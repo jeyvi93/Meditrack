@@ -1,0 +1,702 @@
+:root {
+    --primary-blue: #1e40af;
+    --medical-teal: #0d9488;
+    --navy-dark: #1e293b;
+    --bg-light: #f8fafc;
+    --text-main: #334155;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --danger: #ef4444;
+}
+
+/* =========================
+   MODULE HEADER
+========================= */
+
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.module-header h1 {
+    font-size: 1.6rem;
+    color: var(--navy-dark);
+}
+
+.module-header p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* =========================
+   ADD STAFF BUTTON
+========================= */
+
+.btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 16px;
+    border-radius: 10px;
+
+    border: none;
+    cursor: pointer;
+
+    background: var(--primary-blue);
+    color: white;
+
+    font-weight: 600;
+    font-size: 0.9rem;
+
+    transition: 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #1e3a8a;
+    transform: translateY(-2px);
+}
+
+.btn-primary i {
+    font-size: 1.1rem;
+}
+
+/* =========================
+   FILTER SECTION
+========================= */
+
+.filter-section {
+    background: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 10px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background: white;
+    border: 1px solid var(--border-color);
+
+    padding: 12px 15px;
+    border-radius: 10px;
+
+    width: 400px;
+}
+
+.search-box i {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+}
+
+.search-box input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    background: transparent;
+}
+
+/* =========================
+   FILTER PILLS
+========================= */
+
+.filters {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.filter-select {
+    width: 160px;          /* Smaller width */
+    padding: 7px 10px;     /* Smaller padding */
+    font-size: 14px;       /* Smaller text */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+    transition: 0.2s;
+}
+
+.filter-select:focus {
+    border-color: #0ea5e9;
+}
+/* =========================
+   TABLE
+========================= */
+
+.table-wrapper {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+thead th {
+    background: #f8fafc;
+    padding: 10px;
+    text-align: left;
+    font-size: 0.70rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border-color);
+}
+
+tbody td {
+    padding: 10px;
+    font-size: 0.80rem;
+    color: var(--text-main);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.action-buttons button {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: white;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.icon-btn {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+
+    border: 1px solid var(--border-color);
+    background: white;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* ICON BASE COLORS */
+.icon-btn.view i {
+    color: var(--primary-blue);
+}
+
+.icon-btn.edit i {
+    color: var(--medical-teal);
+}
+
+.icon-btn.delete i {
+    color: var(--danger);
+}
+
+/* HOVER = BORDER + ICON ONLY (NO BACKGROUND) */
+.icon-btn.view:hover {
+    border-color: var(--primary-blue);
+    transform: translateY(-1px);
+}
+
+.icon-btn.view:hover i {
+    color: var(--primary-blue);
+}
+
+/* EDIT */
+.icon-btn.edit:hover {
+    border-color: var(--medical-teal);
+    transform: translateY(-1px);
+}
+
+.icon-btn.edit:hover i {
+    color: var(--medical-teal);
+}
+
+/* DELETE */
+.icon-btn.delete:hover {
+    border-color: var(--danger);
+    transform: translateY(-1px);
+}
+
+.icon-btn.delete:hover i {
+    color: var(--danger);
+}
+
+/* smooth icon transition */
+.icon-btn i {
+    transition: all 0.2s ease;
+}
+
+/* =========================
+   MODAL BASE (IMPORTANT FIX)
+========================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    padding: 20px;
+}
+
+/* 🔥 THIS IS THE CRITICAL FIX */
+.modal.active {
+    display: flex !important;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 14px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    position: relative;
+    padding: 30px 35px;
+}
+
+/* =========================
+   VIEW / EDIT MODAL SIZE
+========================= */
+
+.modal-container.view-mode,
+.modal-container.edit-mode {
+    max-width: 780px;
+    
+}
+
+/* =========================
+   STAFF SUMMARY
+========================= */
+
+.staff-summary {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: var(--light-blue);
+    padding: 18px 20px;
+    border-radius: 12px;
+    border-left: 5px solid var(--primary-blue);
+    position: relative;
+}
+
+.modal-container.edit-mode .staff-summary {
+    border-left: 5px solid var(--primary-blue);
+
+}
+
+.profile-avatar {
+    width: 62px;
+    height: 62px;
+    background: var(--primary-blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.4rem;
+}
+
+.summary-info {
+    display: flex;
+    flex-direction: column;
+}
+
+#e_staffIdDisplay {
+    background: #f0f9ff;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    font-weight: 600;
+}
+
+/* =========================
+   CLOSE BUTTON
+========================= */
+
+.close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-size: 35px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.close:hover {
+    color: #e11d48;
+    transform: scale(1.1);
+}
+
+/* =========================
+   INFO GRID
+========================= */
+
+.info-section {
+    margin-top: 22px;
+}
+
+.info-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--primary-blue);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.data-group {
+    background: var(--bg-light);
+    padding: 10px 12px;
+    border-radius: 10px;
+}
+
+.full-width {
+    grid-column: span 3;
+}
+
+/* =========================
+   INPUTS (EDIT MODE)
+========================= */
+
+.data-group input,
+.data-group select {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    outline: none;
+}
+
+.data-group input:focus,
+.data-group select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-secondary {
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: #f8fafc;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+    .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .full-width {
+        grid-column: span 2;
+    }
+
+    .modal-container.view-mode,
+    .modal-container.edit-mode {
+        max-width: 95%;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-actions button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+}
+
+/* =========================
+   EDIT MODE HEADER FIX (STAFF)
+========================= */
+
+.modal-container.edit-mode .staff-summary {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: var(--light-blue);
+    padding: 18px 20px;
+    border-radius: 12px;
+    border-left: 5px solid var(--primary-blue);
+}
+
+/* ensure avatar stays same */
+.modal-container.edit-mode .p-avatar {
+    width: 62px;
+    height: 62px;
+    background: var(--primary-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* input container */
+.modal-container.edit-mode .summary-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* inputs match visual weight of student header */
+.modal-container.edit-mode .summary-info input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 0.95rem;
+    font-weight: 600;
+    outline: none;
+    min-width: 0;
+    background: white;
+}
+
+/* focus effect like your forms */
+.modal-container.edit-mode .summary-info input:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15);
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    background: #f8fafc;
+    padding: 10px 12px;
+    border-radius: 10px;
+
+    border: 1px solid #eef2f7;
+}
+
+/* label = subtle, not dominant */
+.form-group label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+/* VALUE DISPLAY (for <p> tags like m_age, m_sex, etc.) */
+.form-group p {
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    font-size: 0.95rem;
+    font-weight: 620;
+    color: var(--text-main);
+}
+
+/* =========================
+   DELETE MODAL
+========================= */
+
+.delete-mode {
+    text-align: center;
+    max-width: 420px;
+}
+
+/* warning icon */
+.delete-icon {
+    font-size: 3.8rem;
+    color: #ef4444;
+    margin-bottom: 10px;
+}
+
+/* title */
+.delete-text h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--text-main);
+}
+
+/* description */
+.delete-text p {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* highlight student name */
+.delete-text strong {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+/* buttons layout */
+.delete-mode .modal-actions {
+    justify-content: center;
+}
+
+/* danger button */
+.btn-danger {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+}
+
+/* =========================
+   MESSAGE MODAL
+========================= */
+
+.message-modal{
+    width:380px;
+    max-width:90%;
+    padding:30px;
+    border-radius:16px;
+    background:#fff;
+    text-align:center;
+}
+
+.message-icon{
+    width:70px;
+    height:70px;
+    margin:0 auto 18px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+}
+
+.message-icon.success{
+    background:#dcfce7;
+}
+
+.message-icon.success i{
+    font-size:42px;
+    color:#22c55e;
+}
+
+.message-modal h2{
+    margin:0;
+    font-size:1.45rem;
+    color:var(--navy-dark);
+}
+
+.message-modal p{
+    margin:12px 0 25px;
+    color:var(--text-muted);
+    line-height:1.6;
+}
+
+.message-modal .modal-actions{
+    border:none;
+    margin:0;
+    padding:0;
+    justify-content:center;
+}
+
+.message-modal .btn-primary{
+    width:120px;
+    justify-content:center;
+}

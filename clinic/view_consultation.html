@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultation History | MediTrack</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/view_consultation.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+</head>
+<body>
+    <div id="sidebar"></div>
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="bg-gradient"></div>
+
+            <header class="content-header">
+                <div class="title-area">
+                    <h1>Consultation History</h1>
+                    <p>Access and review all previous clinical consultation records.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-primary" onclick="window.location.href='consultation.html'">
+                        <i class="fas fa-plus"></i> New Consultation
+                    </button>
+                </div>
+            </header>
+
+            <!-- LOGS DATA CARD -->
+            <section class="logs-card">
+                
+                <!-- TOOLBAR -->
+                <div class="logs-toolbar">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by name, department, or details...">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <select class="filter-select" id="patientFilter">
+                            <option value="all">All Patient Types</option>
+                            <option value="student">Students</option>
+                            <option value="staff">Teaching / Non-Teaching Staff</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- TABLE -->
+                <div class="table-responsive">
+                    <table class="logs-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Full Name</th>
+                                <th>Patient Type</th>
+                                <th>Department</th>
+                                <th>Details</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Student Row -->
+                            <tr>
+                                <td class="date-cell">
+                                    <strong>Oct 24, 2024</strong>
+                                    <span>09:30 AM</span>
+                                </td>
+                                <td><span class="patient-name">Marcus Holloway</span></td>
+                                <td><span class="type-pill pill-student">Student</span></td>
+                                <td>College of Engineering</td>
+                                <td>BS Info. Tech.</td>
+                                <td class="text-right">
+                                    <button class="btn-view" onclick="openModal()" title="View Full Log">
+                                        <i class="bx bx-show"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Staff Row -->
+                            <tr>
+                                <td class="date-cell">
+                                    <strong>Oct 24, 2024</strong>
+                                    <span>10:15 AM</span>
+                                </td>
+                                <td><span class="patient-name">Sarah Jenkins</span></td>
+                                <td><span class="type-pill pill-staff">Teaching / Non Teaching-Staff</span></td>
+                                <td colspan="1">Faculty</td>
+                                <td>Instructor</td>
+                                <td class="text-right">
+                                    <button class="btn-view" onclick="openModal()" title="View Full Log">
+                                        <i class="bx bx-show"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Student Row 2 -->
+                            <tr>
+                                <td class="date-cell">
+                                    <strong>Oct 23, 2024</strong>
+                                    <span>02:45 PM</span>
+                                </td>
+                                <td><span class="patient-name">Elena Rodriguez</span></td>
+                                <td><span class="type-pill pill-student">Student</span></td>
+                                <td>College of Education</td>
+                                <td>BSEd Math</td>
+                                <td class="text-right">
+                                    <button class="btn-view" onclick="openModal()" title="View Full Log">
+                                        <i class="bx bx-show"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TABLE FOOTER -->
+                <div class="table-footer">
+                    <p>Showing 3 records found</p>
+                    <div class="pagination">
+                        <button class="btn-page"><i class="fas fa-chevron-left"></i></button>
+                        <button class="btn-page active">1</button>
+                        <button class="btn-page">2</button>
+                        <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+
+    <!-- VIEW LOG MODAL -->
+<div class="modal-overlay" id="viewLogModal">
+    <div class="modal-container">
+
+        <!-- HEADER -->
+        <div class="modal-header">
+            <div>
+                <h2>Medical Log Details</h2>
+                <p>Complete patient consultation record</p>
+            </div>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body">
+
+            <!-- DATE & TIME -->
+            <div class="section">
+                <h3>Record Information</h3>
+                <div class="grid-2">
+                    <div class="info-box">
+                        <label>Date</label>
+                        <p>June 9, 2026</p>
+                    </div>
+                    <div class="info-box">
+                        <label>Time</label>
+                        <p>10:45 AM</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PATIENT INFO -->
+            <div class="section">
+                <h3>Patient Information</h3>
+
+                <div class="grid-2">
+                    <div class="info-box">
+                        <label>Patient Type</label>
+                        <span>Student</span>
+                    </div>
+
+                    <div class="info-box">
+                        <label>Full Name</label>
+                        <p>Juan Dela Cruz</p>
+                    </div>
+
+                    <div class="info-box">
+                        <label>Age / Sex</label>
+                        <p>21 / Male</p>
+                    </div>
+
+                    <div class="info-box">
+                        <label>Contact</label>
+                        <p>0912-345-6789</p>
+                    </div>
+
+                    <div class="info-box">
+                        <label>Department</label>
+                        <p>College of Engineering</p>
+                    </div>
+
+                    <div class="info-box">
+                        <label>Course & Year</label>
+                        <p>BSIT - 3rd Year</p>
+                    </div>
+                </div>
+
+                <div class="info-box full">
+                    <label>Position (if staff)</label>
+                    <p class="text-muted">N/A</p>
+                </div>
+            </div>
+
+            <!-- CLINICAL ASSESSMENT -->
+            <div class="section">
+                <h3>Clinical Assessment</h3>
+
+                <div class="info-box full">
+                    <label>Complaint / Symptoms</label>
+                    <p>Headache and mild fever for 2 days</p>
+                </div>
+
+                <div class="info-box full">
+                    <label>Treatment Given</label>
+                    <p>Rest advised, hydration, and paracetamol administration</p>
+                </div>
+
+                <div class="info-box full">
+                    <label>Remarks (Optional)</label>
+                    <p class="text-muted">Follow-up if symptoms persist after 48 hours</p>
+                </div>
+            </div>
+
+            <!-- MEDICINE DISPENSED -->
+            <div class="section">
+                <h3>Medicine Dispensed</h3>
+
+                <div class="table-mini">
+                    <div class="table-row header">
+                        <span>Medicine Name</span>
+                        <span>Quantity</span>
+                    </div>
+
+                    <div class="table-row">
+                        <span>Paracetamol 500mg</span>
+                        <span>2 tablets</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeModal()">Close</button>
+        </div>
+
+    </div>
+</div>
+
+</div>
+<script src="../includes/includes.js"></script>
+<script src="../assets/js/view_consultation.js"></script>
+</body>
+</html>

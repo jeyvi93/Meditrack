@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral History | MediTrack</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/referral_history.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+</head>
+<body>
+    <div id="sidebar"></div>
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="bg-gradient"></div>
+
+            <header class="content-header">
+                <div class="title-area">
+                    <h1>Referral History</h1>
+                    <p>Access and review all previous referral records.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-primary" onclick="window.location.href='referral-form.html'">
+                        <i class="fas fa-plus"></i> New Referral
+                    </button>
+                </div>
+            </header>
+
+            <!-- LOGS DATA CARD -->
+            <section class="logs-card">
+                
+                <!-- TOOLBAR -->
+                <div class="logs-toolbar">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by name, department, or details...">
+                    </div>
+                </div>
+
+                <!-- TABLE -->
+                <div class="table-responsive">
+                    <table class="logs-table">
+                        <thead>
+                            <tr>
+                                <th>Referred Date</th>
+                                <th>Full Name</th>
+                                <th>Sex</th>
+                                <th>Doctor</th>
+                                <th>Reason for Referral</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Patient Row -->
+                            <tr>
+                                <td class="date-cell">
+                                    <strong>Oct 24, 2024</strong>
+                                </td>
+                                <td><span class="patient-name">Marcus Holloway</span></td>
+                                <td><span>Male</span></td>
+                                <td>Doc McStuffins</td>
+                                <td>Follow-up Care</td>
+                                <td class="text-right">
+                                    <button class="btn-view" title="View Full Details" onclick="openModal()">
+                                        <i class="bx bx-show"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Patient Row 2 -->
+                            <tr>
+                                <td class="date-cell">
+                                    <strong>Oct 24, 2024</strong>
+                                </td>
+                                <td><span class="patient-name">Sarah Jenkins</span></td>
+                                <td><span>Female</span></td>
+                                <td>Doc McStuffins</td>
+                                <td>Specialist Consultation</td>
+                                <td class="text-right">
+                                    <button class="btn-view" title="View Full Details" onclick="openModal()">
+                                        <i class="bx bx-show"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Patient Row 3 -->
+                            <tr>
+                                <td class="date-cell">
+                                    <strong>Oct 23, 2024</strong>
+                                </td>
+                                <td><span class="patient-name">Elena Rodriguez</span></td>
+                                <td><span>Female</span></td>
+                                <td>Doc McStuffins</td>
+                                <td>Follow-up Care</td>
+                                <td class="text-right">
+                                    <button class="btn-view" title="View Full Details" onclick="openModal()">
+                                        <i class="bx bx-show"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TABLE FOOTER -->
+                <div class="table-footer">
+                    <p>Showing 3 records found</p>
+                    <div class="pagination">
+                        <button class="btn-page"><i class="fas fa-chevron-left"></i></button>
+                        <button class="btn-page active">1</button>
+                        <button class="btn-page">2</button>
+                        <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+
+ 
+    </div>
+</div>
+ <!-- VIEW LOG MODAL -->
+<div class="modal-overlay" id="referralModal">
+    <div class="modal-container">
+
+        <!-- HEADER -->
+        <div class="modal-header">
+            <div>
+                <h2>Referral Details</h2>
+                <p>Complete patient referral information.</p>
+            </div>
+            <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body">
+
+            <!-- DATE & TIME -->
+            <div class="section">
+                <h3>Referral Information</h3>
+                <div class="grid-2">
+                    <div class="info-box">
+                        <label>Reffered Date</label>
+                        <p>June 9, 2026</p>
+                    </div>
+                    <div class="info-box">
+                        <label>Doctor</label>
+                        <p>Doc McStuffins</p>
+                    </div>
+                    <div class="info-box full">
+                        <label>Reason for Referral</label>
+                        <p>Follow-up Care</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PATIENT INFO -->
+            <div class="section">
+                <h3>Patient Information</h3>
+
+                <div class="grid-2">
+                    <div class="info-box">
+                        <label>Full Name</label>
+                        <span>Marcus Holloway</span>
+                    </div>
+
+                    <div class="info-box">
+                        <label>Sex</label>
+                        <p>Male</p>
+                    </div>
+
+                    <div class="info-box">
+                        <label>Date of Birth</label>
+                        <p>01-01-2000</p>
+                    </div>
+
+                    <div class="info-box">
+                        <label>Contact</label>
+                        <p>0912-345-6789</p>
+                    </div>
+
+                    <div class="info-box">
+                        <label>Address</label>
+                        <p>Mandaue City</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FAMILY INFO -->
+            <div class="section">
+                <h3>Family Information</h3>
+                
+                <div class="grid-2">
+                    <div class="info-box">
+                     <label>Parent Name</label>
+                     <p>John Holloway</p>
+                    </div>
+
+                    <div class="info-box">
+                     <label>Parent's Date of Birth</label>
+                     <p>02-19-1970</p>
+                    </div>
+
+                    <div class="info-box">
+                     <label>Spouse Name</label>
+                     <p>-</p>
+                    </div>
+
+                    <div class="info-box">
+                     <label>Spouse's Date of Birth</label>
+                     <p>-</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- PHILHEALTH -->
+            <div class="section">
+                <h3>Philhealth</h3>
+                
+                <div class="grid-2">
+                    <div class="info-box">
+                     <label>Member</label>
+                     <p>Yes</p>
+                    </div>
+
+                    <div class="info-box">
+                     <label>Philhealth Number</label>
+                     <p>01234566788</p>
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- VITALS -->
+            <div class="section">
+                <h3>Vital Signs</h3>
+                
+                <div class="grid-2">
+                    <div class="info-box">
+                     <label>Blood Pressure</label>
+                     <p>120/80</p>
+                    </div>
+
+                    <div class="info-box">
+                     <label>Weight</label>
+                     <p>65 kg</p>
+                    </div>
+
+                    <div class="info-box">
+                     <label>Temperature</label>
+                     <p>36.5°C</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- NURSE NOTES -->
+            <div class="section">
+                <h3>Nurse's Notes</h3>
+                    <div class="info-box full">
+                     <p>Patient is stable</p>
+                    </div>
+            </div>
+            
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeModal()">Close</button>
+        </div>
+
+    </div>
+</div>
+<script src="../includes/includes.js"></script>
+<script src="../assets/js/referral_history.js"></script>
+</body>
+</html>

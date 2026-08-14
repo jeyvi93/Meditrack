@@ -1,0 +1,81 @@
+/* REUSING BOOKING DESIGN SYSTEM */
+.booking-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 30px;
+    padding: 60px 0 100px 0;
+    align-items: start;
+}
+
+/* PROFILE CARD CONTENT */
+.appointment-card {
+    background: white; padding: 40px; border-radius: 20px; border: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+}
+
+.profile-header-inner { display: flex; align-items: center; gap: 25px; margin-bottom: 40px; }
+.avatar-circle {
+    width: 80px; height: 80px; background: var(--primary-blue); color: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; font-weight: 800;
+}
+.header-text h2 { font-family: 'Plus Jakarta Sans'; color: var(--navy-dark); }
+
+/* INFO FIELDS */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+.info-group label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+.info-value {
+    display: flex; align-items: center; gap: 12px; background: #f8fafc;
+    padding: 14px 18px; border-radius: 12px; border: 1px solid #e2e8f0;
+}
+.info-value span { font-weight: 600; color: var(--navy-dark); }
+
+/* ACTIONS */
+.profile-actions { margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px; display: flex; flex-direction: column; gap: 15px; }
+.btn-edit-profile {
+    width: 100%; background: var(--navy-dark); color: white; border: none;
+    padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+}
+
+/* LOGOUT BUTTON LOGIC */
+.btn-logout-mobile {
+    display: none; /* HIDDEN ON WEB/DESKTOP */
+    width: 100%; background: #fee2e2; color: #ef4444; border: 1.5px solid #fecaca;
+    padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer;
+    align-items: center; justify-content: center; gap: 10px;
+}
+
+/* MOBILE NAVS */
+.mobile-top-bar {
+    display: none; justify-content: center; align-items: center;
+    padding: 15px 20px; background: white; border-bottom: 1px solid var(--border-color);
+}
+.nav-title { font-weight: 800; color: var(--navy-dark); font-family: 'Plus Jakarta Sans'; }
+
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+.modal-overlay.hidden { display: none; }
+.modal-box { background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 360px; width: 90%; }
+.modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; }
+.btn-no { background: #f1f5f9; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+.btn-yes { background: #ef4444; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+
+/* MOBILE RESPONSIVE ADAPTATION */
+@media (max-width: 992px) {
+    .booking-grid { grid-template-columns: 1fr; }
+    .info-side { display: none; }
+}
+
+@media (max-width: 768px) {
+    .navbar { display: none; }
+    .mobile-top-bar { display: flex; }
+    .bottom-nav { display: flex; }
+    .info-grid { grid-template-columns: 1fr; }
+    
+    .btn-logout-mobile { display: flex; } /* SHOW LOGOUT IN CARD FOR MOBILE */
+    
+    .appointment-card { padding: 25px; border: none; background: transparent; box-shadow: none; }
+    .profile-header-inner { flex-direction: column; text-align: center; gap: 15px; }
+}

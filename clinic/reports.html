@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Report | MediTrack</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Icons & Charts -->
+     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../assets/css/reports.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+
+</head>
+<body>
+
+    <div id="sidebar"></div>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="bg-gradient"></div>
+
+            <header class="content-header">
+                <div class="title-area">
+                    <h1>Monthly Consultation Report</h1>
+                    <p>Detailed performance and health trends for the selected month.</p>
+                </div>
+                
+                <!-- MONTH SELECTOR -->
+                <div class="report-controls">
+                    <div class="selector-group">
+                        <i class="fas fa-calendar-alt"></i>
+                        <select id="monthSelect">
+                            <option>January</option><option>February</option>
+                            <option>March</option><option>April</option>
+                            <option>May</option><option>June</option>
+                            <option>July</option><option>August</option>
+                            <option>September</option><option selected>October</option>
+                            <option>November</option><option>December</option>
+                        </select>
+                        <select id="yearSelect">
+                            <option selected>2024</option>
+                            <option>2023</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+
+            <!-- STATS SUMMARY -->
+            <section class="stats-row">
+                <div class="mini-card">
+                    <label>Total Consultations</label>
+                    <div class="card-val">
+                        <h3>342</h3>
+                        <span class="pill-badge">+12%</span>
+                    </div>
+                </div>
+                <div class="mini-card">
+                    <label>Student Volume</label>
+                    <div class="card-val">
+                        <h3>250</h3>
+                        <span class="text-muted">73%</span>
+                    </div>
+                </div>
+                <div class="mini-card">
+                    <label>Staff Volume</label>
+                    <div class="card-val">
+                        <h3>92</h3>
+                        <span class="text-muted">27%</span>
+                    </div>
+                </div>
+                <div class="mini-card">
+                    <label>Total Medicines Dispensed</label>
+                    <div class="card-val">
+                        <h3>51</h3>
+                        <span class="pill-badge">+12%</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CHARTS SECTION -->
+            <section class="charts-grid">
+                <!-- Daily Volume Chart -->
+                <div class="chart-container main-chart">
+                    <div class="chart-header">
+                        <h3>Daily Consultation Volume (October)</h3>
+                        <p>Track peaks and lows throughout the month</p>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="dailyVolumeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Patient Type Distribution -->
+                <div class="chart-container side-chart">
+                    <div class="chart-header">
+                        <h3>Patient Type</h3>
+                    </div>
+                    <div class="canvas-wrapper doughnut-wrapper">
+                        <canvas id="patientTypeChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TOP RANKINGS & RECENT SUMMARY -->
+            <section class="data-grid">
+                <!-- Top Complaints -->
+                <div class="data-card">
+                    <h3>Top 5 Complaints</h3>
+                    <ul class="rank-list">
+                        <li><span>1. Headache / Migraine</span> <span class="val">42</span></li>
+                        <li><span>2. Cough & Cold</span> <span class="val">38</span></li>
+                        <li><span>3. Stomach Ache</span> <span class="val">22</span></li>
+                        <li><span>4. Allergic Reaction</span> <span class="val">15</span></li>
+                        <li><span>5. Minor Injury</span> <span class="val">10</span></li>
+                    </ul>
+                </div>
+
+                <!-- Top Medicines -->
+                <div class="data-card">
+                    <h3>Top Dispensed Medicines</h3>
+                    <ul class="rank-list">
+                        <li><span>1. Paracetamol 500mg</span> <span class="val">85</span></li>
+                        <li><span>2. Cetirizine 10mg</span> <span class="val">40</span></li>
+                        <li><span>3. Amoxicillin 250mg</span> <span class="val">32</span></li>
+                        <li><span>4. Antacid Tablet</span> <span class="val">25</span></li>
+                        <li><span>5. Mefenamic Acid</span> <span class="val">18</span></li>
+                    </ul>
+                </div>
+
+                <!-- Log Summary Table -->
+                <div class="data-card full-width">
+                    <div class="card-title-btn">
+                        <h3>Summary of Consultations</h3>
+                        <a href="view-consultation.html">View All Logs <i class="fas fa-external-link-alt"></i></a>
+                    </div>
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Patient Name</th>
+                                <th>Type</th>
+                                <th>Complaint</th>
+                                <th>Medicine Given</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Oct 31, 2024</td>
+                                <td><strong>Marcus Holloway</strong></td>
+                                <td>Student</td>
+                                <td>Fever</td>
+                                <td>Paracetamol</td>
+                                <td><span class="stat-tag completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 30, 2024</td>
+                                <td><strong>Sarah Jenkins</strong></td>
+                                <td>Staff</td>
+                                <td>Dental Pain</td>
+                                <td>Mefenamic</td>
+                                <td><span class="stat-tag completed">Completed</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+    <script src="../assets/js/reports.js"></script>
+    <script src="../includes/includes.js"></script>
+</body>
+</html>

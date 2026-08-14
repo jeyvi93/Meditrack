@@ -1,0 +1,600 @@
+:root {
+    --primary-blue: #1e40af;
+    --navy-dark: #1e293b;
+    --accent-blue: #3b82f6;
+    --medical-teal: #0d9488;
+    --bg-light: #f8fafc;
+    --text-main: #334155;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --white: #ffffff;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+body { background-color: var(--bg-light); color: var(--text-main); min-height: 100vh; }
+
+.app-container { display: flex; }
+
+
+/* MAIN CONTENT */
+.main-content {
+    flex: 1;
+    padding: 30px 40px;
+    position: relative;
+    min-height: 100vh;
+}
+
+.bg-gradient {
+    position: absolute; top: 0; left: 0; width: 100%; height: 450px;
+    background: radial-gradient(circle at 0% 0%, #eff6ff 0%, transparent 50%),
+                radial-gradient(circle at 100% 0%, #f1f5f9 0%, transparent 50%);
+    z-index: -1;
+}
+
+/* HEADER AREA */
+.content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.title-area h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.8rem; color: var(--navy-dark); }
+.title-area p { color: var(--text-muted); font-size: 0.9rem; }
+
+/* SUMMARY PILLS */
+.inventory-summary { display: flex; gap: 10px; }
+.summary-item { 
+    background: white; border: 1px solid var(--border-color); padding: 8px 14px; 
+    border-radius: 30px; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; 
+}
+.summary-item.text-danger { border-color: #fecaca; color: var(--danger); }
+.summary-item.text-warning { border-color: #fef3c7; color: var(--warning); }
+.summary-item.near-expiry {
+    border-color: #ffedd5;
+    color: #9a3412;
+}
+
+/* TAB SYSTEM */
+.inventory-tabs { display: flex; gap: 5px; border-bottom: 1px solid var(--border-color); padding: 0 10px; }
+.tab-link { 
+    padding: 12px 20px; background: none; border: none; color: var(--text-muted); 
+    font-weight: 600; cursor: pointer; position: relative; font-size: 0.9rem; 
+}
+
+
+.tab-link.active { color: var(--primary-blue); }
+.tab-link.active::after { 
+    content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; 
+    background: var(--primary-blue); border-radius: 10px 10px 0 0; 
+}
+.tab-badge { background: var(--danger); color: white; padding: 2px 6px; border-radius: 6px; font-size: 0.7rem; margin-left: 5px; }
+
+.tab-pane { display: none; animation: fadeIn 0.3s ease; }
+.tab-pane.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* CARDS & TABLES */
+.inventory-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+
+.inventory-toolbar { padding: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
+.search-wrapper { background: #f1f5f9; padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; gap: 10px; width: 320px; }
+.search-wrapper input { border: none; background: none; outline: none; width: 100%; font-size: 0.85rem; }
+
+.filter-group { display: flex; gap: 10px; }
+.filter-select { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-main); }
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.inventory-table { width: 100%; border-collapse: collapse; text-align: left; }
+.inventory-table th { padding: 16px 20px; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+.inventory-table td { padding: 16px 20px; font-size: 0.9rem; border-bottom: 1px solid #f8fafc; }
+/* ===== Column Widths ===== */
+
+/* Medicine Name */
+.inventory-table th:nth-child(1),
+.inventory-table td:nth-child(1){
+    width: 20%;
+}
+
+/* Batch No. */
+.inventory-table th:nth-child(2),
+.inventory-table td:nth-child(2){
+    width: 11%;
+}
+
+/* Quantity */
+.inventory-table th:nth-child(3),
+.inventory-table td:nth-child(3){
+    width: 8%;
+}
+
+/* Date Acquired */
+.inventory-table th:nth-child(4),
+.inventory-table td:nth-child(4){
+    width: 10%;
+}
+
+/* Expiration Date */
+.inventory-table th:nth-child(5),
+.inventory-table td:nth-child(5){
+    width: 11%;
+}
+
+/* Supplier */
+.inventory-table th:nth-child(6),
+.inventory-table td:nth-child(6){
+    width: 13%;
+}
+
+/* Status  */
+.inventory-table th:nth-child(7),
+.inventory-table td:nth-child(7){
+    width: 15%;
+}
+/* TABLE ELEMENTS */
+.batch { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.85rem; }
+.status-pill { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+.stat-in-stock { background: #dcfce7; color: #166534; }
+.stat-low-stock { background: #fef3c7; color: #f59e0b; }
+.stat-near-expiry { background: #ffedd5; color: #9a3412; }
+.stat-expired { background: #fee2e2; color: var(--danger); }
+.stat-quarantine { background: #e0f2fe; color: #0369a1; }
+
+/* ACTIONS */
+.btn-primary { background: var(--primary-blue); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.btn-report { background: white; color: var(--medical-teal); border: 1px solid var(--medical-teal); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+
+.btn-dispose {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* default icon color */
+.btn-dispose i {
+    color: var(--danger);
+    transition: all 0.2s ease;
+}
+
+/* hover = border + icon only (NO background fill) */
+.btn-dispose:hover {
+    border-color: var(--danger);
+    transform: translateY(-1px);
+}
+
+.btn-dispose:hover i {
+    color: var(--danger);
+}
+
+.tab-info-banner { background: #fff1f2; color: #991b1b; padding: 12px 20px; font-size: 0.85rem; border-bottom: 1px solid #fecaca; }
+
+.text-right { text-align: right; }
+
+.action-cell {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    align-items: center;
+}
+
+/* base */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* ICON DEFAULT COLORS (subtle like appointments) */
+.btn-action.primary i {
+    color: var(--primary-blue);
+}
+
+.btn-action.warning i {
+    color: #b45309;
+}
+
+.btn-action.info i {
+    color: #0369a1;
+}
+
+.btn-action.danger i {
+    color: var(--danger);
+}
+
+/* HOVER = BORDER + ICON COLOR ONLY (NO BACKGROUND FILL) */
+.btn-action.primary:hover {
+    border-color: var(--primary-blue);
+}
+
+.btn-action.primary:hover i {
+    color: var(--primary-blue);
+}
+
+.btn-action.warning:hover {
+    border-color: #f59e0b;
+}
+
+.btn-action.warning:hover i {
+    color: #f59e0b;
+}
+
+.btn-action.info:hover {
+    border-color: #0ea5e9;
+}
+
+.btn-action.info:hover i {
+    color: #0ea5e9;
+}
+
+.btn-action.danger:hover {
+    border-color: var(--danger);
+}
+
+.btn-action.danger:hover i {
+    color: var(--danger);
+}
+
+/* subtle lift like appointments */
+.btn-action:hover {
+    transform: translateY(-1px);
+}
+
+/* MODAL BACKDROP */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 999;
+}
+
+/* DARK BACKDROP */
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+}
+
+/* MODAL BOX */
+.modal-content {
+    position: relative;
+    width: 520px;
+    background: white;
+    margin: 80px auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    overflow: hidden;
+    animation: pop 0.2s ease;
+}
+
+@keyframes pop {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* HEADER */
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    font-size: 1.1rem;
+    color: var(--navy-dark);
+}
+
+/* CLOSE BUTTON */
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+/* BODY */
+.modal-body {
+    padding: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.form-group input {
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+/* ROWS */
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+
+/* FOOTER */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 20px;
+
+}
+
+/* SECONDARY BUTTON (your existing style reused) */
+.btn-secondary {
+    background: white;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    .modal-content {
+        width: 90%;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+}
+
+/* ========================================
+   DISPOSE MODAL STYLES
+======================================== */
+
+.dispose-modal-content {
+    width: 560px;
+    max-width: 95%;
+}
+
+/* Warning Banner */
+.dispose-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    padding: 14px;
+    margin-bottom: 18px;
+
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+}
+
+.dispose-warning i {
+    color: var(--danger);
+    font-size: 1rem;
+    margin-top: 2px;
+}
+
+.dispose-warning p {
+    color: #991b1b;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Information Card */
+.dispose-info-card {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 18px;
+    background: var(--white);
+}
+
+.dispose-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 13px 16px;
+}
+
+.dispose-info-row:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dispose-info-row span {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.dispose-info-row strong {
+    color: var(--navy-dark);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Fixed Reason Container */
+.dispose-fixed-reason {
+    margin-bottom: 16px;
+}
+
+.dispose-fixed-reason label,
+.dispose-reason-group label {
+    display: block;
+    margin-bottom: 6px;
+
+    color: var(--text-main);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.dispose-fixed-reason label small {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Fixed Reason Badge */
+.dispose-reason-badge {
+    padding: 12px 14px;
+
+    border-radius: 8px;
+
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+
+    color: #9a3412;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Dropdown Group */
+.dispose-reason-group {
+    margin-bottom: 16px;
+    display: none; /* hidden by default */
+}
+
+.dispose-reason-group select {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+
+    font-size: 0.9rem;
+    color: var(--text-main);
+    background: white;
+
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.dispose-reason-group select:focus {
+    border-color: var(--primary-blue);
+}
+
+/* Confirm Button */
+.btn-confirm-dispose {
+    background: var(--danger);
+    color: white;
+
+    border: none;
+
+    padding: 10px 18px;
+    border-radius: 8px;
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.btn-confirm-dispose:hover {
+    background: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+
+    .dispose-modal-content {
+        width: 95%;
+    }
+
+    .dispose-info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}
+
+/* =========================
+   INVENTORY REPORT MODAL
+========================= */
+
+.report-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.report-card {
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+
+    padding: 12px;
+}
+
+.report-card span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.report-card strong {
+    display: block;
+    font-size: 1.2rem;
+    margin-top: 4px;
+    color: var(--navy-dark);
+}
+
+/* status colors */
+.report-card.danger {
+    border-color: #fecaca;
+}
+
+.report-card.warning {
+    border-color: #fde68a;
+}
+
+.report-card.near {
+    border-color: #fed7aa;
+}
+
+.report-details h4 {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: var(--navy-dark);
+}
+
+.report-details ul {
+    list-style: none;
+    max-height: 180px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.report-details li {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    color: var(--text-main);
+}

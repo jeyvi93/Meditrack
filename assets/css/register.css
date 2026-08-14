@@ -1,0 +1,404 @@
+:root {
+    --navy-dark: #0f172a;
+    --primary-blue: #2563eb;
+    --medical-teal: #10b981;
+    --text-muted-light: #94a3b8;
+}
+
+/* REGISTER SECTION LAYOUT */
+.register-section {
+    padding: 40px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 100px);
+}
+
+.register-card {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr; /* Split: Left Image, Right Form */
+    background: white;
+    width: 100%;
+    max-width: 1000px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+/* Parent Container */
+.register-info {
+    background: var(--navy-dark);
+    padding: 48px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Subtle glow effect in the corner */
+    background-image: radial-gradient(circle at top left, #1e40af, transparent);
+    position: relative;
+    overflow: hidden;
+}
+
+/* The Blue/Light Pill Badge */
+.badge {
+    display: inline-block;
+    background: rgba(37, 99, 235, 0.2); /* Transparent blue */
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #93c5fd;
+    margin-bottom: 20px;
+}
+
+/* Heading */
+.register-info h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 2.2rem;
+    margin-bottom: 16px;
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+/* Description Text */
+.register-info p {
+    color: var(--text-muted-light);
+    line-height: 1.6;
+    margin-bottom: 40px;
+    font-size: 1.05rem;
+}
+
+/* Benefits List Wrapper */
+.benefit-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Individual List Item */
+.benefit-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    font-weight: 500;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+}
+
+/* The Checkmark Icons */
+.benefit-list li i {
+    color: var(--medical-teal);
+    font-size: 1.1rem;
+}
+
+/* Responsive: Hide or adjust if screen is small */
+@media (max-width: 900px) {
+    /* 1. Hide the info sidebar entirely on mobile to prioritize the form */
+    .register-info {
+        display: none;
+    }
+
+    /* 2. Adjust the parent container to be a single column */
+    .register-container, .register-card {
+        grid-template-columns: 1fr;
+        max-width: 550px; /* Keeps the form from getting too wide on tablets */
+        margin: 0 auto;
+        border-radius: 16px; /* Slightly smaller radius for mobile */
+    }
+
+    /* 3. Ensure the form side takes up the full width now that the sidebar is gone */
+    .register-form-box, .register-form-container {
+        padding: 32px 20px; /* Reduce padding for smaller screens */
+    }
+
+    /* 4. Optional: Force form inputs to stack in one column on mobile */
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .full-width {
+        grid-column: span 1;
+    }
+}
+
+/* RIGHT SIDE: FORM */
+.register-form-container {
+    padding: 48px;
+}
+
+.form-header {
+    margin-bottom: 30px;
+}
+
+.form-header h1 {
+    font-size: 1.8rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--navy-dark);
+}
+
+.form-header p {
+    color: var(--text-muted);
+}
+
+/* FORM GRID */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 20px;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-main);
+}
+
+.input-box {
+    display: flex;
+    align-items: center;
+    background: #f1f5f9;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    transition: 0.3s;
+}
+
+.input-box:focus-within {
+    background: white;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1);
+}
+
+.input-box i {
+    margin-right: 12px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.input-box input, .input-box select {
+    border: none;
+    outline: none;
+    background: none;
+    width: 100%;
+    font-size: 0.9rem;
+    color: var(--navy-dark);
+}
+
+.btn-submit {
+    width: 100%;
+    background: var(--navy-dark);
+    color: white;
+    padding: 16px;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 30px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-submit:hover {
+    background: var(--primary-blue);
+    transform: translateY(-2px);
+}
+
+.mobile-login-hint {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+
+/* RESPONSIVE LOGIC */
+@media (max-width: 900px) {
+    .register-card {
+        grid-template-columns: 1fr; /* Stack into 1 column */
+        max-width: 500px;
+    }
+
+    .register-visual {
+        display: none; /* Hide the picture on mobile */
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr; /* Single column fields on mobile */
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+
+    .register-form-container {
+        padding: 32px 24px;
+    }
+
+    .mobile-login-hint {
+        display: block; /* Show login link on mobile */
+    }
+}
+
+/* ==========================
+   REGISTRATION SUCCESS MODAL
+========================== */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(5px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 9999;
+
+    /* Hidden by default */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+/* SHOW MODAL */
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+
+/* ==========================
+   MODAL BOX
+========================== */
+
+.success-modal {
+    position: relative;
+
+    width: 100%;
+    max-width: 420px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 35px 30px;
+
+    text-align: center;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+
+    transform: translateY(20px) scale(0.97);
+
+    transition: transform 0.25s ease;
+}
+
+
+/* MODAL ANIMATION */
+
+.modal-overlay.show .success-modal {
+    transform: translateY(0) scale(1);
+}
+
+
+/* ==========================
+   SUCCESS ICON
+========================== */
+
+.success-icon {
+    width: 70px;
+    height: 70px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #dcfce7;
+    color: var(--medical-teal);
+
+    border-radius: 50%;
+
+    font-size: 2rem;
+}
+
+
+/* ==========================
+   MODAL TITLE
+========================== */
+
+.success-modal h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+
+    color: var(--navy-dark);
+
+    font-size: 1.5rem;
+
+    margin-bottom: 10px;
+}
+
+
+/* ==========================
+   MODAL DESCRIPTION
+========================== */
+
+.success-modal p {
+    color: var(--text-muted);
+
+    font-size: 0.9rem;
+
+    line-height: 1.6;
+
+    margin-bottom: 25px;
+}
+
+
+/* ==========================
+   LOGIN BUTTON
+========================== */
+
+.btn-success {
+    width: 100%;
+
+    border: none;
+
+    background: var(--primary-blue);
+
+    color: white;
+
+    padding: 12px 20px;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.btn-success:hover {
+    background: var(--navy-dark);
+
+    transform: translateY(-1px);
+}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | MediTrack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/view_profile.css">
+</head>
+<body>
+
+<div class="bg-gradient"></div>
+
+<!-- TOP NAVBAR (Desktop) -->
+<nav class="navbar main-wrapper">
+    <div class="logo">
+        <img src="../assets/images/med.png" alt="Logo">
+    </div>
+    <div class="desktop-menu">
+        <a href="view_appointments.html">My Appointments</a>
+        <a href="book_appointment.html">Book Appointment</a>
+        <a href="notifications.html">Notifications</a>
+        <a href="view_profile.html" style="color: var(--primary-blue);">Profile</a>
+        <a href="#" class="btn-logout-small" onclick="openLogoutModal(); return false;">Logout</a>
+    </div>
+</nav>
+
+<!-- MOBILE TOP BAR (Title only, Logout moved to card) -->
+<nav class="mobile-top-bar">
+    <span class="nav-title">Profile</span>
+</nav>
+
+<main class="main-wrapper">
+    <section class="booking-grid">
+        
+        <!-- Left Side: Sidebar (Hidden on Mobile) -->
+        <div class="info-side">
+            <div class="status-card">
+                <div class="status-icon"><i class='bx bxs-user-circle'></i></div>
+                <div>
+                    <h4>Profile Verified</h4>
+                    <p>Your account information is secured.</p>
+                </div>
+            </div>
+            
+            <div class="reminder-list">
+                <h5>Profile Settings:</h5>
+                <ul>
+                    <li><i class='bx bx-check-double'></i> Keep your email up to date.</li>
+                    <li><i class='bx bx-check-double'></i> ID numbers cannot be changed.</li>
+                    <li><i class='bx bx-check-double'></i> Contact clinic for role updates.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Side: Profile Details Card -->
+        <div class="appointment-card">
+            <div class="profile-header-inner">
+                <div class="avatar-circle">JD</div>
+                <div class="header-text">
+                    <h2>Johnathan Doe</h2>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-group">
+                    <label>Full Name</label>
+                    <div class="info-value">
+                        <i class='bx bx-user'></i>
+                        <span>Johnathan Alexander Doe</span>
+                    </div>
+                </div>
+
+                <div class="info-group">
+                    <label>Email Address</label>
+                    <div class="info-value">
+                        <i class='bx bx-envelope'></i>
+                        <span>j.doe@university.edu.ph</span>
+                    </div>
+                </div>
+
+                <div class="info-group">
+                    <label>ID Number</label>
+                    <div class="info-value">
+                        <i class='bx bx-id-card'></i>
+                        <span>2023-00451-MN-0</span>
+                    </div>
+                </div>
+
+                <div class="info-group">
+                    <label>Academic Role</label>
+                    <div class="info-value">
+                        <i class='bx bx-briefcase'></i>
+                        <span>Student</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn-edit-profile" onclick="window.location.href='edit_profile.html'">
+                    <i class='bx bx-edit-alt'></i> Edit Profile Details
+                </button>
+
+                <!-- NEW: Logout Button (Only visible in Mobile via CSS) -->
+                <button class="btn-logout-mobile" onclick="openLogoutModal()">
+                    <i class='bx bx-log-out'></i> Logout Account
+                </button>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- MOBILE BOTTOM TAB BAR -->
+<nav class="bottom-nav">
+    <a href="view_appointments.html" class="nav-item">
+        <i class='bx bx-calendar-event'></i>
+        <span>My Appointments</span>
+    </a>
+    <a href="book_appointment.html" class="nav-item">
+        <i class='bx bx-plus-circle'></i>
+        <span>Book Appointment</span>
+    </a>
+    <a href="notifications.html" class="nav-item">
+        <i class='bx bx-bell'></i>
+        <span>Notifications</span>
+    </a>
+    <a href="view_profile.html" class="nav-item active">
+        <i class='bx bx-user-circle'></i>
+        <span>Profile</span>
+    </a>
+</nav>
+
+<!-- LOGOUT MODAL -->
+<div id="logoutModal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <i class='bx bx-log-out-circle' style="color: #ef4444; font-size: 3.5rem;"></i>
+        <h3>Sign Out?</h3>
+        <p>Are you sure you want to end your session on this device?</p>
+        <div class="modal-btns">
+            <button class="btn-no" onclick="closeLogoutModal()">Cancel</button>
+            <button class="btn-yes" onclick="confirmLogout()">Logout</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openLogoutModal() { document.getElementById('logoutModal').classList.remove('hidden'); }
+    function closeLogoutModal() { document.getElementById('logoutModal').classList.add('hidden'); }
+    function confirmLogout() { window.location.href = '../index.php'; }
+</script>
+
+</body>
+</html>

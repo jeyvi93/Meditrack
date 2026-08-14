@@ -1,0 +1,73 @@
+:root {
+    --primary-blue: #1e40af;
+    --navy-dark: #1e293b;
+    --accent-blue: #3b82f6;
+    --medical-teal: #0d9488;
+    --bg-light: #f8fafc;
+    --text-main: #334155;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --white: #ffffff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background-color: var(--bg-light); color: var(--text-main); }
+
+.main-content { margin-left: var(--sidebar-width); padding: 40px; position: relative; }
+.bg-gradient {
+    position: absolute; top: 0; left: 0; width: 100%; height: 450px;
+    background: radial-gradient(circle at 0% 0%, #eff6ff 0%, transparent 50%),
+                radial-gradient(circle at 100% 0%, #f1f5f9 0%, transparent 50%);
+    z-index: -1;
+}
+
+/* HEADER & CONTROLS */
+.content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.title-area h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.8rem; color: var(--navy-dark); }
+.title-area p { color: var(--text-muted); font-size: 0.9rem; }
+
+.report-controls { display: flex; gap: 15px; align-items: center; }
+.selector-group {
+    background: white; padding: 8px 16px; border: 1px solid var(--border-color);
+    border-radius: 10px; display: flex; align-items: center; gap: 10px;
+}
+.selector-group i { color: var(--primary-blue); }
+.selector-group select { border: none; outline: none; font-weight: 600; color: var(--navy-dark); cursor: pointer; }
+.btn-primary { background: var(--navy-dark); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+
+/* STATS ROW */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+.mini-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid var(--border-color); }
+.mini-card label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.5px; }
+.card-val { display: flex; align-items: baseline; gap: 10px; margin-top: 8px; }
+.card-val h3 { font-size: 1.8rem; color: var(--navy-dark); }
+.pill-badge { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
+.mini-card.highlight { border-left: 5px solid var(--medical-teal); }
+
+/* CHARTS GRID */
+.charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px; }
+.chart-container { background: white; padding: 25px; border-radius: 15px; border: 1px solid var(--border-color); }
+.chart-header { margin-bottom: 20px; }
+.chart-header h3 { font-size: 1rem; color: var(--navy-dark); }
+.chart-header p { font-size: 0.8rem; color: var(--text-muted); }
+.canvas-wrapper { height: 300px; position: relative; }
+.doughnut-wrapper { height: 240px; margin-top: 20px; }
+
+/* DATA GRID */
+.data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.data-card { background: white; padding: 25px; border-radius: 15px; border: 1px solid var(--border-color); }
+.full-width { grid-column: span 2; }
+.data-card h3 { font-size: 1rem; color: var(--navy-dark); margin-bottom: 20px; }
+
+.rank-list { list-style: none; }
+.rank-list li { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+.rank-list li:last-child { border: none; }
+.rank-list .val { font-weight: 700; color: var(--primary-blue); }
+
+.card-title-btn { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.card-title-btn a { font-size: 0.8rem; color: var(--accent-blue); text-decoration: none; font-weight: 600; }
+
+.summary-table { width: 100%; border-collapse: collapse; text-align: left; }
+.summary-table th { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+.summary-table td { padding: 15px 0; font-size: 0.9rem; border-bottom: 1px solid #f8fafc; }
+.stat-tag.completed { background: #ecfdf5; color: #059669; padding: 4px 10px; border-radius: 5px; font-size: 0.75rem; font-weight: 600; }

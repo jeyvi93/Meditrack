@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment | MediTrack</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/book_appointment.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+
+<div class="bg-gradient"></div>
+
+<!-- TOP NAVBAR (Desktop Only Menu) -->
+<nav class="navbar main-wrapper">
+    <div class="logo">
+        <img src="../assets/images/med.png" alt="Logo">
+    </div>
+
+    <div class="desktop-menu">
+        <a href="view_appointments.html">My Appointments</a>
+        <a href="book_appointment.html" style="color: var(--primary-blue);">Book Appointment</a>
+        <a href="notifications.html">Notifications</a>
+        <a href="view_profile.html">Profile</a>
+        <a href="#" class="btn-logout-small" onclick="openLogoutModal(); return false;">Logout</a>
+    </div>
+</nav>
+
+<main class="main-wrapper">
+    <section class="booking-section">
+        
+        <div class="page-header">
+            <h1>Book <span class="text-accent">Appointment</span></h1>
+            <p>Schedule your visit to the Mandaue City College Clinic.</p>
+        </div>
+
+        <div class="booking-grid">
+            <!-- Left Side: Information Card -->
+            <div class="info-side">
+                <div class="status-card">
+                    <div class="status-icon"><i class='bx bxs-calendar'></i></div>
+                    <div>
+                        <h4>Clinic Services Available</h4>
+                        <p>Reserve your preferred consultation schedule.</p>
+                    </div>
+                </div>
+                
+                <div class="reminder-list">
+                    <h5>Important Reminders:</h5>
+                    <ul>
+                        <li><i class='bx bx-check-double'></i> Please arrive 5 minutes before your slot.</li>
+                        <li><i class='bx bx-check-double'></i> Bring your Student/Staff ID for verification.</li>
+                        <li><i class='bx bx-check-double'></i> Ensure your contact information is up to date.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Side: The Actual Form -->
+            <form action="#" class="appointment-card" onsubmit="openAppointmentModal(event)">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Logged-in User</label>
+                        <div class="input-box disabled">
+                            <i class='bx bx-user'></i>
+                            <input type="text" value="John Doe (Student)" disabled>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Contact Number</label>
+                        <div class="input-box">
+                            <i class='bx bx-phone'></i>
+                            <input type="text" placeholder="0912 345 6789" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Purpose of Visit</label>
+                    <div class="input-box">
+                        <i class='bx bx-notepad'></i>
+                        <input type="text" placeholder="Enter reason (e.g. Fever, Consultation)" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Symptoms / Additional Notes</label>
+                    <div class="input-box">
+                        <i class='bx bx-detail'></i>
+                        <textarea placeholder="Describe how you feel..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Select Date</label>
+                        <div class="input-box">
+                            <i class='bx bx-calendar'></i>
+                            <input type="date" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Preferred Time</label>
+                        <div class="input-box">
+                            <i class='bx bx-time'></i>
+                            <select required>
+                                <option value="">Select Time</option>
+                                <option>8:30 AM</option>
+                                <option>10:00 AM</option>
+                                <option>1:30 PM</option>
+                                <option>3:00 PM</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit-booking">
+                    Confirm Appointment <i class='bx bx-right-arrow-alt'></i>
+                </button>
+            </form>
+        </div>
+    </section>
+</main>
+
+
+<!-- CONFIRM APPOINTMENT MODAL -->
+<div id="confirmAppointmentModal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <i class='bx bx-calendar-check' style="color: #2563eb;"></i>
+
+        <h3>Confirm Appointment?</h3>
+
+        <p>
+            Are you sure you want to submit this appointment request?
+        </p>
+
+        <div class="modal-btns">
+            <button class="btn-no" onclick="closeAppointmentModal()">
+                Cancel
+            </button>
+
+            <button class="btn-yes" onclick="confirmAppointment()">
+                Confirm
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div id="successAppointmentModal" class="modal-overlay hidden">
+    <div class="modal-box success-modal">
+        <i class='bx bx-check-circle' style="color: #10b981;"></i>
+
+        <h3>Appointment Submitted!</h3>
+
+        <p>
+            Your appointment request has been submitted successfully.
+            Please wait for the clinic to review your request.
+        </p>
+
+        <div class="modal-btns single-btn">
+            <button class="btn-success" onclick="closeSuccessModal()">
+                Done
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- LOGOUT MODAL -->
+<div id="logoutModal" class="modal-overlay hidden">
+    <div class="modal-box logout-modal">
+        <i class='bx bx-log-out-circle logout-icon'></i>
+
+        <h3>Sign Out?</h3>
+
+        <p>
+            Are you sure you want to log out of your MediTrack account?
+        </p>
+
+        <div class="modal-btns">
+            <button class="btn-no" onclick="closeLogoutModal()">
+                Cancel
+            </button>
+
+            <button class="btn-logout-confirm" onclick="confirmLogout()">
+                Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MOBILE BOTTOM TAB BAR -->
+<nav class="bottom-nav">
+    <a href="view_appointments.html" class="nav-item">
+        <i class='bx bx-calendar-event'></i>
+        <span>My Appointments</span>
+    </a>
+    <a href="book_appointment.html" class="nav-item active">
+        <i class='bx bx-plus-circle'></i>
+        <span>Book Appointment</span>
+    </a>
+    <a href="notifications.html" class="nav-item">
+        <i class='bx bx-bell'></i>
+        <span>Notifications</span>
+    </a>
+    <a href="view_profile.html" class="nav-item">
+        <i class='bx bx-user-circle'></i>
+        <span>Profile</span>
+    </a>
+</nav>
+
+<script src="../assets/js/book_appointment.js"></script>
+</body>
+</html>

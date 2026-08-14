@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | MediTrack</title>
+     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/notifications.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+<div class="bg-gradient"></div>
+    
+<nav class="navbar main-wrapper">
+    <div class="logo">
+        <img src="../assets/images/med.png" alt="Logo">
+    </div>
+
+    <div class="desktop-menu">
+        <a href="view_appointments.html">My Appointments</a>
+        <a href="book_appointment.html">Book Appointment</a>
+        <a href="notifications.html" style="color: var(--primary-blue);">Notifications</a>
+        <a href="view_profile.html">Profile</a>
+        <a href="#" class="btn-logout-small" onclick="openLogoutModal(); return false;">Logout</a>
+    </div>
+</nav>
+
+<main class="main-wrapper">
+    <header class="page-header">
+        <h1>Your <span class="text-accent">Notifications</span></h1>
+        <p>Updates regarding your clinic visits and account.</p>
+    </header>
+
+    <div class="notification-grid">
+        <!-- Sidebar -->
+        <aside class="info-side">
+            <div class="summary-card">
+                <div class="noti-stats-icon"><i class='bx bxs-bell'></i></div>
+                <h4>All Caught Up?</h4>
+                <p>You have <strong>2 unread</strong> notifications today.</p>
+            </div>
+        </aside>
+
+        <!-- Notification List -->
+        <section class="notification-feed">
+            
+            <div class="date-divider">Today</div>
+
+            <div class="noti-card unread">
+                <div class="unread-dot"></div>
+                <div class="noti-icon-box icon-green">
+                    <i class='bx bx-check-double'></i>
+                </div>
+                <div class="noti-content">
+                    <div class="noti-meta">
+                        <h4>Appointment Approved</h4>
+                        <span class="noti-time">10:30 AM</span>
+                    </div>
+                    <p class="noti-text">Your request for a dental checkup on Oct 28 has been confirmed. Please bring your ID.</p>
+                    <div class="noti-actions">
+                        <button class="btn-noti-primary">View Schedule</button>
+                        <button class="btn-noti-secondary">Dismiss</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="noti-card unread">
+                <div class="unread-dot"></div>
+                <div class="noti-icon-box icon-blue">
+                    <i class='bx bx-info-circle'></i>
+                </div>
+                <div class="noti-content">
+                    <div class="noti-meta">
+                        <h4>Clinic Hours Updated</h4>
+                        <span class="noti-time">8:15 AM</span>
+                    </div>
+                    <p class="noti-text">The clinic will now be open from 7:00 AM to 6:00 PM starting next week.</p>
+                </div>
+            </div>
+
+            <div class="date-divider">Yesterday</div>
+
+            <div class="noti-card">
+                <div class="noti-icon-box icon-red">
+                    <i class='bx bx-error-circle'></i>
+                </div>
+                <div class="noti-content">
+                    <div class="noti-meta">
+                        <h4>Security Alert</h4>
+                        <span class="noti-time">Oct 20</span>
+                    </div>
+                    <p class="noti-text">A new login was detected on your account from a Chrome browser on Windows.</p>
+                </div>
+            </div>
+
+        </section>
+    </div>
+</main>
+
+<nav class="bottom-nav">
+    <a href="view_appointments.html" class="nav-item">
+        <i class='bx bx-calendar-event'></i>
+        <span>My Appointments</span>
+    </a>
+    <a href="book_appointment.html" class="nav-item">
+        <i class='bx bx-plus-circle'></i>
+        <span>Book Appointment</span>
+    </a>
+    <a href="notifications.html" class="nav-item active">
+        <i class='bx bx-bell'></i>
+        <span>Notifications</span>
+    </a>
+    <a href="view_profile.html" class="nav-item">
+        <i class='bx bx-user-circle'></i>
+        <span>Profile</span>
+    </a>
+</nav>
+
+<!-- LOGOUT MODAL -->
+<div id="logoutModal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <i class='bx bx-log-out-circle' style="color: #ef4444; font-size: 3.5rem;"></i>
+
+        <h3>Sign Out?</h3>
+
+        <p>Are you sure you want to end your session on this device?</p>
+
+        <div class="modal-btns">
+            <button class="btn-no" onclick="closeLogoutModal()">
+                Cancel
+            </button>
+
+            <button class="btn-yes" onclick="confirmLogout()">
+                Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openLogoutModal() {
+    document.getElementById('logoutModal').classList.remove('hidden');
+}
+
+function closeLogoutModal() {
+    document.getElementById('logoutModal').classList.add('hidden');
+}
+
+function confirmLogout() {
+    window.location.href = '../index.php';
+}
+</script>
+
+</body>
+</html>
