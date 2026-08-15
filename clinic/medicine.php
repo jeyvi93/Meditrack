@@ -13,6 +13,7 @@ $sql = "SELECT *
         FROM medicines
         WHERE status = 'Active'
         AND expiry_date >= CURDATE()
+        AND is_quarantined = 0
         ORDER BY medicine_name ASC";
 $all_medicines = mysqli_query($conn, $sql);
 $expired_medicines = mysqli_query($conn, "
@@ -23,6 +24,19 @@ $expired_medicines = mysqli_query($conn, "
     ORDER BY expiry_date ASC
 ");
 $expired_count = mysqli_num_rows($expired_medicines);   
+
+$quarantined_medicines = mysqli_query($conn, "
+    SELECT *
+    FROM medicines
+    WHERE is_quarantined = 1
+    ORDER BY medicine_name ASC
+");
+
+$disposed_medicines = mysqli_query($conn, "
+    SELECT *
+    FROM disposed_medicines
+    ORDER BY disposal_date DESC
+");
 ?>
 
 <!DOCTYPE html>
@@ -70,8 +84,9 @@ $expired_count = mysqli_num_rows($expired_medicines);
                     </span>
                     <?php endif; ?>
                 </button>
-                <button class="tab-link" onclick="openTab(event, 'disposed')">Disposed Records</button>
                 <button class="tab-link" onclick="openTab(event, 'quarantine')"> Quarantine </button>
+                <button class="tab-link" onclick="openTab(event, 'disposed')">Disposed Records</button>
+                
             </nav>
 
             <!-- DATA SECTION -->
@@ -80,7 +95,7 @@ $expired_count = mysqli_num_rows($expired_medicines);
                 <div class="inventory-toolbar">
                     <div class="search-wrapper">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search medicine, batch, or supplier...">
+                        <input type="text" id="medicineSearch" placeholder="Search medicine, batch, or supplier...">
                     </div>
                 <div class="toolbar-right" id="toolbarRight">
                     <div class="filter-group" id="filterGroup">
@@ -133,7 +148,7 @@ $expired_count = mysqli_num_rows($expired_medicines);
 
                                 ?>
 
-                                <tr>
+                                <tr data-status="<?= htmlspecialchars($status); ?>">
 
                                     <td>
                                         <strong><?= htmlspecialchars($row['medicine_name']); ?></strong>
@@ -167,14 +182,18 @@ $expired_count = mysqli_num_rows($expired_medicines);
 
                                     <td class="action-cell">
 
-                                        <button class="btn-action primary">
-                                            <i class="bx bx-edit"></i>
+                                        <button 
+                                            class="btn-action primary"
+                                            onclick="openEditModal(<?= $row['id']; ?>)">
+                                            <i class="bx bx-edit" title="Edit Medicine"></i>
                                         </button>
 
                                         <?php if($status == "Expired"): ?>
 
-                                        <button class="btn-dispose">
-                                            <i class="bx bx-trash"></i>
+                                        <button
+                                            class="btn-dispose"
+                                            onclick="openExpiredDispose(<?= $row['id']; ?>)">
+                                            <i class="bx bx-trash" title="Dispose Medicine"></i>
                                         </button>
 
                                         <?php elseif($status == "Low Stock"): ?>
@@ -185,14 +204,18 @@ $expired_count = mysqli_num_rows($expired_medicines);
 
                                         <?php elseif($status == "Near Expiry"): ?>
 
-                                        <button class="btn-dispose">
-                                            <i class="bx bx-trash"></i>
+                                        <button
+                                            class="btn-dispose"
+                                            onclick="openNearExpiryDispose(<?= $row['id']; ?>)">
+                                            <i class="bx bx-trash" title="Dispose Medicine"></i>
                                         </button>
 
                                         <?php else: ?>
 
-                                        <button class="btn-action warning">
-                                            <i class="bx bx-shield-quarter"></i>
+                                        <button
+                                            class="btn-action warning"
+                                            onclick="openQuarantineModal(<?= $row['id']; ?>)">
+                                            <i class="bx bx-shield-quarter" title="Quarantine Medicine"></i>
                                         </button>
 
                                         <?php endif; ?>
@@ -297,6 +320,94 @@ $expired_count = mysqli_num_rows($expired_medicines);
                         </table>
                     </div>
                 </div>
+                
+                <!-- QUARANTINE TAB -->
+                <div id="quarantine" class="tab-pane">
+                    <div class="tab-info-banner">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Note: Quarantined medicines are temporarily restricted and not for dispensing.</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>Medicine Name</th>
+                                    <th>Batch No.</th>
+                                    <th>Quantity</th>
+                                    <th>Date Acquired</th>
+                                    <th>Status</th>
+                                    <th class="text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            <?php if(mysqli_num_rows($quarantined_medicines) > 0): ?>
+
+                            <?php while($row = mysqli_fetch_assoc($quarantined_medicines)): ?>
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        <?= htmlspecialchars($row['medicine_name']); ?>
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <code class="batch">
+                                        <?= htmlspecialchars($row['batch_number']); ?>
+                                    </code>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($row['quantity']); ?>
+                                </td>
+
+                                <td>
+                                    <?= date("M d, Y", strtotime($row['date_acquired'])); ?>
+                                </td>
+
+                                <td>
+                                    <span class="status-pill stat-quarantine">
+                                        Quarantine
+                                    </span>
+                                </td>
+
+                                <td class="text-right">
+
+                                    <button 
+                                        class="btn-action primary"
+                                        onclick="returnToStock(<?= $row['id']; ?>)">
+                                        <i class="bx bx-transfer-alt" title="Return to Stock"></i>
+                                    </button>
+
+                                    <button 
+                                        class="btn-action danger"
+                                        onclick="openQuarantineDispose(<?= $row['id']; ?>)">
+                                        <i class="bx bx-trash" title="Dispose"></i>
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                            <?php endwhile; ?>
+
+                        <?php else: ?>
+
+                        <tr>
+                            <td colspan="6" style="text-align:center;">
+                                No quarantined medicines found.
+                            </td>
+                        </tr>
+
+                        <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
 
                 <!-- DISPOSED RECORDS TAB -->
                 <div id="disposed" class="tab-pane">
@@ -312,64 +423,54 @@ $expired_count = mysqli_num_rows($expired_medicines);
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><strong>Paracetamol 500mg</strong></td>
-                                    <td><code class="batch">B-004</code></td>
-                                    <td>120</td>
-                                    <td>Oct 10, 2023</td>
-                                    <td>Expired</td>
-                                </tr>
+
+                            <?php if(mysqli_num_rows($disposed_medicines) > 0): ?>
+
+                            <?php while($row = mysqli_fetch_assoc($disposed_medicines)): ?>
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        <?= htmlspecialchars($row['medicine_name']); ?>
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <code class="batch">
+                                        <?= htmlspecialchars($row['batch_number']); ?>
+                                    </code>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($row['quantity_disposed']); ?>
+                                </td>
+
+                                <td>
+                                    <?= date("M d, Y", strtotime($row['disposal_date'])); ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($row['disposal_reason']); ?>
+                                </td>
+
+                            </tr>
+
+                            <?php endwhile; ?>
+
+                            <?php else: ?>
+
+                            <tr>
+                                <td colspan="5" style="text-align:center;">
+                                    No disposed medicine records found.
+                                </td>
+                            </tr>
+
+                            <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
-                <!-- QUARANTINE TAB -->
-<div id="quarantine" class="tab-pane">
-    <div class="tab-info-banner">
-        <i class="fas fa-info-circle"></i>
-        <span>Note: Quarantined medicines are temporarily restricted and not for dispensing.</span>
-    </div>
-
-    <div class="table-responsive">
-        <table class="inventory-table">
-            <thead>
-                <tr>
-                    <th>Medicine Name</th>
-                    <th>Batch No.</th>
-                    <th>Quantity</th>
-                    <th>Date Acquired</th>
-                    <th>Status</th>
-                    <th class="text-right">Action</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <!-- SAMPLE ROW -->
-                <tr data-status="Quarantine">
-                    <td><strong>Paracetamol</strong></td>
-                    <td><code class="batch">B-999</code></td>
-                    <td>100</td>
-                    <td>Jan 01, 2025</td>
-                    <td>
-                        <span class="status-pill stat-quarantine">
-                            Quarantine
-                        </span>
-                    </td>
-                    <td class="text-right">
-                        <button class="btn-action primary">
-                            <i class="bx bx-transfer-alt" title="Return to Stock"></i>
-                        </button>
-
-                        <button class="btn-action danger" onclick="openQuarantineDispose()">
-                            <i class="bx bx-trash" title="Dispose"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
 
             </section>
         </main>
@@ -387,38 +488,38 @@ $expired_count = mysqli_num_rows($expired_medicines);
             </button>
         </div>
 
-        <form class="modal-body">
+        <form class="modal-body" id="editMedicineForm">
             <div class="form-group">
                 <label>Medicine Name</label>
-                <input type="text" value="Amoxicillin">
+                <input type="text" id="editMedicineName">
             </div>
 
             <div class="form-group">
                 <label>Batch No.</label>
-                <input type="text" value="B-205">
+                <input type="text" id="editBatchNumber">
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>Quantity</label>
-                    <input type="number" value="450">
+                    <input type="number" id="editQuantity">
                 </div>
 
                 <div class="form-group">
                     <label>Supplier</label>
-                    <input type="text" value="PharmaPlus">
+                    <input type="text" id="editSupplier">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>Date Acquired</label>
-                    <input type="date">
+                    <input type="date" id="editDateAcquired">
                 </div>
 
                 <div class="form-group">
                     <label>Expiration Date</label>
-                    <input type="date">
+                    <input type="date" id="editExpiryDate">
                 </div>
             </div>
 
@@ -428,6 +529,37 @@ $expired_count = mysqli_num_rows($expired_medicines);
             </div>
         </form>
     </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal" id="successModal">
+
+    <div class="modal-overlay" onclick="closeSuccessModal()"></div>
+
+    <div class="modal-content success-modal-content">
+
+        <div class="success-icon">
+            <i class="bx bx-check-circle"></i>
+        </div>
+
+        <div class="success-message">
+            <h2>Medicine Updated!</h2>
+            <p>
+                The medicine information has been successfully updated.
+            </p>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn-primary"
+                onclick="closeSuccessModal()">
+                Done
+            </button>
+        </div>
+
+    </div>
+
 </div>
 
 <!--DISPOSE MODAL-->
@@ -519,13 +651,302 @@ $expired_count = mysqli_num_rows($expired_medicines);
 
         <div class="modal-footer">
 
-            <button class="btn-secondary"
-                    onclick="closeDisposeModal()">
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="closeDisposeModal()">
                 Cancel
             </button>
 
-            <button class="btn-confirm-dispose">
+            <button
+                type="button"
+                class="btn-confirm-dispose"
+                onclick="confirmDisposal()">
                 Confirm Disposal
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- QUARANTINE MODAL -->
+<div class="modal" id="quarantineModal">
+
+    <div class="modal-overlay" onclick="closeQuarantineModal()"></div>
+
+    <div class="modal-content quarantine-modal-content">
+
+        <div class="modal-header">
+            <h2>Quarantine Medicine</h2>
+
+            <button class="modal-close" onclick="closeQuarantineModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <!-- WARNING -->
+            <div class="quarantine-warning">
+                <i class="fas fa-shield-halved"></i>
+
+                <p>
+                    This medicine will be temporarily restricted
+                    and cannot be dispensed while in quarantine.
+                </p>
+            </div>
+
+            <!-- MEDICINE INFO -->
+            <div class="quarantine-info-card">
+
+                <div class="quarantine-info-row">
+                    <span>Medicine</span>
+                    <strong id="quarantineMedicine">
+                        Medicine Name
+                    </strong>
+                </div>
+
+                <div class="quarantine-info-row">
+                    <span>Batch No.</span>
+                    <strong id="quarantineBatch">
+                        Batch Number
+                    </strong>
+                </div>
+
+                <div class="quarantine-info-row">
+                    <span>Quantity</span>
+                    <strong id="quarantineQty">
+                        0
+                    </strong>
+                </div>
+
+            </div>
+
+            <p class="quarantine-note">
+                Are you sure you want to move this medicine to quarantine?
+            </p>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="closeQuarantineModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="btn-confirm-quarantine"
+                onclick="confirmQuarantine()">
+                Quarantine
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- RETURN TO STOCK MODAL -->
+<div class="modal" id="returnStockModal">
+
+    <div class="modal-overlay" onclick="closeReturnStockModal()"></div>
+
+    <div class="modal-content return-stock-modal-content">
+
+        <div class="modal-header">
+            <h2>Return to Stock</h2>
+
+            <button
+                class="modal-close"
+                onclick="closeReturnStockModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <!-- WARNING -->
+            <div class="return-stock-warning">
+                <i class="fas fa-box-open"></i>
+
+                <p>
+                    This medicine will be returned to active inventory
+                    and will become available for dispensing again.
+                </p>
+            </div>
+
+            <!-- MEDICINE INFO -->
+            <div class="return-stock-info-card">
+
+                <div class="return-stock-info-row">
+                    <span>Medicine</span>
+                    <strong id="returnStockMedicine">
+                        Medicine Name
+                    </strong>
+                </div>
+
+                <div class="return-stock-info-row">
+                    <span>Batch No.</span>
+                    <strong id="returnStockBatch">
+                        Batch Number
+                    </strong>
+                </div>
+
+                <div class="return-stock-info-row">
+                    <span>Quantity</span>
+                    <strong id="returnStockQty">
+                        0
+                    </strong>
+                </div>
+
+            </div>
+
+            <p class="return-stock-note">
+                Are you sure you want to return this medicine to stock?
+            </p>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="closeReturnStockModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="btn-confirm-return"
+                onclick="confirmReturnToStock()">
+                Return to Stock
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- RETURN TO STOCK MODAL -->
+<div class="modal" id="returnStockModal">
+
+    <div class="modal-overlay" onclick="closeReturnStockModal()"></div>
+
+    <div class="modal-content return-stock-modal-content">
+
+        <div class="modal-header">
+            <h2>Return Medicine to Stock</h2>
+
+            <button class="modal-close" onclick="closeReturnStockModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <!-- WARNING -->
+            <div class="return-stock-warning">
+                <i class="fas fa-box-open"></i>
+
+                <p>
+                    This medicine will be removed from quarantine
+                    and returned to active inventory.
+                </p>
+            </div>
+
+            <!-- MEDICINE INFO -->
+            <div class="return-stock-info-card">
+
+                <div class="return-stock-info-row">
+                    <span>Medicine</span>
+                    <strong id="returnStockMedicine">
+                        Medicine Name
+                    </strong>
+                </div>
+
+                <div class="return-stock-info-row">
+                    <span>Batch No.</span>
+                    <strong id="returnStockBatch">
+                        Batch Number
+                    </strong>
+                </div>
+
+                <div class="return-stock-info-row">
+                    <span>Quantity</span>
+                    <strong id="returnStockQty">
+                        0
+                    </strong>
+                </div>
+
+            </div>
+
+            <p class="return-stock-note">
+                Are you sure you want to return this medicine to stock?
+            </p>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="closeReturnStockModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="btn-confirm-return"
+                onclick="confirmReturnStock()">
+                Return to Stock
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- RETURN TO STOCK SUCCESS MODAL -->
+<div class="modal" id="returnStockSuccessModal">
+
+    <div class="modal-overlay"></div>
+
+    <div class="modal-content success-modal-content">
+
+        <div class="success-icon">
+            <i class="bx bx-check-circle"></i>
+        </div>
+
+        <div class="success-message">
+
+            <h2>Medicine Returned!</h2>
+
+            <p>
+                The medicine has been successfully returned
+                to active inventory.
+            </p>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn-primary"
+                onclick="closeReturnStockSuccessModal()">
+                Done
             </button>
 
         </div>

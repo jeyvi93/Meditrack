@@ -28,5 +28,5 @@ if (isset($_GET['id'])) {
     mysqli_close($conn);
 }
 
-header("Location: ../pages/students.php");
+header("Location: ../clinic/students.php");
 exit();

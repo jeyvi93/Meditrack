@@ -120,7 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_close($conn);
 
 
-    header("Location: ../pages/staffs.php");
+    header("Location: ../clinic/staffs.php");
     exit();
 
 }

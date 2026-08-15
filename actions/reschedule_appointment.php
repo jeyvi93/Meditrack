@@ -44,7 +44,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }
 
 
-    header("Location: ../pages/appointments.php");
+    header("Location: ../clinic/appointments.php");
     exit();
 
 }

@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_close($check);
         mysqli_close($conn);
 
-        header("Location: ../pages/add_student.php");
+        header("Location: ../clinic/add_student.php");
         exit();
     }
 
@@ -147,13 +147,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_close($conn);
 
 
-    header("Location: ../pages/students.php");
+    header("Location: ../clinic/students.php");
     exit();
 
 
 } else {
 
-    header("Location: ../pages/add_student.php");
+    header("Location: ../clinic/add_student.php");
     exit();
 
 }

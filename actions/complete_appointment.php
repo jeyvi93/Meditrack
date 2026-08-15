@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
 
-    header("Location: ../pages/appointments.php#completed");
+    header("Location: ../clinic/appointments.php#completed");
     exit();
 }
 ?>

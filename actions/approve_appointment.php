@@ -17,5 +17,5 @@ mysqli_stmt_execute($stmt);
 
 $_SESSION['success']="Appointment approved.";
 
-header("Location: ../pages/appointments.php");
+header("Location: ../clinic/appointments.php");
 exit();

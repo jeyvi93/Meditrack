@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!$stmt) {
         $_SESSION['error'] = "Database error: " . mysqli_error($conn);
-        header("Location: ../pages/students.php");
+        header("Location: ../clinic/students.php");
         exit();
     }
 
@@ -115,12 +115,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
 
-    header("Location: ../pages/students.php");
+    header("Location: ../clinic/students.php");
     exit();
 
 } else {
 
-    header("Location: ../pages/students.php");
+    header("Location: ../clinic/students.php");
     exit();
 
 }
