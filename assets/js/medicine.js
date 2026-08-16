@@ -703,3 +703,14 @@ function closeReturnStockSuccessModal() {
 
     location.reload();
 }
+
+// RESTOCK
+function openRestock(id, medicineName) {
+
+    const url =
+        "add_medicine.php?mode=restock" +
+        "&id=" + encodeURIComponent(id) +
+        "&medicine=" + encodeURIComponent(medicineName);
+
+    window.location.href = url;
+}

@@ -104,7 +104,7 @@ if (!isset($_SESSION['user_id'])) {
                             <div class="input-row two-cols">
                                 <div class="input-group">
                                     <label>Contact Number</label>
-                                    <input type="tel" name="contact_number" placeholder="0912 345 6789">
+                                    <input type="tel" name="contact_number" placeholder="09XX XXX XXXX" required>
                                 </div>
                                 <div class="input-group">
                                     <label>Address</label>

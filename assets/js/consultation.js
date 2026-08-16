@@ -13,28 +13,54 @@
             }
         }
 
-        // Add Dynamic Medicine Rows
-        function addMedicineRow() {
-            const container = document.getElementById('medicineRows');
-            const newRow = document.createElement('div');
-            newRow.className = 'medicine-row';
-            newRow.innerHTML = `
-                <div class="input-group">
-                    <select class="med-select">
-                        <option value="">Select Medicine from Inventory</option>
-                        <option>Paracetamol 500mg</option>
-                        <option>Amoxicillin 250mg</option>
-                        <option>Cetirizine 10mg</option>
-                    </select>
-                </div>
-                <div class="input-group qty-input">
-                    <input type="number" min="1" value="1">
-                </div>
-                <div class="row-action">
-                    <button type="button" class="btn-remove" onclick="this.parentElement.parentElement.remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-            container.appendChild(newRow);
-        }
+// Add Dynamic Medicine Rows
+function addMedicineRow() {
+
+    const container = document.getElementById('medicineRows');
+
+    // Get the medicine options from the first dropdown
+    const firstSelect = document.querySelector('.med-select');
+
+    const newRow = document.createElement('div');
+    newRow.className = 'medicine-row';
+
+    newRow.innerHTML = `
+        <div class="input-group">
+            <label>
+                Medicine Name
+            </label>
+
+            <select
+                class="med-select"
+                name="medicines[]"
+            >
+                ${firstSelect.innerHTML}
+            </select>
+        </div>
+
+        <div class="input-group qty-input">
+            <label>
+                Quantity
+            </label>
+
+            <input
+                type="number"
+                name="medicine_quantities[]"
+                min="1"
+                value="1"
+            >
+        </div>
+
+        <div class="row-action">
+            <button
+                type="button"
+                class="btn-remove"
+                onclick="this.parentElement.parentElement.remove()"
+            >
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+
+    container.appendChild(newRow);
+}

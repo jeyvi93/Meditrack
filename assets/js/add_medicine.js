@@ -1,19 +1,87 @@
-const params = new URLSearchParams(window.location.search);
+const addMedicineForm = document.getElementById("addMedicineForm");
 
-const mode = params.get("mode");
-const medicine = params.get("medicine");
+addMedicineForm.addEventListener("submit", function (e) {
 
-const pageTitle = document.getElementById("pageTitle");
-const pageDesc = document.getElementById("pageDesc");
-const medicineInput = document.getElementById("medicine_name");
+    e.preventDefault();
 
-if (mode === "restock") {
+    const formData = new FormData();
 
-    pageTitle.textContent = "Restock Medicine";
-    pageDesc.textContent = "Add a new batch for existing medicine.";
+    formData.append(
+        "medicine_name",
+        document.getElementById("medName").value.trim()
+    );
 
-    if (medicineInput) {
-        medicineInput.value = medicine;
-        medicineInput.readOnly = true;
+    formData.append(
+        "batch_number",
+        document.getElementById("batchNo").value.trim()
+    );
+
+    formData.append(
+        "supplier",
+        document.getElementById("supplier").value.trim()
+    );
+
+    formData.append(
+        "quantity",
+        document.getElementById("quantity").value
+    );
+
+    formData.append(
+        "low_stock_threshold",
+        document.getElementById("lowStockThreshold").value
+    );
+
+    formData.append(
+        "date_acquired",
+        document.getElementById("dateAcquired").value
+    );
+
+    formData.append(
+        "expiry_date",
+        document.getElementById("expiryDate").value
+    );
+
+
+    fetch("../actions/add_medicine.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+
+    if (data.success) {
+
+        document.getElementById(
+            "addMedicineSuccessModal"
+        ).style.display = "flex";
+
+    } else {
+
+        alert(
+            data.message ||
+            "Unable to add medicine."
+        );
+
     }
+
+})
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Something went wrong while adding the medicine."
+        );
+
+    });
+
+});
+
+function closeAddMedicineSuccessModal() {
+
+    document.getElementById(
+        "addMedicineSuccessModal"
+    ).style.display = "none";
+
+    window.location.href = "medicine.php";
 }

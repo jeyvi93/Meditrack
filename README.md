@@ -30,7 +30,7 @@ Allows clinic personnel to manage and monitor patient appointments.
 #### Medicine Inventory
 Used to manage medicines available in the clinic, including inventory status and medicine-related information.
 
-> 🚧 Currently under development.
+
 
 #### Consultations
 Designed to record and manage patient consultation information, including complaints, vital signs, and other relevant consultation details.

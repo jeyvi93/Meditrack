@@ -54,13 +54,13 @@ if (!isset($_SESSION['user_id'])) {
                             <div class="input-row">
                                 <div class="input-group">
                                     <label>Student ID</label>
-                                    <input type="text" name="student_id_number" placeholder="2024-00001" required>
+                                    <input type="text" name="student_id_number" placeholder="223-XXXXX" required>
                                 </div>
                             </div>
                             <div class="input-row two-cols">
                                 <div class="input-group">
                                     <label>Course</label>
-                                    <input type="text" name="course" placeholder="BSIT" required>
+                                    <input type="text" name="course" placeholder="BS IT" required>
                                 </div>
                                 <div class="input-group">
                                     <label>Department</label>
@@ -110,7 +110,7 @@ if (!isset($_SESSION['user_id'])) {
                             <div class="input-row two-cols">
                                 <div class="input-group">
                                     <label>Contact Number</label>
-                                    <input type="tel" name="contact_number" placeholder="0912 345 6789">
+                                    <input type="tel" name="contact_number" placeholder="09XX XXX XXXX" required>
                                 </div>
                                 <div class="input-group">
                                     <label>Address</label>

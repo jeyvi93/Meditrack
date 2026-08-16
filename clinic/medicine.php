@@ -198,7 +198,10 @@ $disposed_medicines = mysqli_query($conn, "
 
                                         <?php elseif($status == "Low Stock"): ?>
 
-                                        <button class="btn-action info">
+                                        <button
+                                            class="btn-action info"
+                                            onclick="openRestock(<?= $row['id']; ?>, '<?= htmlspecialchars($row['medicine_name'], ENT_QUOTES); ?>')"
+                                            title="Restock Medicine">
                                             <i class="bx bx-package"></i>
                                         </button>
 
