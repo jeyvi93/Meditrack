@@ -64,3 +64,62 @@ function addMedicineRow() {
 
     container.appendChild(newRow);
 }
+
+// ==========================
+// SAVE CONSULTATION
+// ==========================
+
+const consultationForm = document.getElementById("consultationForm");
+
+consultationForm.addEventListener("submit", function (e) {
+
+    e.preventDefault();
+
+    const formData = new FormData(consultationForm);
+
+    fetch("../actions/save_consultation.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (data.success) {
+
+            // Show success modal
+            document.getElementById("successModal").style.display = "flex";
+
+        } else {
+
+            alert(data.message || "Failed to save consultation.");
+
+        }
+
+    })
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Something went wrong while saving the consultation.");
+
+    });
+
+});
+
+
+// ==========================
+// SUCCESS MODAL
+// ==========================
+
+function closeSuccessModal() {
+
+    document.getElementById("successModal").style.display = "none";
+
+}
+
+
+function viewConsultationLogs() {
+
+    window.location.href = "view_consultation.php";
+
+}

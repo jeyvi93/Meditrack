@@ -1,0 +1,369 @@
+<?php
+
+session_start();
+require_once "../config/database.php";
+
+header("Content-Type: application/json");
+
+
+// ==========================
+// AUTHENTICATION
+// ==========================
+
+if (!isset($_SESSION['user_id'])) {
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Unauthorized access."
+    ]);
+
+    exit();
+}
+
+
+// ==========================
+// REQUEST METHOD
+// ==========================
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Invalid request method."
+    ]);
+
+    exit();
+}
+
+
+// ==========================
+// GET FORM DATA
+// ==========================
+
+$date = $_POST['consultation_date'] ?? null;
+$time = $_POST['consultation_time'] ?? null;
+$patient_type = $_POST['patient_type'] ?? null;
+$full_name = $_POST['full_name'] ?? null;
+$age = $_POST['age'] ?? null;
+$sex = $_POST['sex'] ?? null;
+$contact_number = $_POST['contact_number'] ?? null;
+$department = $_POST['department'] ?? null;
+$course = $_POST['course'] ?? null;
+$year_level = $_POST['year_level'] ?? null;
+$position = $_POST['position'] ?? null;
+$complaint = $_POST['complaint'] ?? null;
+$treatment_given = $_POST['treatment'] ?? null;
+$remarks = $_POST['remarks'] ?? null;
+
+
+// ==========================
+// MEDICINES
+// ==========================
+
+$medicines = $_POST['medicines'] ?? [];
+$quantities = $_POST['medicine_quantities'] ?? [];
+
+
+// ==========================
+// BASIC VALIDATION
+// ==========================
+
+if (
+    empty($date) ||
+    empty($time) ||
+    empty($patient_type) ||
+    empty($full_name)
+) {
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Please complete the required fields."
+    ]);
+
+    exit();
+}
+
+
+// ==========================
+// START TRANSACTION
+// ==========================
+
+$conn->begin_transaction();
+
+try {
+
+
+    // ==========================
+    // INSERT CONSULTATION
+    // ==========================
+
+    $sql = "
+        INSERT INTO consultations (
+            date,
+            time,
+            patient_type,
+            full_name,
+            age,
+            sex,
+            contact_number,
+            department,
+            course,
+            year_level,
+            position,
+            complaint,
+            treatment_given,
+            remarks
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ";
+
+    $stmt = $conn->prepare($sql);
+
+    if (!$stmt) {
+        throw new Exception(
+            "Failed to prepare consultation query: " . $conn->error
+        );
+    }
+
+
+    $stmt->bind_param(
+        "ssssisssssssss",
+        $date,
+        $time,
+        $patient_type,
+        $full_name,
+        $age,
+        $sex,
+        $contact_number,
+        $department,
+        $course,
+        $year_level,
+        $position,
+        $complaint,
+        $treatment_given,
+        $remarks
+    );
+
+
+    if (!$stmt->execute()) {
+
+        throw new Exception(
+            "Failed to save consultation: " . $stmt->error
+        );
+    }
+
+
+    // Get newly created consultation ID
+    $consultation_id = $stmt->insert_id;
+
+    $stmt->close();
+
+
+    // ==========================
+    // PROCESS MEDICINES
+    // ==========================
+
+    for ($i = 0; $i < count($medicines); $i++) {
+
+        $medicine_id = (int) $medicines[$i];
+
+        $quantity = isset($quantities[$i])
+            ? (int) $quantities[$i]
+            : 0;
+
+
+        // Skip empty medicine rows
+        if ($medicine_id <= 0 || $quantity <= 0) {
+            continue;
+        }
+
+
+        // ==========================
+        // CHECK INVENTORY
+        // ==========================
+
+        $inventorySql = "
+            SELECT quantity
+            FROM medicines
+            WHERE id = ?
+            FOR UPDATE
+        ";
+
+        $inventoryStmt = $conn->prepare($inventorySql);
+
+        if (!$inventoryStmt) {
+            throw new Exception(
+                "Failed to check medicine inventory."
+            );
+        }
+
+        $inventoryStmt->bind_param(
+            "i",
+            $medicine_id
+        );
+
+        $inventoryStmt->execute();
+
+        $inventoryResult = $inventoryStmt->get_result();
+
+
+        if ($inventoryResult->num_rows === 0) {
+
+            $inventoryStmt->close();
+
+            throw new Exception(
+                "Selected medicine does not exist."
+            );
+        }
+
+
+        $inventory = $inventoryResult->fetch_assoc();
+
+        $currentQuantity = (int) $inventory['quantity'];
+
+        $inventoryStmt->close();
+
+
+        // ==========================
+        // CHECK STOCK
+        // ==========================
+
+        if ($quantity > $currentQuantity) {
+
+            throw new Exception(
+                "Not enough stock available for the selected medicine."
+            );
+        }
+
+
+        // ==========================
+        // INSERT JUNCTION RECORD
+        // ==========================
+
+        $medicineInsertSql = "
+            INSERT INTO consultation_medicine (
+                consultation_id,
+                medicine_id,
+                quantity_used
+            )
+            VALUES (?, ?, ?)
+        ";
+
+        $medicineInsertStmt =
+            $conn->prepare($medicineInsertSql);
+
+        if (!$medicineInsertStmt) {
+
+            throw new Exception(
+                "Failed to record dispensed medicine."
+            );
+        }
+
+
+        $medicineInsertStmt->bind_param(
+            "iii",
+            $consultation_id,
+            $medicine_id,
+            $quantity
+        );
+
+
+        if (!$medicineInsertStmt->execute()) {
+
+            $medicineInsertStmt->close();
+
+            throw new Exception(
+                "Failed to record dispensed medicine: "
+                . $medicineInsertStmt->error
+            );
+        }
+
+        $medicineInsertStmt->close();
+
+
+        // ==========================
+        // DEDUCT INVENTORY
+        // ==========================
+
+        $updateSql = "
+            UPDATE medicines
+            SET quantity = quantity - ?
+            WHERE id = ?
+              AND quantity >= ?
+        ";
+
+        $updateStmt = $conn->prepare($updateSql);
+
+        if (!$updateStmt) {
+
+            throw new Exception(
+                "Failed to prepare inventory update."
+            );
+        }
+
+
+        $updateStmt->bind_param(
+            "iii",
+            $quantity,
+            $medicine_id,
+            $quantity
+        );
+
+
+        if (!$updateStmt->execute()) {
+
+            $updateStmt->close();
+
+            throw new Exception(
+                "Failed to update medicine inventory."
+            );
+        }
+
+
+        // Make sure something was actually deducted
+        if ($updateStmt->affected_rows === 0) {
+
+            $updateStmt->close();
+
+            throw new Exception(
+                "Medicine stock could not be deducted."
+            );
+        }
+
+        $updateStmt->close();
+    }
+
+
+    // ==========================
+    // COMMIT
+    // ==========================
+
+    $conn->commit();
+
+
+    echo json_encode([
+        "success" => true,
+        "message" => "Consultation saved successfully.",
+        "consultation_id" => $consultation_id
+    ]);
+
+
+} catch (Exception $e) {
+
+
+    // ==========================
+    // ROLLBACK
+    // ==========================
+
+    $conn->rollback();
+
+
+    echo json_encode([
+        "success" => false,
+        "message" => $e->getMessage()
+    ]);
+}
+
+
+$conn->close();
+?>
