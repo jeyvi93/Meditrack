@@ -33,8 +33,6 @@ Used to manage medicines available in the clinic, including inventory status and
 #### Consultations
 Designed to record and manage patient consultation information, including complaints, vital signs, and other relevant consultation details.
 
-> 🚧 Currently under development.
-
 #### Monthly Reports
 Designed to provide summarized clinic records and statistics for a specific month.
 
