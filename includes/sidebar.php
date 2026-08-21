@@ -24,7 +24,7 @@
 
             <li>
                 <a href="staffs.php">
-                    <i class='bx bxs-user-detail'></i> Teaching / Non-Teaching Staffs
+                    <i class='bx bxs-user-detail'></i> School Staffs
                 </a>
             </li>
 

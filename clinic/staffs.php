@@ -17,7 +17,7 @@ $result = mysqli_query($conn, $sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Profiles | MediTrack</title>
+    <title>School Staff Profiles | MediTrack</title>
 
     <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../assets/css/sidebar.css">
@@ -43,7 +43,7 @@ $result = mysqli_query($conn, $sql);
     <!-- TOP HEADER -->
     <header class="module-header">
         <div class="title-area">
-            <h1>Teaching / Non-Teaching Staff Profiles</h1>
+            <h1>School Staff Profiles</h1>
             <p>Manage and monitor staff information and records.</p>
         </div>
 
