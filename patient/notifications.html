@@ -38,7 +38,7 @@
             <div class="summary-card">
                 <div class="noti-stats-icon"><i class='bx bxs-bell'></i></div>
                 <h4>All Caught Up?</h4>
-                <p>You have <strong>2 unread</strong> notifications today.</p>
+                <p>You have <strong>1 unread</strong> notifications today.</p>
             </div>
         </aside>
 
@@ -59,40 +59,12 @@
                     </div>
                     <p class="noti-text">Your request for a dental checkup on Oct 28 has been confirmed. Please bring your ID.</p>
                     <div class="noti-actions">
-                        <button class="btn-noti-primary">View Schedule</button>
-                        <button class="btn-noti-secondary">Dismiss</button>
+                        <button class="btn-noti-primary" onclick="window.location.href='view_appointments.html'">View Appointment</button>
+                        <button class="btn-noti-secondary" onclick="markAsRead(this)">Mark as Read</button>
                     </div>
                 </div>
             </div>
 
-            <div class="noti-card unread">
-                <div class="unread-dot"></div>
-                <div class="noti-icon-box icon-blue">
-                    <i class='bx bx-info-circle'></i>
-                </div>
-                <div class="noti-content">
-                    <div class="noti-meta">
-                        <h4>Clinic Hours Updated</h4>
-                        <span class="noti-time">8:15 AM</span>
-                    </div>
-                    <p class="noti-text">The clinic will now be open from 7:00 AM to 6:00 PM starting next week.</p>
-                </div>
-            </div>
-
-            <div class="date-divider">Yesterday</div>
-
-            <div class="noti-card">
-                <div class="noti-icon-box icon-red">
-                    <i class='bx bx-error-circle'></i>
-                </div>
-                <div class="noti-content">
-                    <div class="noti-meta">
-                        <h4>Security Alert</h4>
-                        <span class="noti-time">Oct 20</span>
-                    </div>
-                    <p class="noti-text">A new login was detected on your account from a Chrome browser on Windows.</p>
-                </div>
-            </div>
 
         </section>
     </div>
@@ -138,19 +110,7 @@
     </div>
 </div>
 
-<script>
-function openLogoutModal() {
-    document.getElementById('logoutModal').classList.remove('hidden');
-}
-
-function closeLogoutModal() {
-    document.getElementById('logoutModal').classList.add('hidden');
-}
-
-function confirmLogout() {
-    window.location.href = '../index.php';
-}
-</script>
+<script src="../assets/js/notifications.js"></script>
 
 </body>
 </html>

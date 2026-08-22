@@ -7,7 +7,7 @@ MediTrack is a clinic management system developed as a capstone project for Mand
 The system is divided into two main sides:
 
 - **Clinic Side** – used by clinic personnel to manage patient information, appointments, medicines, consultations, reports, and referrals.
-- **Patient Side** – used by students/patients to book appointments, view appointment status, receive notifications, and manage their profile.
+- **Patient Side** – used by students/school staffs to book appointments, view appointment status, receive notifications, and manage their profile.
 
 ## System Modules
 
