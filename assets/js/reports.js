@@ -25,7 +25,7 @@
         new Chart(typeCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Student', 'Staff'],
+                labels: ['Student', 'School Staff'],
                 datasets: [{
                     data: [250, 92],
                     backgroundColor: ['#1e40af', '#0d9488'],
