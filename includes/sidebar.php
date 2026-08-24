@@ -53,7 +53,7 @@
             </li>
 
             <li>
-                <a href="referral-form.php">
+                <a href="referral_form.php">
                     <i class='bx bxs-share-alt'></i> Referrals
                 </a>
             </li>

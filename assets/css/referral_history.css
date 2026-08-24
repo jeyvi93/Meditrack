@@ -114,19 +114,86 @@ body { background-color: var(--bg-light); color: var(--text-main); }
     color: var(--primary-blue);
 }
 
-/* FOOTER */
+/* ==========================
+   PAGINATION
+========================== */
+
 .table-footer {
-    padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
-    border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted);
+    padding: 16px 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-top: 1px solid var(--border-color);
+
+    font-size: 0.85rem;
+    color: var(--text-muted);
 }
-.pagination { display: flex; gap: 5px; }
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
 .btn-page {
-    width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border-color);
-    background: white; cursor: pointer;
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    margin: 0;
+
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+
+    background: #fff;
+    color: var(--text-main);
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    box-sizing: border-box;
 }
-.btn-page.active { background: var(--primary-blue); color: white; border-color: var(--primary-blue); }
-.text-right { text-align: right; }
-.text-muted { color: #cbd5e1; }
+
+.btn-page:hover:not(:disabled) {
+    background: var(--accent-blue);
+}
+
+.btn-page.active {
+    background: var(--primary-blue);
+    color: #fff;
+    border-color: var(--primary-blue);
+}
+
+.btn-page:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Center the arrow icons */
+.pagination .btn-page i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-muted {
+    color: #cbd5e1;
+}
 
 /* MODAL OVERLAY */
 .modal-overlay {

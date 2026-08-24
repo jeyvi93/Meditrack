@@ -123,3 +123,43 @@ function viewConsultationLogs() {
     window.location.href = "view_consultation.php";
 
 }
+
+// TOGGLE OTHER COMPLAINT FIELD
+function toggleOtherComplaint() {
+
+    const complaint = document.getElementById("complaint");
+    const otherGroup = document.getElementById("otherComplaintGroup");
+
+    if (complaint.value === "Other") {
+        otherGroup.style.display = "block";
+    } else {
+        otherGroup.style.display = "none";
+    }
+}
+
+// AUTO-SET DATE AND TIME
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dateInput = document.getElementById("consultationDate");
+    const timeInput = document.getElementById("consultationTime");
+
+    const now = new Date();
+
+    // Current date
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+
+    // Current time
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+
+    if (dateInput) {
+        dateInput.value = `${year}-${month}-${day}`;
+    }
+
+    if (timeInput) {
+        timeInput.value = `${hours}:${minutes}`;
+    }
+
+});

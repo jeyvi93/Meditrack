@@ -288,15 +288,76 @@
                     <!-- COMPLAINT -->
                     <div class="input-group">
                         <label for="complaint">
-                            Complaint / Symptoms
+                            Complaint
                         </label>
 
-                        <textarea
+                        <select
                             id="complaint"
                             name="complaint"
-                            rows="2"
-                            placeholder="What is the patient feeling?"
-                        ></textarea>
+                            onchange="toggleOtherComplaint()"
+                            required
+                        >
+                            <option value="">
+                                Select Complaint / Symptoms
+                            </option>
+                            <option value="Headache / Migraine">
+                                Headache / Migraine
+                            </option>
+                            <option value="Fever">
+                                Fever
+                            </option>
+                            <option value="Cough & Cold">
+                                Cough & Cold
+                            </option>
+
+                            <option value="Stomach Ache">
+                                Stomach Ache
+                            </option>
+
+                            <option value="Allergic Reaction">
+                                Allergic Reaction
+                            </option>
+
+                            <option value="Dental Pain">
+                                Dental Pain
+                            </option>
+
+                            <option value="Minor Injury">
+                                Minor Injury
+                            </option>
+
+                            <option value="Dizziness">
+                                Dizziness
+                            </option>
+
+                            <option value="Body Pain">
+                                Body Pain
+                            </option>
+
+                            <option value="Nausea / Vomiting">
+                                Nausea / Vomiting
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+                        </select>
+                    </div>
+
+                    <div
+                        class="input-group"
+                        id="otherComplaintGroup"
+                        style="display: none;"
+                    >
+                        <label for="otherComplaint">
+                            Specify Complaint
+                        </label>
+
+                        <input
+                            type="text"
+                            id="otherComplaint"
+                            placeholder="Enter complaint / symptoms"
+                        >
                     </div>
 
                     <!-- TREATMENT / REMARKS -->

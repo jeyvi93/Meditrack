@@ -1,3 +1,72 @@
+<?php
+
+session_start();
+
+require_once "../config/database.php";
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+// ==========================
+// PAGINATION
+// ==========================
+
+$recordsPerPage = 10;
+
+$currentPage = isset($_GET['page'])
+    ? (int) $_GET['page']
+    : 1;
+
+if ($currentPage < 1) {
+    $currentPage = 1;
+}
+
+$offset = ($currentPage - 1) * $recordsPerPage;
+
+
+// ==========================
+// TOTAL RECORDS
+// ==========================
+
+$countSql = "
+    SELECT COUNT(*) AS total
+    FROM referrals
+";
+
+$countResult = $conn->query($countSql);
+
+$totalRecords = $countResult->fetch_assoc()['total'];
+
+$totalPages = ceil($totalRecords / $recordsPerPage);
+
+
+// Prevent invalid page
+if ($totalPages > 0 && $currentPage > $totalPages) {
+    $currentPage = $totalPages;
+    $offset = ($currentPage - 1) * $recordsPerPage;
+}
+
+
+// ==========================
+// GET REFERRALS
+// ==========================
+
+$sql = "
+    SELECT *
+    FROM referrals
+    ORDER BY referred_date DESC, id DESC
+    LIMIT $recordsPerPage OFFSET $offset
+";
+
+$result = $conn->query($sql);
+
+if (!$result) {
+    die("Error loading referral history: " . $conn->error);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +82,9 @@
     <link rel="stylesheet" href="../assets/css/sidebar.css">
 </head>
 <body>
-    <div id="sidebar"></div>
+    <!-- SIDEBAR INCLUDE -->
+    <?php include "../includes/sidebar.php"; ?>
+
         <!-- MAIN CONTENT -->
         <main class="main-content">
             <div class="bg-gradient"></div>
@@ -24,7 +95,7 @@
                     <p>Access and review all previous referral records.</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-primary" onclick="window.location.href='referral-form.html'">
+                    <button class="btn-primary" onclick="window.location.href='referral_form.php'">
                         <i class="fas fa-plus"></i> New Referral
                     </button>
                 </div>
@@ -55,66 +126,153 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Patient Row -->
+
+                        <?php if (mysqli_num_rows($result) > 0): ?>
+
+                        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+
                             <tr>
                                 <td class="date-cell">
-                                    <strong>Oct 24, 2024</strong>
+                                    <strong>
+                                        <?= date("M d, Y", strtotime($row['referred_date'])) ?>
+                                    </strong>
                                 </td>
-                                <td><span class="patient-name">Marcus Holloway</span></td>
-                                <td><span>Male</span></td>
-                                <td>Doc McStuffins</td>
-                                <td>Follow-up Care</td>
+
+                                <td>
+                                    <span class="patient-name">
+                                        <?= htmlspecialchars($row['full_name']) ?>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span>
+                                        <?= htmlspecialchars($row['sex']) ?>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($row['doctor_name']) ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($row['reason_for_referral']) ?>
+                                </td>
+
                                 <td class="text-right">
-                                    <button class="btn-view" title="View Full Details" onclick="openModal()">
+                                    <button
+                                        class="btn-view"
+                                        title="View Full Details"
+                                        onclick="openModal(<?= $row['id'] ?>)">
                                         <i class="bx bx-show"></i>
                                     </button>
                                 </td>
                             </tr>
 
-                            <!-- Patient Row 2 -->
+                            <?php endwhile; ?>
+
+                        <?php else: ?>
+
                             <tr>
-                                <td class="date-cell">
-                                    <strong>Oct 24, 2024</strong>
-                                </td>
-                                <td><span class="patient-name">Sarah Jenkins</span></td>
-                                <td><span>Female</span></td>
-                                <td>Doc McStuffins</td>
-                                <td>Specialist Consultation</td>
-                                <td class="text-right">
-                                    <button class="btn-view" title="View Full Details" onclick="openModal()">
-                                        <i class="bx bx-show"></i>
-                                    </button>
+                                <td colspan="6" style="text-align: center;">
+                                    No referral records found.
                                 </td>
                             </tr>
 
-                            <!-- Patient Row 3 -->
-                            <tr>
-                                <td class="date-cell">
-                                    <strong>Oct 23, 2024</strong>
-                                </td>
-                                <td><span class="patient-name">Elena Rodriguez</span></td>
-                                <td><span>Female</span></td>
-                                <td>Doc McStuffins</td>
-                                <td>Follow-up Care</td>
-                                <td class="text-right">
-                                    <button class="btn-view" title="View Full Details" onclick="openModal()">
-                                        <i class="bx bx-show"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                        <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
 
                 <!-- TABLE FOOTER -->
                 <div class="table-footer">
-                    <p>Showing 3 records found</p>
+
+                    <p>
+                        Showing
+                        <?= $totalRecords > 0 ? (($currentPage - 1) * $recordsPerPage + 1) : 0 ?>
+                        -
+                        <?= min($currentPage * $recordsPerPage, $totalRecords) ?>
+                        of
+                        <?= $totalRecords ?>
+                        <?= $totalRecords === 1 ? 'record' : 'records' ?>
+                    </p>
+
+                    <?php if ($totalPages > 1): ?>
+
                     <div class="pagination">
-                        <button class="btn-page"><i class="fas fa-chevron-left"></i></button>
-                        <button class="btn-page active">1</button>
-                        <button class="btn-page">2</button>
-                        <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+
+                        <!-- PREVIOUS -->
+                        <?php if ($currentPage > 1): ?>
+
+                            <a
+                                href="?page=<?= $currentPage - 1 ?>"
+                                class="btn-page"
+                            >
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+
+                        <?php else: ?>
+
+                            <button
+                                class="btn-page"
+                                disabled
+                            >
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+
+                        <?php endif; ?>
+
+
+                        <!-- PAGE NUMBERS -->
+                        <?php for ($page = 1; $page <= $totalPages; $page++): ?>
+
+                            <?php if ($page == $currentPage): ?>
+
+                            <a
+                                href="?page=<?= $page ?>"
+                                class="btn-page active"
+                            >
+                                <?= $page ?>
+                            </a>
+
+                            <?php else: ?>
+
+                            <a
+                                href="?page=<?= $page ?>"
+                                class="btn-page"
+                            >
+                                <?= $page ?>
+                            </a>
+
+                            <?php endif; ?>
+
+                        <?php endfor; ?>
+
+
+                        <!-- NEXT -->
+                        <?php if ($currentPage < $totalPages): ?>
+
+                            <a
+                                href="?page=<?= $currentPage + 1 ?>"
+                                class="btn-page"
+                            >
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+
+                        <?php else: ?>
+
+                            <button
+                                class="btn-page"
+                                disabled
+                            >
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+
+                        <?php endif; ?>
+
                     </div>
+
+                    <?php endif; ?>
+
                 </div>
 
             </section>
@@ -145,15 +303,15 @@
                 <div class="grid-2">
                     <div class="info-box">
                         <label>Reffered Date</label>
-                        <p>June 9, 2026</p>
+                        <p id="modalReferredDate">—</p>
                     </div>
                     <div class="info-box">
                         <label>Doctor</label>
-                        <p>Doc McStuffins</p>
+                        <p id="modalDoctor">—</p>
                     </div>
                     <div class="info-box full">
                         <label>Reason for Referral</label>
-                        <p>Follow-up Care</p>
+                        <p id="modalReason">—</p>
                     </div>
                 </div>
             </div>
@@ -165,27 +323,27 @@
                 <div class="grid-2">
                     <div class="info-box">
                         <label>Full Name</label>
-                        <span>Marcus Holloway</span>
+                        <p id="modalFullName">—</p>
                     </div>
 
                     <div class="info-box">
                         <label>Sex</label>
-                        <p>Male</p>
+                        <p id="modalSex">—</p>
                     </div>
 
                     <div class="info-box">
                         <label>Date of Birth</label>
-                        <p>01-01-2000</p>
+                        <p id="modalDob">—</p>
                     </div>
 
                     <div class="info-box">
                         <label>Contact</label>
-                        <p>0912-345-6789</p>
+                        <p id="modalContact">—</p>
                     </div>
 
                     <div class="info-box">
                         <label>Address</label>
-                        <p>Mandaue City</p>
+                        <p id="modalAddress">—</p>
                     </div>
                 </div>
 
@@ -198,22 +356,22 @@
                 <div class="grid-2">
                     <div class="info-box">
                      <label>Parent Name</label>
-                     <p>John Holloway</p>
+                     <p id="modalParentName">—</p>
                     </div>
 
                     <div class="info-box">
                      <label>Parent's Date of Birth</label>
-                     <p>02-19-1970</p>
+                     <p id="modalParentDob">—</p>
                     </div>
 
                     <div class="info-box">
                      <label>Spouse Name</label>
-                     <p>-</p>
+                     <p id="modalSpouseName">—</p>
                     </div>
 
                     <div class="info-box">
                      <label>Spouse's Date of Birth</label>
-                     <p>-</p>
+                     <p id="modalSpouseDob">—</p>
                     </div>
 
                 </div>
@@ -227,12 +385,12 @@
                 <div class="grid-2">
                     <div class="info-box">
                      <label>Member</label>
-                     <p>Yes</p>
+                     <p id="modalPhilhealthMember">—</p>
                     </div>
 
                     <div class="info-box">
                      <label>Philhealth Number</label>
-                     <p>01234566788</p>
+                     <p id="modalPhilhealthNumber">—</p>
                     </div>
                 </div>
                 
@@ -245,17 +403,17 @@
                 <div class="grid-2">
                     <div class="info-box">
                      <label>Blood Pressure</label>
-                     <p>120/80</p>
+                     <p id="modalBP">—</p>
                     </div>
 
                     <div class="info-box">
                      <label>Weight</label>
-                     <p>65 kg</p>
+                     <p id="modalWeight">—</p>
                     </div>
 
                     <div class="info-box">
                      <label>Temperature</label>
-                     <p>36.5°C</p>
+                     <p id="modalTemperature">—</p>
                     </div>
 
                 </div>
@@ -266,7 +424,7 @@
             <div class="section">
                 <h3>Nurse's Notes</h3>
                     <div class="info-box full">
-                     <p>Patient is stable</p>
+                     <p id="modalNurseNotes">—</p>
                     </div>
             </div>
             

@@ -1,3 +1,13 @@
+<?php
+session_start();
+require_once "../config/database.php";
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +24,8 @@
 </head>
 <body>
 
-    <div id="sidebar"></div>
+    <!-- SIDEBAR -->
+        <?php include "../includes/sidebar.php"; ?>
 
         <!-- MAIN CONTENT -->
         <main class="main-content">
@@ -26,11 +37,11 @@
                     <p>Issue a formal referral to external medical facilities or specialists.</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-secondary" onclick="window.location.href='referral_history.html'"><i class="fas fa-list"></i> Referral History</button>
+                    <button class="btn-secondary" onclick="window.location.href='referral_history.php'"><i class="fas fa-list"></i> Referral History</button>
                 </div>
             </header>
 
-            <form id="referralForm">
+            <form id="referralForm" method="POST" action="../actions/referral_save.php">
                 
                 <!-- SECTION 1: REFERRAL INFORMATION -->
                 <section class="form-card highlight-blue">
@@ -41,21 +52,15 @@
                     <div class="input-grid three-cols">
                         <div class="input-group">
                             <label>Referred Date</label>
-                            <input type="date" id="refDate" value="2024-10-24" required>
+                            <input type="date" id="refDate" name="referred_date" value="<?= date('Y-m-d') ?>" required>
                         </div>
                         <div class="input-group">
                             <label>Doctor's Name</label>
-                            <input type="text" id="DoctorName" placeholder="e.g. Dr. Smith" required>
+                            <input type="text" id="DoctorName" name="doctor_name" placeholder="e.g. Dr. Smith" required>
                         </div>
                         <div class="input-group">
-                            <label>Reason for Referral</label>
-                            <select id="reason" required>
-                                <option value="">Select Reason</option>
-                                <option>Specialized Testing</option>
-                                <option>Emergency Transfer</option>
-                                <option>Specialist Consultation</option>
-                                <option>Follow-up Care</option>
-                            </select>
+                            <label for="reason">Reason for Referral</label>
+                            <textarea id="reason" name="reason_for_referral" rows="2" placeholder="Enter the reason for referring the patient..." required></textarea>
                         </div>
                     </div>
                 </section>
@@ -69,11 +74,11 @@
                     <div class="input-grid three-cols">
                         <div class="input-group">
                             <label>Full Name</label>
-                            <input type="text" id="fullName" placeholder="Last Name, First Name Middle" required>
+                            <input type="text" id="fullName" name="full_name" placeholder="Last Name, First Name Middle" required>
                         </div>
                         <div class="input-group">
                             <label>Date of Birth</label>
-                            <input type="date" id="dobInput" required>
+                            <input type="date" id="dobInput" name="date_of_birth" required>
                         </div>
                         <div class="input-group readonly">
                             <label>Age</label>
@@ -83,19 +88,19 @@
                     <div class="input-grid two-cols">
                         <div class="input-group">
                             <label>Sex</label>
-                            <select>
+                            <select id="sex" name="sex" required>
                                 <option>Male</option>
                                 <option>Female</option>
                             </select>
                         </div>
                         <div class="input-group">
                             <label>Contact Number</label>
-                            <input type="tel" id="contact" placeholder="09XX XXX XXXX">
+                            <input type="tel" id="contact" name="contact_number" placeholder="09XX XXX XXXX">
                         </div>
                     </div>
                     <div class="input-group">
                         <label>Home Address</label>
-                        <input type="text" id="address" placeholder="Complete Street, City, Province">
+                        <input type="text" id="address" name="address" placeholder="Complete Street, City, Province">
                     </div>
                 </section>
 
@@ -109,19 +114,19 @@
                         <div class="input-grid">
                             <div class="input-group">
                                 <label>Parent Name (Father or Mother)</label>
-                                <input type="text" id="parent_name" placeholder="Full Name">
+                                <input type="text" id="parent_name" name="parent_name" placeholder="Full Name">
                             </div>
                             <div class="input-group">
                                 <label>Parent's Date of Birth</label>
-                                <input type="date" id="parent_dob">
+                                <input type="date" id="parent_dob" name="parent_dob">
                             </div>
                             <div class="input-group">
                                 <label>Spouse Name (if any)</label>
-                                <input type="text" id="spouse_name" placeholder="Full Name (Optional)">
+                                <input type="text" id="spouse_name" name="spouse_name" placeholder="Full Name (Optional)">
                             </div>
                             <div class="input-group">
                                 <label>Spouse's Date of Birth</label>
-                                <input type="date" id="spouse_dob">
+                                <input type="date" id="spouse_dob" name="spouse_dob">
                             </div>
                         </div>
                     </section>
@@ -145,7 +150,7 @@
                         <!-- CONDITIONAL FIELD -->
                         <div class="input-group conditional-input" id="philhealthSpec">
                             <label>Specify PhilHealth Number / Details</label>
-                            <input type="text" id="philhealthInput" placeholder="Enter PhilHealth ID or Category">
+                            <input type="text" id="philhealthInput" name="philhealth_number" placeholder="Enter PhilHealth ID or Category">
                         </div>
                     </section>
                 </div>
@@ -159,21 +164,21 @@
                     <div class="input-row two-cols">
                         <div class="input-group">
                             <label>Nurse's Notes</label>
-                            <textarea id="nurseNotes" rows="4" placeholder="Enter observations, referral notes, and instructions for the receiving physician..."></textarea>
+                            <textarea id="nurseNotes" name="nurse_notes" rows="4" placeholder="Enter observations, referral notes, and instructions for the receiving physician..."></textarea>
                         </div>
                         <div class="input-group">
                             <label>Weight (kg)</label>
-                            <input type="number" id="weight" step="0.1" placeholder="0.0">
+                            <input type="number" id="weight" name="weight" step="0.1" placeholder="0.0">
                         </div>
                     </div>
                     <div class="input-row two-cols">
                         <div class="input-group">
                             <label>Blood Pressure</label>
-                            <input type="text" id="bp" placeholder="e.g. 120/80">
+                            <input type="text" id="bp" name="blood_pressure" placeholder="e.g. 120/80">
                         </div>
                         <div class="input-group">
                             <label>Temperature (°C)</label>
-                            <input type="number" id="temp" step="0.1" placeholder="36.5">
+                            <input type="number" id="temp" name="temperature" step="0.1" placeholder="36.5">
                         </div>
                     </div>
                 </section>

@@ -172,7 +172,7 @@ body { background-color: var(--bg-light); color: var(--text-main); }
 }
 
 .btn-page:hover:not(:disabled) {
-    background: var(--bg-light);
+    background: var(--accent-blue);
 }
 
 .btn-page.active {
