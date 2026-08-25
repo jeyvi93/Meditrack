@@ -8,7 +8,38 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once "../config/database.php";
 
-$sql = "SELECT * FROM students ORDER BY full_name ASC";
+// ==========================
+// PAGINATION
+// ==========================
+
+$recordsPerPage = 15;
+
+$currentPage = isset($_GET['page'])
+    ? (int) $_GET['page']
+    : 1;
+
+if ($currentPage < 1) {
+    $currentPage = 1;
+}
+
+// TOTAL RECORDS
+$countSql = "SELECT COUNT(*) AS total FROM students";
+$countResult = mysqli_query($conn, $countSql);
+$totalRecords = mysqli_fetch_assoc($countResult)['total'];
+
+$totalPages = ceil($totalRecords / $recordsPerPage);
+
+// OFFSET
+$offset = ($currentPage - 1) * $recordsPerPage;
+
+// GET STUDENTS FOR CURRENT PAGE
+$sql = "
+    SELECT *
+    FROM students
+    ORDER BY full_name ASC
+    LIMIT $recordsPerPage OFFSET $offset
+";
+
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -232,7 +263,97 @@ onclick='openEditStudentModal({
 </tbody>
 
                 </table>
+                <!-- TABLE FOOTER -->
+                <div class="table-footer">
 
+                    <p>
+                        Showing
+                        <?= $totalRecords > 0 ? (($currentPage - 1) * $recordsPerPage + 1) : 0 ?>
+                        -
+                        <?= min($currentPage * $recordsPerPage, $totalRecords) ?>
+                        of
+                        <?= $totalRecords ?>
+                        <?= $totalRecords === 1 ? 'record' : 'records' ?>
+                    </p>
+
+                    <?php if ($totalPages > 1): ?>
+
+                    <div class="pagination">
+
+                        <!-- PREVIOUS -->
+                        <?php if ($currentPage > 1): ?>
+
+                        <a
+                            href="?page=<?= $currentPage - 1 ?>"
+                            class="btn-page"
+                            >
+                            <i class="bx bx-chevron-left"></i>
+                        </a>
+
+                        <?php else: ?>
+
+                        <button
+                            class="btn-page"
+                            disabled
+                            >
+                            <i class="bx bx-chevron-left"></i>
+                        </button>
+
+                        <?php endif; ?>
+
+
+                        <!-- PAGE NUMBERS -->
+                        <?php for ($page = 1; $page <= $totalPages; $page++): ?>
+
+                        <?php if ($page == $currentPage): ?>
+
+                            <a
+                                href="?page=<?= $page ?>"
+                                class="btn-page active"
+                                >
+                                <?= $page ?>
+                            </a>
+
+                        <?php else: ?>
+
+                            <a
+                                href="?page=<?= $page ?>"
+                                class="btn-page"
+                                >
+                                <?= $page ?>
+                            </a>
+
+                        <?php endif; ?>
+
+                        <?php endfor; ?>
+
+
+                        <!-- NEXT -->
+                        <?php if ($currentPage < $totalPages): ?>
+
+                            <a
+                                href="?page=<?= $currentPage + 1 ?>"
+                                class="btn-page"
+                                >
+                                <i class="bx bx-chevron-right"></i>
+                            </a>
+
+                        <?php else: ?>
+
+                            <button
+                                class="btn-page"
+                                disabled
+                                >
+                                <i class="bx bx-chevron-right"></i>
+                            </button>
+
+                        <?php endif; ?>
+
+                    </div>
+
+                    <?php endif; ?>
+
+                </div>
             </div>
         </div>
 

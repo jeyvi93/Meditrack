@@ -198,13 +198,12 @@
                                 Department
                             </label>
 
-                            <input
-                                type="text"
-                                id="department"
-                                name="department"
-                                placeholder="e.g. School of Technology"
-                            >
-                        </div>
+                            <select id="department" name="department" required>
+                                <option value="">Select Department</option>
+                                <option value="School of Education">Education</option>
+                                <option value="School of Technology">Technology</option>
+                                <option value="School of Business">Business</option>
+                            </select>
                     </div>
 
                     <!-- STUDENT FIELDS -->

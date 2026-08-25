@@ -7,6 +7,206 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once "../config/database.php";
+
+// ==========================
+// DASHBOARD STATISTICS
+// ==========================
+
+// TOTAL CONSULTATIONS
+$consultationSql = "
+    SELECT COUNT(*) AS total
+    FROM consultations
+";
+
+$consultationResult = mysqli_query($conn, $consultationSql);
+$totalConsultations = mysqli_fetch_assoc($consultationResult)['total'];
+
+
+// PENDING APPOINTMENTS
+$pendingSql = "
+    SELECT COUNT(*) AS total
+    FROM appointments
+    WHERE status = 'Pending'
+";
+
+$pendingResult = mysqli_query($conn, $pendingSql);
+$pendingAppointments = mysqli_fetch_assoc($pendingResult)['total'];
+
+
+// CONSULTATIONS TODAY
+$todaySql = "
+    SELECT COUNT(*) AS total
+    FROM consultations
+    WHERE date = CURDATE()
+";
+
+$todayResult = mysqli_query($conn, $todaySql);
+$consultationsToday = mysqli_fetch_assoc($todayResult)['total'];
+
+
+// Medicine Alerts
+$medicine_alert_sql = "
+    SELECT COUNT(*) AS alert_count
+    FROM medicines
+    WHERE status = 'Active'
+    AND is_quarantined = 0
+    AND (
+        quantity <= low_stock_threshold
+        OR expiry_date < CURDATE()
+        OR expiry_date <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)
+    )
+";
+
+$medicine_alert_result = mysqli_query($conn, $medicine_alert_sql);
+$medicine_alert_data = mysqli_fetch_assoc($medicine_alert_result);
+$medicine_alert_count = $medicine_alert_data['alert_count'];
+
+// ==========================
+// ANNUAL TOP 5 COMPLAINTS
+// ==========================
+
+$topComplaintsSql = "
+    SELECT complaint, COUNT(*) AS total
+    FROM consultations
+    WHERE YEAR(date) = YEAR(CURDATE())
+    AND complaint IS NOT NULL
+    AND complaint != ''
+    GROUP BY complaint
+    ORDER BY total DESC
+    LIMIT 5
+";
+
+$topComplaintsResult = mysqli_query($conn, $topComplaintsSql);
+
+$complaintLabels = [];
+$complaintCounts = [];
+
+while ($row = mysqli_fetch_assoc($topComplaintsResult)) {
+    $complaintLabels[] = $row['complaint'];
+    $complaintCounts[] = $row['total'];
+}
+
+// ==========================
+// ANNUAL CONSULTATION TRENDS
+// ==========================
+
+$consultationTrendSql = "
+    SELECT MONTH(date) AS month, COUNT(*) AS total
+    FROM consultations
+    WHERE YEAR(date) = YEAR(CURDATE())
+    GROUP BY MONTH(date)
+    ORDER BY month
+";
+
+$consultationTrendResult = mysqli_query($conn, $consultationTrendSql);
+
+$consultationMonthlyCounts = array_fill(0, 12, 0);
+
+while ($row = mysqli_fetch_assoc($consultationTrendResult)) {
+    $monthIndex = (int)$row['month'] - 1;
+    $consultationMonthlyCounts[$monthIndex] = (int)$row['total'];
+}
+
+
+// ==========================
+// CONSULTATION DEPARTMENT DISTRIBUTION
+// ==========================
+
+$departmentSql = "
+    SELECT department, COUNT(*) AS total
+    FROM consultations
+    WHERE YEAR(date) = YEAR(CURDATE())
+    AND department IS NOT NULL
+    AND department != ''
+    GROUP BY department
+    ORDER BY total DESC
+";
+
+$departmentResult = mysqli_query($conn, $departmentSql);
+
+$departmentLabels = [];
+$departmentCounts = [];
+
+while ($row = mysqli_fetch_assoc($departmentResult)) {
+    $departmentLabels[] = $row['department'];
+    $departmentCounts[] = (int)$row['total'];
+}
+
+// ==========================
+// ANNUAL APPOINTMENT TRENDS
+// ==========================
+
+$appointmentTrendSql = "
+    SELECT MONTH(appointment_date) AS month, COUNT(*) AS total
+    FROM appointments
+    WHERE YEAR(appointment_date) = YEAR(CURDATE())
+    AND status = 'Completed'
+    GROUP BY MONTH(appointment_date)
+    ORDER BY month
+";
+
+$appointmentTrendResult = mysqli_query($conn, $appointmentTrendSql);
+
+$appointmentMonthlyCounts = array_fill(0, 12, 0);
+
+while ($row = mysqli_fetch_assoc($appointmentTrendResult)) {
+    $monthIndex = (int)$row['month'] - 1;
+    $appointmentMonthlyCounts[$monthIndex] = (int)$row['total'];
+}
+
+
+// ==========================
+// APPOINTMENT DEPARTMENT DISTRIBUTION
+// ==========================
+
+$appointmentDeptSql = "
+    SELECT 
+        COALESCE(s.department, st.department) AS department,
+        COUNT(*) AS total
+    FROM appointments a
+    JOIN users u ON a.user_id = u.id
+    LEFT JOIN students s ON u.student_id = s.id
+    LEFT JOIN staffs st ON u.staff_id = st.id
+    WHERE YEAR(a.appointment_date) = YEAR(CURDATE())
+    AND a.status = 'Completed'
+    AND COALESCE(s.department, st.department) IS NOT NULL
+    AND COALESCE(s.department, st.department) != ''
+    GROUP BY COALESCE(s.department, st.department)
+    ORDER BY total DESC
+";
+
+$appointmentDeptResult = mysqli_query($conn, $appointmentDeptSql);
+
+$appointmentDeptLabels = [];
+$appointmentDeptCounts = [];
+
+while ($row = mysqli_fetch_assoc($appointmentDeptResult)) {
+    $appointmentDeptLabels[] = $row['department'];
+    $appointmentDeptCounts[] = (int)$row['total'];
+}
+
+// ==========================
+// RECENT ACTIVITY
+// ==========================
+
+$recentActivitySql = "
+    SELECT 
+        activity_type,
+        action,
+        description,
+        created_at
+    FROM activity_logs
+    ORDER BY created_at DESC
+    LIMIT 5
+";
+
+$recentActivityResult = mysqli_query($conn, $recentActivitySql);
+
+$recentActivities = [];
+
+while ($row = mysqli_fetch_assoc($recentActivityResult)) {
+    $recentActivities[] = $row;
+}
 ?>
 
 <!DOCTYPE html>
@@ -56,7 +256,7 @@ require_once "../config/database.php";
             </div>
             <div class="stat-data">
                 <span class="label">Total Consultations</span>
-                <span class="value">0</span>
+                <span class="value"><?= $totalConsultations ?></span>
             </div>
         </div>
 
@@ -66,7 +266,7 @@ require_once "../config/database.php";
             </div>
             <div class="stat-data">
                 <span class="label">Pending Appointments</span>
-                <span class="value">4</span>
+                <span class="value"><?= $pendingAppointments ?></span>
             </div>
         </div>
 
@@ -76,7 +276,7 @@ require_once "../config/database.php";
             </div>
             <div class="stat-data">
                 <span class="label">Consultations Today</span>
-                <span class="value">12</span>
+                <span class="value"><?= $consultationsToday ?></span>
             </div>
         </div>
 
@@ -86,7 +286,7 @@ require_once "../config/database.php";
             </div>
             <div class="stat-data">
                 <span class="label">Medicine Alerts</span>
-                <span class="value">08</span>
+                <span class="value"><?= $medicine_alert_count ?></span>
             </div>
         </div>
 
@@ -105,68 +305,80 @@ require_once "../config/database.php";
 
 
     <div class="activity-list">
+        <?php foreach ($recentActivities as $activity): ?>
 
-        <div class="activity-item">
+            <?php
+                if ($activity['activity_type'] === 'Appointment') {
 
-            <div class="activity-icon approved">
-                <i class='bx bx-check-circle'></i>
+                    $iconClass = 'approved';
+                    $icon = 'bx-calendar';
+
+                    if ($activity['action'] === 'Approved') {
+                        $iconClass = 'approved';
+                        $icon = 'bx-check-circle';
+                    }
+                    elseif ($activity['action'] === 'Completed') {
+                        $iconClass = 'approved';
+                        $icon = 'bx-check-circle';
+                    }
+                    elseif ($activity['action'] === 'Cancelled') {
+                        $iconClass = 'cancel';
+                        $icon = 'bx-x-circle';
+                    }
+                    elseif ($activity['action'] === 'Rejected') {
+                        $iconClass = 'cancel';
+                        $icon = 'bx-x-circle';
+                    }
+                    elseif ($activity['action'] === 'Rescheduled') {
+                        $iconClass = 'pending';
+                        $icon = 'bx-calendar';
+                    }
+                    elseif ($activity['action'] === 'Created') {
+                        $iconClass = 'pending';
+                        $icon = 'bx-calendar-plus';
+                    }
+
+                }
+                elseif ($activity['activity_type'] === 'Medicine') {
+
+                    $iconClass = 'medicine';
+                    $icon = 'bx-capsule';
+
+                }
+                else {
+
+                    $iconClass = 'pending';
+                    $icon = 'bx-info-circle';
+
+                }
+            ?>
+
+            <div class="activity-item">
+
+                <div class="activity-icon <?= $iconClass ?>">
+                    <i class='bx <?= $icon ?>'></i>
+                </div>
+
+                <div class="activity-details">
+
+                    <h4>
+                        <?= htmlspecialchars($activity['action']) ?>
+                        <?= htmlspecialchars($activity['activity_type']) ?>
+                    </h4>
+
+                    <p>
+                        <?= htmlspecialchars($activity['description']) ?>
+                    </p>
+
+                    <span>
+                        <?= date("M d, Y • h:i A", strtotime($activity['created_at'])) ?>
+                    </span>
+
+                </div>
+
             </div>
 
-            <div class="activity-details">
-                <h4>Appointment Approved</h4>
-                <p>John Doe's appointment was approved.</p>
-                <span>09:30 AM • Checkup</span>
-            </div>
-
-        </div>
-
-
-
-        <div class="activity-item">
-
-            <div class="activity-icon pending">
-                <i class='bx bx-calendar'></i>
-            </div>
-
-            <div class="activity-details">
-                <h4>New Appointment Request</h4>
-                <p>Maria Santos requested a consultation.</p>
-                <span>Today • General Checkup</span>
-            </div>
-
-        </div>
-
-
-
-        <div class="activity-item">
-
-            <div class="activity-icon cancel">
-                <i class='bx bx-x-circle'></i>
-            </div>
-
-            <div class="activity-details">
-                <h4>Appointment Cancelled</h4>
-                <p>Juan Dela Cruz cancelled an appointment.</p>
-                <span>Yesterday • Medical Consultation</span>
-            </div>
-
-        </div>
-
-
-
-        <div class="activity-item">
-
-            <div class="activity-icon medicine">
-                <i class='bx bx-capsule'></i>
-            </div>
-
-            <div class="activity-details">
-                <h4>Medicine Updated</h4>
-                <p>Paracetamol inventory was updated.</p>
-                <span>2 hours ago</span>
-            </div>
-
-        </div>
+        <?php endforeach; ?>
 
 
     </div>
@@ -268,6 +480,21 @@ require_once "../config/database.php";
 
     </div>
 </div>
+
+<script>
+    const complaintLabels = <?= json_encode($complaintLabels) ?>;
+    const complaintCounts = <?= json_encode($complaintCounts) ?>;
+
+    const consultationMonthlyCounts = <?= json_encode($consultationMonthlyCounts) ?>;
+
+    const departmentLabels = <?= json_encode($departmentLabels) ?>;
+    const departmentCounts = <?= json_encode($departmentCounts) ?>;
+
+    const appointmentMonthlyCounts = <?= json_encode($appointmentMonthlyCounts) ?>;
+
+    const appointmentDeptLabels = <?= json_encode($appointmentDeptLabels) ?>;
+    const appointmentDeptCounts = <?= json_encode($appointmentDeptCounts) ?>;
+</script>
 
 <script src="../includes/includes.js"></script>
 <script src="../assets/js/dashboard.js"></script>

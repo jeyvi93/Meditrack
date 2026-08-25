@@ -1,76 +1,151 @@
-/* TOP 5 COMPLAINTS */
+/* ANNUAL TOP 5 COMPLAINTS */
 new Chart(document.getElementById('complaintsChart'), {
     type: 'bar',
     data: {
-        labels: ['Headache', 'Fever', 'Cough', 'Stomach Pain', 'Dizziness'],
+        labels: complaintLabels,
         datasets: [{
             label: 'Cases',
-            data: [30, 25, 18, 12, 10],
+            data: complaintCounts,
             backgroundColor: '#3b82f6'
         }]
     },
     options: {
         responsive: true,
         maintainAspectRatio: false,
-        indexAxis: 'y'
+        indexAxis: 'y',
+        scales: {
+            x: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0
+                }
+            }
+        }
     }
 });
 
-/* CONSULTATION TREND */
+/* ANNUAL CONSULTATION TREND */
 new Chart(document.getElementById('consultationChart'), {
     type: 'line',
     data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ],
         datasets: [{
             label: 'Consultations',
-            data: [15, 22, 18, 30, 28, 40],
+            data: consultationMonthlyCounts,
             borderColor: '#f59e0b',
-            tension: 0.3
+            tension: 0.3,
+            fill: false
         }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0
+                }
+            }
+        }
     }
 });
 
-/* APPOINTMENT TREND */
+/* ANNUAL APPOINTMENT TREND */
 new Chart(document.getElementById('appointmentChart'), {
     type: 'line',
     data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ],
         datasets: [{
             label: 'Appointments',
-            data: [20, 30, 25, 40, 35, 50],
+            data: appointmentMonthlyCounts,
             borderColor: '#0d9488',
-            tension: 0.3
+            tension: 0.3,
+            fill: false
         }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0
+                }
+            }
+        }
     }
 });
 
-/* PIE CHART - DEPARTMENTS */
+/* DEPARTMENT DISTRIBUTION */
+
+const departmentColors = departmentLabels.map(department => {
+    const dept = department.toLowerCase();
+
+    if (dept.includes('technology')) {
+        return '#800000'; // Maroon
+    }
+
+    if (dept.includes('education')) {
+        return '#3b82f6'; // Blue
+    }
+
+    if (dept.includes('business')) {
+        return '#f59e0b'; // Orange
+    }
+
+    return '#64748b'; // Gray fallback
+});
+
 new Chart(document.getElementById('departmentChart'), {
     type: 'pie',
     data: {
-        labels: ['Education', 'Technology', 'Business'],
+        labels: departmentLabels,
         datasets: [{
-            data: [45, 30, 25],
-            backgroundColor: [
-                '#3b82f6',
-                '#800000',
-                '#f59e0b'
-            ]
+            data: departmentCounts,
+            backgroundColor: departmentColors
         }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
     }
 });
-/* Appointment PIE CHART - DEPARTMENTS */
+
+//* APPOINTMENT DEPARTMENT DISTRIBUTION */
+
+const appointmentDepartmentColors = appointmentDeptLabels.map(department => {
+    const dept = department.toLowerCase();
+
+    if (dept.includes('technology')) {
+        return '#800000'; // Maroon
+    }
+
+    if (dept.includes('education')) {
+        return '#3b82f6'; // Blue
+    }
+
+    if (dept.includes('business')) {
+        return '#f59e0b'; // Orange
+    }
+
+    return '#64748b'; // Gray fallback
+});
+
 new Chart(document.getElementById('appointmentDeptChart'), {
     type: 'pie',
     data: {
-        labels: ['Education', 'Technology', 'Business'],
+        labels: appointmentDeptLabels,
         datasets: [{
-            data: [20, 30, 25],
-            backgroundColor: [
-                '#3b82f6',
-                '#800000',
-                '#f59e0b'
-            ]
+            data: appointmentDeptCounts,
+            backgroundColor: appointmentDepartmentColors
         }]
     },
     options: {

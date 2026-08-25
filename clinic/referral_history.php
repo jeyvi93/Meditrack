@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 // PAGINATION
 // ==========================
 
-$recordsPerPage = 10;
+$recordsPerPage = 1;
 
 $currentPage = isset($_GET['page'])
     ? (int) $_GET['page']
@@ -207,7 +207,7 @@ if (!$result) {
                                 href="?page=<?= $currentPage - 1 ?>"
                                 class="btn-page"
                             >
-                                <i class="fas fa-chevron-left"></i>
+                                <i class="bx bx-chevron-left"></i>
                             </a>
 
                         <?php else: ?>
@@ -216,7 +216,7 @@ if (!$result) {
                                 class="btn-page"
                                 disabled
                             >
-                                <i class="fas fa-chevron-left"></i>
+                                <i class="bx bx-chevron-left"></i>
                             </button>
 
                         <?php endif; ?>
@@ -255,7 +255,7 @@ if (!$result) {
                                 href="?page=<?= $currentPage + 1 ?>"
                                 class="btn-page"
                             >
-                                <i class="fas fa-chevron-right"></i>
+                                <i class="bx bx-chevron-right"></i>
                             </a>
 
                         <?php else: ?>
@@ -264,7 +264,7 @@ if (!$result) {
                                 class="btn-page"
                                 disabled
                             >
-                                <i class="fas fa-chevron-right"></i>
+                                <i class="bx bx-chevron-right"></i>
                             </button>
 
                         <?php endif; ?>

@@ -700,3 +700,90 @@ tbody tr:hover {
     width:120px;
     justify-content:center;
 }
+
+/* ==========================
+   PAGINATION
+========================== */
+
+.table-footer {
+    padding: 16px 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-top: 1px solid var(--border-color);
+
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-page {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    margin: 0;
+
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+
+    background: #fff;
+    color: var(--text-main);
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+    transition: all 0.2s ease;
+}
+
+/* HOVER */
+.btn-page:hover:not(:disabled) {
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: #fff;
+}
+
+/* ACTIVE PAGE */
+.btn-page.active {
+    background: var(--primary-blue);
+    color: #fff;
+    border-color: var(--primary-blue);
+}
+
+/* DISABLED ARROWS */
+.btn-page:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: #fff;
+    color: var(--text-muted);
+}
+
+/* ARROW ICONS */
+.pagination .btn-page i {
+    font-size: 1.1rem;
+    line-height: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: inherit;
+}

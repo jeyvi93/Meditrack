@@ -227,6 +227,35 @@ if (!mysqli_stmt_execute($stmt)) {
 }
 
 mysqli_stmt_close($stmt);
+
+
+// ==========================
+// ACTIVITY LOG
+// ==========================
+
+$activity_type = "Medicine";
+$action = "Added";
+$description = "Added {$medicine_name} to inventory. Batch: {$batch_number}, Quantity: {$quantity}.";
+
+$logStmt = mysqli_prepare(
+    $conn,
+    "INSERT INTO activity_logs
+    (user_id, activity_type, action, description)
+    VALUES (?, ?, ?, ?)"
+);
+
+mysqli_stmt_bind_param(
+    $logStmt,
+    "isss",
+    $_SESSION['user_id'],
+    $activity_type,
+    $action,
+    $description
+);
+
+mysqli_stmt_execute($logStmt);
+mysqli_stmt_close($logStmt);
+
 mysqli_close($conn);
 
 

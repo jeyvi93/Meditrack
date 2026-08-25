@@ -172,11 +172,7 @@ $stmt = mysqli_prepare(
      WHERE id = ?"
 );
 
-mysqli_stmt_bind_param(
-    $stmt,
-    "i",
-    $id
-);
+mysqli_stmt_bind_param($stmt, "i", $id);
 
 
 if (!mysqli_stmt_execute($stmt)) {
@@ -192,6 +188,39 @@ if (!mysqli_stmt_execute($stmt)) {
 }
 
 mysqli_stmt_close($stmt);
+
+
+// ==========================
+// ACTIVITY LOG
+// ==========================
+
+$activity_type = "Medicine";
+$action = "Disposed";
+
+$description = "Disposed {$medicine['medicine_name']}."
+             . " Batch: {$medicine['batch_number']}."
+             . " Quantity: {$medicine['quantity']}."
+             . " Reason: {$disposal_reason}.";
+
+$logStmt = mysqli_prepare(
+    $conn,
+    "INSERT INTO activity_logs
+    (user_id, activity_type, action, description)
+    VALUES (?, ?, ?, ?)"
+);
+
+mysqli_stmt_bind_param(
+    $logStmt,
+    "isss",
+    $_SESSION['user_id'],
+    $activity_type,
+    $action,
+    $description
+);
+
+mysqli_stmt_execute($logStmt);
+
+mysqli_stmt_close($logStmt);
 
 mysqli_close($conn);
 

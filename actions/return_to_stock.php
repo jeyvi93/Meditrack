@@ -44,9 +44,9 @@ $id = (int) $_POST['id'];
 
 $stmt = mysqli_prepare(
     $conn,
-    "SELECT id, is_quarantined, status
-     FROM medicines
-     WHERE id = ?"
+    "SELECT id, medicine_name, is_quarantined, status
+    FROM medicines
+    WHERE id = ?"
 );
 
 mysqli_stmt_bind_param($stmt, "i", $id);
@@ -100,6 +100,40 @@ mysqli_stmt_bind_param($stmt, "i", $id);
 
 
 if (mysqli_stmt_execute($stmt)) {
+
+    // ==========================
+    // LOG ACTIVITY
+    // ==========================
+
+    $log_description = $medicine['medicine_name'] . " was returned to stock.";
+
+    $log_stmt = mysqli_prepare(
+        $conn,
+        "INSERT INTO activity_logs
+        (
+            user_id,
+            activity_type,
+            action,
+            description
+        )
+        VALUES (?, ?, ?, ?)"
+    );
+
+    $activity_type = "Medicine";
+    $action = "Returned to Stock";
+
+    mysqli_stmt_bind_param(
+        $log_stmt,
+        "isss",
+        $_SESSION['user_id'],
+        $activity_type,
+        $action,
+        $log_description
+    );
+
+    mysqli_stmt_execute($log_stmt);
+    mysqli_stmt_close($log_stmt);
+
 
     echo json_encode([
         "success" => true,

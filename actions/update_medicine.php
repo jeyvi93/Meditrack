@@ -79,6 +79,40 @@ mysqli_stmt_bind_param(
 
 if (mysqli_stmt_execute($stmt)) {
 
+    // ==========================
+    // LOG ACTIVITY
+    // ==========================
+
+    $log_description = $medicine_name . " was updated.";
+
+    $log_stmt = mysqli_prepare(
+        $conn,
+        "INSERT INTO activity_logs
+        (
+            user_id,
+            activity_type,
+            action,
+            description
+        )
+        VALUES (?, ?, ?, ?)"
+    );
+
+    $activity_type = "Medicine";
+    $action = "Updated";
+
+    mysqli_stmt_bind_param(
+        $log_stmt,
+        "isss",
+        $_SESSION['user_id'],
+        $activity_type,
+        $action,
+        $log_description
+    );
+
+    mysqli_stmt_execute($log_stmt);
+    mysqli_stmt_close($log_stmt);
+
+
     echo json_encode([
         "success" => true,
         "message" => "Medicine updated successfully."

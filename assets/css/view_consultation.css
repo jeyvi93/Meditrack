@@ -168,38 +168,44 @@ body { background-color: var(--bg-light); color: var(--text-main); }
     font-weight: 600;
 
     cursor: pointer;
+
     box-sizing: border-box;
+
+    transition: all 0.2s ease;
 }
 
+/* HOVER */
 .btn-page:hover:not(:disabled) {
-    background: var(--accent-blue);
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: #fff;
 }
 
+/* ACTIVE PAGE */
 .btn-page.active {
     background: var(--primary-blue);
     color: #fff;
     border-color: var(--primary-blue);
 }
 
+/* DISABLED ARROWS */
 .btn-page:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+    background: #fff;
+    color: var(--text-muted);
 }
 
-/* Center the arrow icons */
+/* ARROW ICONS */
 .pagination .btn-page i {
+    font-size: 1.1rem;
+    line-height: 1;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
-}
 
-.text-right {
-    text-align: right;
-}
-
-.text-muted {
-    color: #cbd5e1;
+    color: inherit;
 }
 
 /* MODAL OVERLAY */
