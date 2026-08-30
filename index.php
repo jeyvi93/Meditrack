@@ -29,7 +29,7 @@ if (isset($_SESSION['user_id'])) {
             </div>
             <div class="nav-auth">
                 <a href="patient/register.html" class="register-link">Register</a>
-                <a href="#" onclick="openLogin()" class="btn-login">Login</a>
+                <a href="patient/login.php" class="btn-login">Login</a>
             </div>
         </nav>
     </header>
@@ -41,7 +41,7 @@ if (isset($_SESSION['user_id'])) {
                 <div class="uni-tag">
                     <span class="pulse"></span> Mandaue City College
                 </div>
-                <h1>Integrated School <span class="text-accent">Clinic Management System.</span></h1>
+                <h1>Integrated Campus <span class="text-accent">Clinic Management System.</span></h1>
                 <p>A centralized platform for managing health records, clinic consultations, and medical services within the academic institution.</p>
                 
                 <div class="trust-indicators">
@@ -51,13 +51,13 @@ if (isset($_SESSION['user_id'])) {
                     </div>
                     <div class="indicator">
                         <i class='bx bxs-time-five'></i>
-                        <span>On-Campus Care</span>
+                        <span>Efficient Clinic Services</span>
                     </div>
                 </div>
 
                 <div class="cta-group">
                     <button class="btn-lg" onclick="installApp()">
-                         Install Student App <i class='bx bx-download'></i>
+                         Get MediTrack App <i class='bx bx-download'></i>
                     </button>
                     <div class="status-badge">
                         <span class="dot"></span> Available on Mobile
@@ -78,57 +78,7 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </section>
     </main>
-<!-- LOGIN MODAL -->
-<div id="loginModal" class="modal">
 
-    <div class="modal-content login-modal">
-
-        <span class="close" onclick="closeLogin()">&times;</span>
-
-        <div class="login-box">
-
-            <h2>User Login</h2><br>
-
-            <form action="auth/login_process.php" method="POST">
-
-                <!-- EMAIL -->
-                <div class="input-group">
-                    <label for="email">Email Address</label>
-                    <div class="input-box">
-                        <i class='bx bx-user'></i>
-                        <input type="email" id="email" name="email" placeholder="Enter email address" required> 
-                    </div>
-                </div>
-
-                <!-- PASSWORD -->
-                <div class="input-group">
-
-                    <div class="password-header">
-                        <label for="password">Password</label>
-                        <a href="patient/forgot_password.html" class="forgot-link">Forgot Password?</a>
-                    </div>
-
-                    <div class="input-box">
-                        <i class='bx bx-lock-alt'></i>
-                        <input type="password" id="password" name="password" placeholder="Enter password" required>
-                    </div>
-
-                </div>
-
-                <button type="submit" class="btn-login">Login</button>
-
-            </form>
-
-            <div class="bottom-text">
-                <p>Don't have an account?</p>
-                <a href="patient/register.html">Register here</a>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
 <script src="assets/js/index.js"></script>
 
 </body>
