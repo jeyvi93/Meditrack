@@ -34,7 +34,7 @@ if (!isset($_SESSION['user_id'])) {
                 <header class="action-bar">
                     <div class="title-area">
                         <h1>New Staff Registration</h1>
-                        <p>Create a comprehensive clinical profile for a new staff member.</p>
+                        <p>Create a complete staff profile for the clinic system.</p>
                     </div>
                     <a href="staffs.php" class="btn-secondary">
                         <i class="fas fa-arrow-left"></i> Back to Staffs

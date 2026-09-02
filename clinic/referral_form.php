@@ -168,7 +168,7 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                         <div class="input-group">
                             <label>Weight (kg)</label>
-                            <input type="number" id="weight" name="weight" step="0.1" placeholder="0.0">
+                            <input type="number" id="weight" name="weight" step="1" placeholder="0">
                         </div>
                     </div>
                     <div class="input-row two-cols">

@@ -12,13 +12,16 @@ if (!isset($_SESSION['user_id'])) {
 // MONTH & YEAR FILTER
 // ==========================
 
+$currentMonth = (int) date('n');
+$currentYear = (int) date('Y');
+
 $selectedMonth = isset($_GET['month'])
     ? (int) $_GET['month']
-    : date('n');
+    : $currentMonth;
 
 $selectedYear = isset($_GET['year'])
     ? (int) $_GET['year']
-    : date('Y');
+    : $currentYear;
 
 if ($selectedMonth < 1 || $selectedMonth > 12) {
     $selectedMonth = date('n');
@@ -101,13 +104,6 @@ $staffVolume =
     $teachingStaffVolume +
     $nonTeachingStaffVolume;
 
-$studentPercentage = $totalConsultations > 0
-    ? round(($studentVolume / $totalConsultations) * 100)
-    : 0;
-
-$staffPercentage = $totalConsultations > 0
-    ? round(($staffVolume / $totalConsultations) * 100)
-    : 0;
 
 // ==========================
 // TOTAL MEDICINES DISPENSED
@@ -263,52 +259,6 @@ $stmt->execute();
 
 $summaryResult = $stmt->get_result();
 
-// ==========================
-// PREVIOUS MONTH MEDICINES
-// ==========================
-
-$previousMonthDate = date(
-    'Y-m-01',
-    strtotime($startDate . ' -1 month')
-);
-
-$previousMonthStart = date(
-    'Y-m-01',
-    strtotime($previousMonthDate)
-);
-
-$previousMonthEnd = date(
-    'Y-m-t',
-    strtotime($previousMonthDate)
-);
-
-$stmt = $conn->prepare("
-    SELECT COALESCE(SUM(cm.quantity_used), 0) AS total
-    FROM consultation_medicine cm
-    INNER JOIN consultations c
-        ON cm.consultation_id = c.id
-    WHERE c.date BETWEEN ? AND ?
-");
-
-$stmt->bind_param(
-    "ss",
-    $previousMonthStart,
-    $previousMonthEnd
-);
-
-$stmt->execute();
-
-$previousMedicines = (int) $stmt->get_result()
-    ->fetch_assoc()['total'];
-
-if ($previousMedicines > 0) {
-    $medicineChange = round(
-        (($totalMedicines - $previousMedicines) / $previousMedicines) * 100
-    );
-} else {
-    $medicineChange = 0;
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -382,28 +332,25 @@ if ($previousMedicines > 0) {
                     <label>Total Consultations</label>
                     <div class="card-val">
                         <h3><?= $totalConsultations ?></h3>
-                        <span class="pill-badge">+12%</span>
+                        
                     </div>
                 </div>
                 <div class="mini-card">
                     <label>Student Volume</label>
                     <div class="card-val">
                         <h3><?= $studentVolume ?></h3>
-                        <span class="text-muted"><?= $studentPercentage ?>%</span>
                     </div>
                 </div>
                 <div class="mini-card">
                     <label>School Staff Volume</label>
                     <div class="card-val">
                         <h3><?= $staffVolume ?></h3>
-                        <span class="text-muted"><?= $staffPercentage ?>%</span>
                     </div>
                 </div>
                 <div class="mini-card">
                     <label>Total Medicines Dispensed</label>
                     <div class="card-val">
-                        <h3><?= $totalMedicines ?></h3> 
-                        <span class="pill-badge"><?= $medicineChange >= 0 ? '+' : '' ?><?= $medicineChange ?>%</span>
+                        <h3><?= $totalMedicines ?></h3>
                     </div>
                 </div>
             </section>

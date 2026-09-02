@@ -207,6 +207,29 @@ $recentActivities = [];
 while ($row = mysqli_fetch_assoc($recentActivityResult)) {
     $recentActivities[] = $row;
 }
+
+// ==========================
+// ALL ACTIVITY
+// ==========================
+
+$allActivitySql = "
+    SELECT 
+        activity_type,
+        action,
+        description,
+        created_at
+    FROM activity_logs
+    ORDER BY created_at DESC
+    LIMIT 50
+";
+
+$allActivityResult = mysqli_query($conn, $allActivitySql);
+
+$allActivities = [];
+
+while ($row = mysqli_fetch_assoc($allActivityResult)) {
+    $allActivities[] = $row;
+}
 ?>
 
 <!DOCTYPE html>
@@ -300,7 +323,9 @@ while ($row = mysqli_fetch_assoc($recentActivityResult)) {
 
     <div class="table-header">
         <h3>Recent Activity</h3>
-        <a href="#" class="btn-link">View All</a>
+        <a href="#" class="btn-link" onclick="openActivityModal(); return false;">
+            View All
+        </a>
     </div>
 
 
@@ -479,6 +504,97 @@ while ($row = mysqli_fetch_assoc($recentActivityResult)) {
         </form>
 
     </div>
+</div>
+
+<!-- ALL ACTIVITY MODAL -->
+<div id="activityModal" class="activity-modal-overlay">
+
+    <div class="activity-modal-box">
+
+        <div class="activity-modal-header">
+            <div>
+                <h2>All Activity</h2>
+                <p>Recent system activity</p>
+            </div>
+
+            <button type="button" class="activity-close-btn" onclick="closeActivityModal()">
+                ×
+            </button>
+        </div>
+
+        <div class="activity-modal-list">
+
+            <?php foreach ($allActivities as $activity): ?>
+
+                <?php
+                    if ($activity['activity_type'] === 'Appointment') {
+
+                        $iconClass = 'approved';
+                        $icon = 'bx-calendar';
+
+                        if ($activity['action'] === 'Approved' || $activity['action'] === 'Completed') {
+                            $iconClass = 'approved';
+                            $icon = 'bx-check-circle';
+                        }
+                        elseif ($activity['action'] === 'Cancelled' || $activity['action'] === 'Rejected') {
+                            $iconClass = 'cancel';
+                            $icon = 'bx-x-circle';
+                        }
+                        elseif ($activity['action'] === 'Rescheduled') {
+                            $iconClass = 'pending';
+                            $icon = 'bx-calendar';
+                        }
+                        elseif ($activity['action'] === 'Created') {
+                            $iconClass = 'pending';
+                            $icon = 'bx-calendar-plus';
+                        }
+
+                    }
+                    elseif ($activity['activity_type'] === 'Medicine') {
+
+                        $iconClass = 'medicine';
+                        $icon = 'bx-capsule';
+
+                    }
+                    else {
+
+                        $iconClass = 'pending';
+                        $icon = 'bx-info-circle';
+
+                    }
+                ?>
+
+                <div class="activity-item">
+
+                    <div class="activity-icon <?= $iconClass ?>">
+                        <i class='bx <?= $icon ?>'></i>
+                    </div>
+
+                    <div class="activity-details">
+
+                        <h4>
+                            <?= htmlspecialchars($activity['action']) ?>
+                            <?= htmlspecialchars($activity['activity_type']) ?>
+                        </h4>
+
+                        <p>
+                            <?= htmlspecialchars($activity['description']) ?>
+                        </p>
+
+                        <span>
+                            <?= date("M d, Y • h:i A", strtotime($activity['created_at'])) ?>
+                        </span>
+
+                    </div>
+
+                </div>
+
+            <?php endforeach; ?>
+
+        </div>
+
+    </div>
+
 </div>
 
 <script>

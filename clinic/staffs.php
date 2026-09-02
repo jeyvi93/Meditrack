@@ -15,7 +15,7 @@ $result = mysqli_query($conn, $sql);
 // PAGINATION
 // ==========================
 
-$recordsPerPage = 15;
+$recordsPerPage = 20;
 
 $currentPage = isset($_GET['page'])
     ? (int) $_GET['page']

@@ -34,7 +34,7 @@ if (!isset($_SESSION['user_id'])) {
                 <header class="action-bar">
                     <div class="title-area">
                         <h1>New Student Registration</h1>
-                        <p>Create a comprehensive clinical profile for a new student.</p>
+                        <p>Create a complete student profile for the clinic system.</p>
                     </div>
                     <a href="students.php" class="btn-secondary">
                         <i class="fas fa-arrow-left"></i> Back to Students

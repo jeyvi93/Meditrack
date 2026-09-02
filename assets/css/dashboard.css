@@ -332,3 +332,137 @@
     background:#fef3c7;
     color:#d97706;
 }
+
+/* =========================
+   ALL ACTIVITY MODAL
+========================= */
+
+.activity-modal-overlay {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(15, 23, 42, 0.6);
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1000;
+}
+
+
+.activity-modal-box {
+
+    width: 600px;
+    max-width: 90%;
+
+    max-height: 80vh;
+
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    padding: 20px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+
+    animation: fadeIn 0.2s ease;
+
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+.activity-modal-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding-bottom: 15px;
+
+    border-bottom: 1px solid var(--border-color);
+
+}
+
+
+.activity-modal-header h2 {
+
+    margin: 0;
+
+    font-size: 1.2rem;
+
+    color: var(--navy-dark);
+
+}
+
+
+.activity-modal-header p {
+
+    margin: 4px 0 0;
+
+    font-size: 0.8rem;
+
+    color: var(--text-muted);
+
+}
+
+
+.activity-close-btn {
+
+    background: none;
+
+    border: none;
+
+    font-size: 1.6rem;
+
+    cursor: pointer;
+
+    color: var(--text-muted);
+
+    line-height: 1;
+
+}
+
+
+.activity-close-btn:hover {
+
+    color: var(--navy-dark);
+
+}
+
+
+.activity-modal-list {
+
+    margin-top: 15px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    overflow-y: auto;
+
+    max-height: 60vh;
+
+    padding-right: 5px;
+
+}
+
+
+.activity-modal-list .activity-item {
+
+    flex-shrink: 0;
+
+}

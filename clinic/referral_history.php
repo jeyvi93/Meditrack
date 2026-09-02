@@ -10,11 +10,17 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // ==========================
-// PAGINATION
+// SEARCH + PAGINATION
 // ==========================
 
-$recordsPerPage = 10;
+$recordsPerPage = 15;
 
+// Get search term
+$search = isset($_GET['search'])
+    ? trim($_GET['search'])
+    : '';
+
+// Current page
 $currentPage = isset($_GET['page'])
     ? (int) $_GET['page']
     : 1;
@@ -23,30 +29,80 @@ if ($currentPage < 1) {
     $currentPage = 1;
 }
 
-$offset = ($currentPage - 1) * $recordsPerPage;
+
+// ==========================
+// SEARCH CONDITION
+// ==========================
+
+$where = "";
+$params = [];
+$types = "";
+
+if ($search !== "") {
+
+    $where = "
+        WHERE
+            full_name LIKE ?
+            OR sex LIKE ?
+            OR doctor_name LIKE ?
+            OR reason_for_referral LIKE ?
+            OR referred_date LIKE ?
+    ";
+
+    $searchTerm = "%" . $search . "%";
+
+    $params = [
+        $searchTerm,
+        $searchTerm,
+        $searchTerm,
+        $searchTerm,
+        $searchTerm
+    ];
+
+    $types = "sssss";
+}
 
 
 // ==========================
-// TOTAL RECORDS
+// TOTAL FILTERED RECORDS
 // ==========================
 
 $countSql = "
     SELECT COUNT(*) AS total
     FROM referrals
+    $where
 ";
 
-$countResult = $conn->query($countSql);
+$countStmt = mysqli_prepare($conn, $countSql);
 
-$totalRecords = $countResult->fetch_assoc()['total'];
-
-$totalPages = ceil($totalRecords / $recordsPerPage);
-
-
-// Prevent invalid page
-if ($totalPages > 0 && $currentPage > $totalPages) {
-    $currentPage = $totalPages;
-    $offset = ($currentPage - 1) * $recordsPerPage;
+if ($search !== "") {
+    mysqli_stmt_bind_param(
+        $countStmt,
+        $types,
+        ...$params
+    );
 }
+
+mysqli_stmt_execute($countStmt);
+
+$countResult = mysqli_stmt_get_result($countStmt);
+
+$totalRecords = mysqli_fetch_assoc($countResult)['total'];
+
+$totalPages = $totalRecords > 0
+    ? ceil($totalRecords / $recordsPerPage)
+    : 1;
+
+
+// ==========================
+// PREVENT INVALID PAGE
+// ==========================
+
+if ($currentPage > $totalPages) {
+    $currentPage = $totalPages;
+}
+
+$offset = ($currentPage - 1) * $recordsPerPage;
 
 
 // ==========================
@@ -56,11 +112,24 @@ if ($totalPages > 0 && $currentPage > $totalPages) {
 $sql = "
     SELECT *
     FROM referrals
+    $where
     ORDER BY referred_date DESC, id DESC
     LIMIT $recordsPerPage OFFSET $offset
 ";
 
-$result = $conn->query($sql);
+$stmt = mysqli_prepare($conn, $sql);
+
+if ($search !== "") {
+    mysqli_stmt_bind_param(
+        $stmt,
+        $types,
+        ...$params
+    );
+}
+
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
 
 if (!$result) {
     die("Error loading referral history: " . $conn->error);

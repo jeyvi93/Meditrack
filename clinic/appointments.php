@@ -136,10 +136,6 @@ $rejected = mysqli_query($conn, "
                     <div id="pending" class="tab-content active">
                         <div class="table-header">
                             <h2>Pending Requests</h2>
-                            <div class="search-box">
-                                <i class="fas fa-search"></i>
-                                <input type="text" class="table-search" placeholder="Search pending by name or ID...">
-                            </div>
                         </div>
                         <table class="appointment-table">
                             <thead>
@@ -229,10 +225,6 @@ $rejected = mysqli_query($conn, "
                     <div id="approved" class="tab-content">
                         <div class="table-header">
                             <h2>Approved Appointments</h2>
-                            <div class="search-box">
-                                <i class="fas fa-search"></i>
-                                <input type="text" class="table-search" placeholder="Search approved...">
-                            </div>
                         </div>
                         <table class="appointment-table">
 

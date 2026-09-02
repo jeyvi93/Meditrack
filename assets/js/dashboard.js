@@ -192,3 +192,33 @@ document.getElementById("cancelForm").addEventListener("submit", function (e) {
 
     closeCancelModal();
 });
+
+// ==========================
+// ACTIVITY MODAL
+// ==========================
+
+function openActivityModal() {
+
+    document.getElementById("activityModal").style.display = "flex";
+
+    document.body.style.overflow = "hidden";
+}
+
+
+function closeActivityModal() {
+
+    document.getElementById("activityModal").style.display = "none";
+
+    document.body.style.overflow = "";
+}
+
+
+window.addEventListener("click", function(event) {
+
+    const modal = document.getElementById("activityModal");
+
+    if (event.target === modal) {
+        closeActivityModal();
+    }
+
+});
