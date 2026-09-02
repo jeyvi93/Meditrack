@@ -54,17 +54,22 @@ if (!isset($_SESSION['user_id'])) {
                             <div class="input-row">
                                 <div class="input-group">
                                     <label>Student ID</label>
-                                    <input type="text" name="student_id_number" placeholder="223-XXXXX" required>
+                                    <input type="text" name="student_id_number" placeholder="223-XXXXX" maxlength="9" pattern="[0-9]{3}-[0-9]{5}" title="Student ID must follow the format 223-XXXXX." required>
                                 </div>
                             </div>
                             <div class="input-row two-cols">
                                 <div class="input-group">
                                     <label>Course</label>
-                                    <input type="text" name="course" placeholder="BS IT" required>
+                                    <input type="text" name="course" placeholder="BS IT" pattern="[A-Za-z0-9 .&-]+" title="Course should contain valid letters, numbers, spaces, periods, or hyphens." required>
                                 </div>
                                 <div class="input-group">
                                     <label>Department</label>
-                                    <input type="text" name="department" placeholder="Technology">
+                                    <select name="department" required>
+                                        <option value="">Select Department</option>
+                                        <option value="Technology">Technology</option>
+                                        <option value="Education">Education</option>
+                                        <option value="Business">Business</option>
+                                    </select>
                                 </div>
                     
                                 <div class="input-group">
@@ -88,7 +93,7 @@ if (!isset($_SESSION['user_id'])) {
                             </div>
                             <div class="input-group">
                                 <label>Full Name</label>
-                                <input type="text" name="full_name" placeholder="Last Name, First Name Middle Name" required>
+                                <input type="text" name="full_name" placeholder="Last Name, First Name Middle Name" pattern="[A-Za-zÀ-ÿ\s.,'-]+" title="Full name should contain letters, spaces, and common name punctuation only." oninput="this.value = this.value.replace(/[0-9]/g, '')" required>
                             </div>
                             <div class="input-row three-cols">
                                 <div class="input-group">
@@ -110,11 +115,11 @@ if (!isset($_SESSION['user_id'])) {
                             <div class="input-row two-cols">
                                 <div class="input-group">
                                     <label>Contact Number</label>
-                                    <input type="tel" name="contact_number" placeholder="09XX XXX XXXX" required>
+                                    <input type="tel" name="contact_number" placeholder="09XXXXXXXXX" maxlength="11" minlength="11" pattern="09[0-9]{9}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Contact number must contain exactly 11 digits and start with 09." required>    
                                 </div>
                                 <div class="input-group">
                                     <label>Address</label>
-                                    <input type="text" name="address" placeholder="City / Province">
+                                    <input type="text" name="address" placeholder="Street, Barangay, City, Province" required>
                                 </div>
                             </div>
                         </section>
@@ -127,16 +132,16 @@ if (!isset($_SESSION['user_id'])) {
                             </div>
                             <div class="input-group">
                                 <label>Contact Name</label>
-                                <input type="text" name="emergency_name" placeholder="Guardian Full Name">
+                                <input type="text" name="emergency_name" placeholder="Guardian Full Name" pattern="[A-Za-zÀ-ÿ\s.,'-]+" title="Contact name should contain letters, spaces, and common name punctuation only.">
                             </div>
                             <div class="input-row two-cols">
                                 <div class="input-group">
                                     <label>Relationship</label>
-                                    <input type="text" name="emergency_relationship"placeholder="e.g. Mother">
+                                    <input type="text" name="emergency_relationship" placeholder="e.g. Mother" pattern="[A-Za-zÀ-ÿ\s-]+" title="Relationship should contain letters and spaces only.">
                                 </div>
                                 <div class="input-group">
                                     <label>Phone Number</label>
-                                    <input type="tel" name="emergency_contact" placeholder="09XX XXX XXXX">
+                                    <input type="tel" name="emergency_contact" placeholder="09XXXXXXXXX" maxlength="11" minlength="11" pattern="09[0-9]{9}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Phone number must contain exactly 11 digits and start with 09.">
                                 </div>
                             </div>
                         </section>
@@ -163,11 +168,11 @@ if (!isset($_SESSION['user_id'])) {
                                 </div>
                                 <div class="input-group">
                                     <label>Height (cm)</label>
-                                    <input type="number" name="height" placeholder="170">
+                                    <input type="number" name="height" placeholder="170" min="1" step="1">
                                 </div>
                                 <div class="input-group">
                                     <label>Weight (kg)</label>
-                                    <input type="number" name="weight" placeholder="60">
+                                    <input type="number" name="weight" placeholder="60" min="1" step="1">
                                 </div>
                             </div>
                             <div class="input-group">

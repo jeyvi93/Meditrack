@@ -15,12 +15,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $recordsPerPage = 15;
 
-// Get search term
-$search = isset($_GET['search'])
-    ? trim($_GET['search'])
-    : '';
-
-// Current page
 $currentPage = isset($_GET['page'])
     ? (int) $_GET['page']
     : 1;
@@ -31,76 +25,103 @@ if ($currentPage < 1) {
 
 
 // ==========================
-// SEARCH CONDITION
+// SEARCH
 // ==========================
 
-$where = "";
+$search = isset($_GET['search'])
+    ? trim($_GET['search'])
+    : '';
+
+
+// ==========================
+// BUILD WHERE CONDITION
+// ==========================
+
+$where = [];
 $params = [];
 $types = "";
 
-if ($search !== "") {
+if ($search !== '') {
 
-    $where = "
-        WHERE
-            full_name LIKE ?
-            OR sex LIKE ?
-            OR doctor_name LIKE ?
-            OR reason_for_referral LIKE ?
-            OR referred_date LIKE ?
-    ";
+    $where[] = "(
+        full_name LIKE ?
+        OR sex LIKE ?
+        OR doctor_name LIKE ?
+        OR reason_for_referral LIKE ?
+        OR referred_date LIKE ?
+    )";
 
-    $searchTerm = "%" . $search . "%";
+    $searchParam = "%" . $search . "%";
 
-    $params = [
-        $searchTerm,
-        $searchTerm,
-        $searchTerm,
-        $searchTerm,
-        $searchTerm
-    ];
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
 
-    $types = "sssss";
+    $types .= "sssss";
+}
+
+
+$whereSql = '';
+
+if (!empty($where)) {
+    $whereSql = "WHERE " . implode(" AND ", $where);
 }
 
 
 // ==========================
-// TOTAL FILTERED RECORDS
+// COUNT FILTERED RECORDS
 // ==========================
 
 $countSql = "
     SELECT COUNT(*) AS total
     FROM referrals
-    $where
+    $whereSql
 ";
 
-$countStmt = mysqli_prepare($conn, $countSql);
+$countStmt = $conn->prepare($countSql);
 
-if ($search !== "") {
-    mysqli_stmt_bind_param(
-        $countStmt,
-        $types,
-        ...$params
-    );
+if (!$countStmt) {
+    die("Count prepare failed: " . $conn->error);
 }
 
-mysqli_stmt_execute($countStmt);
+if (!empty($params)) {
+    $countStmt->bind_param($types, ...$params);
+}
 
-$countResult = mysqli_stmt_get_result($countStmt);
+$countStmt->execute();
 
-$totalRecords = mysqli_fetch_assoc($countResult)['total'];
+$countResult = $countStmt->get_result();
 
-$totalPages = $totalRecords > 0
-    ? ceil($totalRecords / $recordsPerPage)
-    : 1;
+$totalRecords = (int) $countResult->fetch_assoc()['total'];
+
+$countStmt->close();
+
+
+// ==========================
+// TOTAL PAGES
+// ==========================
+
+$totalPages = ceil($totalRecords / $recordsPerPage);
 
 
 // ==========================
 // PREVENT INVALID PAGE
 // ==========================
 
-if ($currentPage > $totalPages) {
+if ($totalPages > 0 && $currentPage > $totalPages) {
     $currentPage = $totalPages;
 }
+
+if ($totalPages === 0) {
+    $currentPage = 1;
+}
+
+
+// ==========================
+// OFFSET
+// ==========================
 
 $offset = ($currentPage - 1) * $recordsPerPage;
 
@@ -112,27 +133,41 @@ $offset = ($currentPage - 1) * $recordsPerPage;
 $sql = "
     SELECT *
     FROM referrals
-    $where
+    $whereSql
     ORDER BY referred_date DESC, id DESC
     LIMIT $recordsPerPage OFFSET $offset
 ";
 
-$stmt = mysqli_prepare($conn, $sql);
+$stmt = $conn->prepare($sql);
 
-if ($search !== "") {
-    mysqli_stmt_bind_param(
-        $stmt,
-        $types,
-        ...$params
-    );
+if (!$stmt) {
+    die("Referral query prepare failed: " . $conn->error);
 }
 
-mysqli_stmt_execute($stmt);
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
 
-$result = mysqli_stmt_get_result($stmt);
+$stmt->execute();
 
-if (!$result) {
-    die("Error loading referral history: " . $conn->error);
+$result = $stmt->get_result();
+
+
+// ==========================
+// PAGINATION QUERY PARAMETERS
+// ==========================
+
+$queryParams = [];
+
+if ($search !== '') {
+    $queryParams['search'] = $search;
+}
+
+function pageUrl($page, $queryParams) {
+
+    $queryParams['page'] = $page;
+
+    return '?' . http_build_query($queryParams);
 }
 ?>
 
@@ -175,10 +210,19 @@ if (!$result) {
                 
                 <!-- TOOLBAR -->
                 <div class="logs-toolbar">
-                    <div class="search-wrapper">
+                    <form class="search-wrapper" method="GET" action="referral_history.php">
+
                         <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search by name, department, or details...">
-                    </div>
+
+                        <input
+                            type="text"
+                            name="search"
+                            id="searchInput"
+                            value="<?= htmlspecialchars($search) ?>"
+                            placeholder="Search by name, department, or details..."
+                        >
+
+                    </form>
                 </div>
 
                 <!-- TABLE -->
@@ -273,7 +317,7 @@ if (!$result) {
                         <?php if ($currentPage > 1): ?>
 
                             <a
-                                href="?page=<?= $currentPage - 1 ?>"
+                                href="<?= pageUrl($currentPage - 1, $queryParams) ?>"
                                 class="btn-page"
                             >
                                 <i class="bx bx-chevron-left"></i>
@@ -294,25 +338,12 @@ if (!$result) {
                         <!-- PAGE NUMBERS -->
                         <?php for ($page = 1; $page <= $totalPages; $page++): ?>
 
-                            <?php if ($page == $currentPage): ?>
-
                             <a
-                                href="?page=<?= $page ?>"
-                                class="btn-page active"
+                                href="<?= pageUrl($page, $queryParams) ?>"
+                                class="btn-page <?= $page == $currentPage ? 'active' : '' ?>"
                             >
                                 <?= $page ?>
                             </a>
-
-                            <?php else: ?>
-
-                            <a
-                                href="?page=<?= $page ?>"
-                                class="btn-page"
-                            >
-                                <?= $page ?>
-                            </a>
-
-                            <?php endif; ?>
 
                         <?php endfor; ?>
 
@@ -321,7 +352,7 @@ if (!$result) {
                         <?php if ($currentPage < $totalPages): ?>
 
                             <a
-                                href="?page=<?= $currentPage + 1 ?>"
+                                href="<?= pageUrl($currentPage + 1, $queryParams) ?>"
                                 class="btn-page"
                             >
                                 <i class="bx bx-chevron-right"></i>

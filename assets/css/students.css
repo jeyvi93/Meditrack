@@ -133,10 +133,14 @@
     border: 1px solid var(--border-color);
 
     background: white;
+    color: var(--text-main);
+
     cursor: pointer;
 
     font-size: 0.8rem;
     font-weight: 600;
+
+    text-decoration: none;
 
     transition: 0.2s;
 }

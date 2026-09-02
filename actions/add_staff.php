@@ -40,6 +40,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $emergency_relationship = $_POST['emergency_relationship'];
     $emergency_contact = $_POST['emergency_contact'];
 
+        // Check if Staff ID already exists
+    $check = mysqli_prepare($conn,
+        "SELECT staff_id_number FROM staffs WHERE staff_id_number = ?"
+    );
+
+    mysqli_stmt_bind_param($check, "s", $staff_id);
+    mysqli_stmt_execute($check);
+    mysqli_stmt_store_result($check);
+
+    if (mysqli_stmt_num_rows($check) > 0) {
+
+        $_SESSION['error'] = "Staff ID already exists.";
+
+        mysqli_stmt_close($check);
+        mysqli_close($conn);
+
+        header("Location: ../clinic/add_staff.php");
+        exit();
+    }
+
+    mysqli_stmt_close($check);
+
 
     $sql = "INSERT INTO staffs (
         staff_id_number,

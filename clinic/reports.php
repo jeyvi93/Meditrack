@@ -48,6 +48,25 @@ $endDate = date(
 );
 
 // ==========================
+// PREVIOUS MONTH
+// ==========================
+
+$previousMonthDate = strtotime($startDate . ' -1 month');
+
+$previousMonth = (int) date('n', $previousMonthDate);
+$previousYear = (int) date('Y', $previousMonthDate);
+
+$previousStartDate = date(
+    'Y-m-01',
+    $previousMonthDate
+);
+
+$previousEndDate = date(
+    'Y-m-t',
+    $previousMonthDate
+);
+
+// ==========================
 // TOTAL CONSULTATIONS
 // ==========================
 
@@ -63,6 +82,28 @@ $stmt->execute();
 $totalConsultations = $stmt->get_result()
     ->fetch_assoc()['total'];
 
+// ==========================
+// PREVIOUS MONTH CONSULTATIONS
+// ==========================
+
+$stmt = $conn->prepare("
+    SELECT COUNT(*) AS total
+    FROM consultations
+    WHERE date BETWEEN ? AND ?
+");
+
+$stmt->bind_param("ss", $previousStartDate, $previousEndDate);
+$stmt->execute();
+
+$previousConsultations = (int) $stmt->get_result()
+    ->fetch_assoc()['total'];
+
+if ($previousConsultations > 0) {
+    $consultationChange =
+        (($totalConsultations - $previousConsultations) / $previousConsultations) * 100;
+} else {
+    $consultationChange = $totalConsultations > 0 ? 100 : 0;
+}
 // ==========================
 // PATIENT TYPE COUNTS
 // ==========================
@@ -104,6 +145,20 @@ $staffVolume =
     $teachingStaffVolume +
     $nonTeachingStaffVolume;
 
+// ==========================
+// PATIENT TYPE PERCENTAGES
+// ==========================
+
+if ($totalConsultations > 0) {
+    $studentPercentage =
+        ($studentVolume / $totalConsultations) * 100;
+
+    $staffPercentage =
+        ($staffVolume / $totalConsultations) * 100;
+} else {
+    $studentPercentage = 0;
+    $staffPercentage = 0;
+}
 
 // ==========================
 // TOTAL MEDICINES DISPENSED
@@ -122,6 +177,31 @@ $stmt->execute();
 
 $totalMedicines = (int) $stmt->get_result()
     ->fetch_assoc()['total'];
+
+// ==========================
+// PREVIOUS MONTH MEDICINES
+// ==========================
+
+$stmt = $conn->prepare("
+    SELECT COALESCE(SUM(cm.quantity_used), 0) AS total
+    FROM consultation_medicine cm
+    INNER JOIN consultations c
+        ON cm.consultation_id = c.id
+    WHERE c.date BETWEEN ? AND ?
+");
+
+$stmt->bind_param("ss", $previousStartDate, $previousEndDate);
+$stmt->execute();
+
+$previousMedicines = (int) $stmt->get_result()
+    ->fetch_assoc()['total'];
+
+if ($previousMedicines > 0) {
+    $medicineChange =
+        (($totalMedicines - $previousMedicines) / $previousMedicines) * 100;
+} else {
+    $medicineChange = $totalMedicines > 0 ? 100 : 0;
+}
 
 // ==========================
 // DAILY CONSULTATION VOLUME
@@ -328,31 +408,83 @@ $summaryResult = $stmt->get_result();
 
             <!-- STATS SUMMARY -->
             <section class="stats-row">
+
+                <!-- TOTAL CONSULTATIONS -->
                 <div class="mini-card">
                     <label>Total Consultations</label>
+
                     <div class="card-val">
                         <h3><?= $totalConsultations ?></h3>
-                        
+
+                        <?php if ($consultationChange > 0): ?>
+                            <span class="comparison positive">
+                                ↑ <?= number_format(abs($consultationChange), 1) ?>%
+                            </span>
+                        <?php elseif ($consultationChange < 0): ?>
+                            <span class="comparison negative">
+                                ↓ <?= number_format(abs($consultationChange), 1) ?>%
+                            </span>
+                        <?php else: ?>
+                            <span class="comparison neutral">
+                                — 0%
+                            </span>
+                        <?php endif; ?>
+
                     </div>
                 </div>
+
+
+                <!-- STUDENT VOLUME -->
                 <div class="mini-card">
                     <label>Student Volume</label>
+
                     <div class="card-val">
                         <h3><?= $studentVolume ?></h3>
+
+                        <span class="percentage">
+                            <?= number_format($studentPercentage, 1) ?>%
+                        </span>
                     </div>
                 </div>
+
+                <!-- SCHOOL STAFF -->
                 <div class="mini-card">
                     <label>School Staff Volume</label>
+
                     <div class="card-val">
                         <h3><?= $staffVolume ?></h3>
+
+                        <span class="percentage">
+                            <?= number_format($staffPercentage, 1) ?>%
+                        </span>
                     </div>
                 </div>
+
+
+                <!-- MEDICINES -->
                 <div class="mini-card">
                     <label>Total Medicines Dispensed</label>
+
                     <div class="card-val">
                         <h3><?= $totalMedicines ?></h3>
+
+                        <?php if ($medicineChange > 0): ?>
+                            <span class="comparison positive">
+                                ↑ <?= number_format(abs($medicineChange), 1) ?>%
+                            </span>
+                        <?php elseif ($medicineChange < 0): ?>
+                            <span class="comparison negative">
+                                ↓ <?= number_format(abs($medicineChange), 1) ?>%
+                            </span>
+                        <?php else: ?>
+                            <span class="comparison neutral">
+                                — 0%
+                            </span>
+                        <?php endif; ?>
+
                     </div>
                 </div>
+
             </section>
 
             <!-- CHARTS SECTION -->

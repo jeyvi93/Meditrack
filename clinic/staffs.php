@@ -8,11 +8,8 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once "../config/database.php";
 
-$sql = "SELECT * FROM staffs ORDER BY full_name ASC";
-$result = mysqli_query($conn, $sql);
-
 // ==========================
-// PAGINATION
+// SEARCH + FILTER + PAGINATION
 // ==========================
 
 $recordsPerPage = 20;
@@ -25,28 +22,181 @@ if ($currentPage < 1) {
     $currentPage = 1;
 }
 
-// TOTAL RECORDS
-$countQuery = "SELECT COUNT(*) AS total FROM staffs";
+// ==========================
+// SEARCH
+// ==========================
 
-$countResult = mysqli_query($conn, $countQuery);
+$search = isset($_GET['search'])
+    ? trim($_GET['search'])
+    : '';
+
+// ==========================
+// DEPARTMENT FILTER
+// ==========================
+
+$department = isset($_GET['department'])
+    ? trim($_GET['department'])
+    : '';
+
+// ==========================
+// POSITION FILTER
+// ==========================
+
+$position = isset($_GET['position'])
+    ? trim($_GET['position'])
+    : '';
+
+// ==========================
+// BUILD WHERE CONDITION
+// ==========================
+
+$where = [];
+$params = [];
+$types = "";
+
+if ($search !== '') {
+
+    $where[] = "(
+        staff_id_number LIKE ?
+        OR full_name LIKE ?
+        OR sex LIKE ?
+        OR position LIKE ?
+        OR designation LIKE ?
+        OR department LIKE ?
+    )";
+
+    $searchParam = "%" . $search . "%";
+
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+
+    $types .= "ssssss";
+}
+
+if ($department !== '' && $department !== 'all') {
+
+    $where[] = "LOWER(department) = ?";
+    $params[] = strtolower($department);
+
+    $types .= "s";
+}
+
+if ($position !== '' && $position !== 'all') {
+
+    $where[] = "LOWER(position) = ?";
+    $params[] = strtolower($position);
+
+    $types .= "s";
+}
+
+$whereSql = '';
+
+if (!empty($where)) {
+    $whereSql = "WHERE " . implode(" AND ", $where);
+}
+
+// ==========================
+// COUNT FILTERED RECORDS
+// ==========================
+
+$countSql = "SELECT COUNT(*) AS total FROM staffs $whereSql";
+
+$countStmt = mysqli_prepare($conn, $countSql);
+
+if (!$countStmt) {
+    die("Count prepare failed: " . mysqli_error($conn));
+}
+
+if (!empty($params)) {
+    mysqli_stmt_bind_param($countStmt, $types, ...$params);
+}
+
+mysqli_stmt_execute($countStmt);
+
+$countResult = mysqli_stmt_get_result($countStmt);
 
 $totalRecords = (int) mysqli_fetch_assoc($countResult)['total'];
 
+mysqli_stmt_close($countStmt);
+
+// ==========================
 // TOTAL PAGES
+// ==========================
+
 $totalPages = ceil($totalRecords / $recordsPerPage);
 
+// ==========================
+// PREVENT INVALID PAGE
+// ==========================
+
+if ($totalPages > 0 && $currentPage > $totalPages) {
+    $currentPage = $totalPages;
+}
+
+if ($totalPages === 0) {
+    $currentPage = 1;
+}
+
+// ==========================
 // OFFSET
+// ==========================
+
 $offset = ($currentPage - 1) * $recordsPerPage;
 
-// GET CURRENT PAGE RECORDS
+// ==========================
+// GET STAFF RECORDS
+// ==========================
+
 $sql = "
     SELECT *
     FROM staffs
+    $whereSql
     ORDER BY full_name ASC
     LIMIT $recordsPerPage OFFSET $offset
 ";
 
-$result = mysqli_query($conn, $sql);
+$stmt = mysqli_prepare($conn, $sql);
+
+if (!$stmt) {
+    die("Staff query prepare failed: " . mysqli_error($conn));
+}
+
+if (!empty($params)) {
+    mysqli_stmt_bind_param($stmt, $types, ...$params);
+}
+
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
+
+// ==========================
+// PAGINATION QUERY PARAMETERS
+// ==========================
+
+$queryParams = [];
+
+if ($search !== '') {
+    $queryParams['search'] = $search;
+}
+
+if ($department !== '' && $department !== 'all') {
+    $queryParams['department'] = $department;
+}
+
+if ($position !== '' && $position !== 'all') {
+    $queryParams['position'] = $position;
+}
+
+function pageUrl($page, $queryParams) {
+
+    $queryParams['page'] = $page;
+
+    return '?' . http_build_query($queryParams);
+}
 
 ?>
 
@@ -93,42 +243,133 @@ $result = mysqli_query($conn, $sql);
     <!-- FILTER + SEARCH -->
     <section class="filter-section">
 
-        <div class="search-box">
+        <form class="search-box" method="GET" action="staffs.php">
+
             <i class='bx bx-search'></i>
-            <input type="text" id="staffSearch" placeholder="Search by ID or Name...">
-        </div>
+
+            <input
+                type="text"
+                name="search"
+                id="staffSearch"
+                value="<?= htmlspecialchars($search) ?>"
+                placeholder="Search by ID, Name, Sex, Position, Designation, or Department..."
+            >
+
+            <?php if ($department !== '' && $department !== 'all'): ?>
+                <input
+                    type="hidden"
+                    name="department"
+                    value="<?= htmlspecialchars($department) ?>"
+                >
+            <?php endif; ?>
+
+            <?php if ($position !== '' && $position !== 'all'): ?>
+                <input
+                    type="hidden"
+                    name="position"
+                    value="<?= htmlspecialchars($position) ?>"
+                >
+            <?php endif; ?>
+
+        </form>
 
         <div class="filters">
 
-    <div class="filter-group">
-        <label for="department">Department</label>
-        <select id="department" class="filter-select">
-            <option value="all">All Departments</option>
-            <option value="technology">Technology</option>
-            <option value="education">Education</option>
-            <option value="business">Business</option>
-            <option value="clinic">Clinic</option>
-            <option value="library">Library</option>
-            <option value="guidance">Guidance Office</option>
-            <option value="cashier">Cashier</option>
-            <option value="registrar">Registrar</option>
-            <option value="utility">Utility</option>
-            <option value="admin">Admin Office</option>
-            <option value="saso">SASO</option>
-            <option value="csu">CSU</option>
-        </select>
-    </div>
+            <div class="filter-group">
+                <label for="department">Department</label>
+                <select id="department" class="filter-select">
 
-    <div class="filter-group">
-        <label for="position">Position</label>
-        <select id="position" class="filter-select">
-            <option value="all">All Positions</option>
-            <option value="teaching staff">Teaching Staff</option>
-            <option value="non-teaching staff">Non-Teaching Staff</option>
-        </select>
-    </div>
+                    <option value="all"
+                        <?= $department === '' || $department === 'all' ? 'selected' : '' ?>>
+                        All Departments
+                    </option>
 
-</div>
+                    <option value="technology"
+                        <?= $department === 'technology' ? 'selected' : '' ?>>
+                        Technology
+                    </option>
+
+                    <option value="education"
+                        <?= $department === 'education' ? 'selected' : '' ?>>
+                        Education
+                    </option>
+
+                    <option value="business"
+                        <?= $department === 'business' ? 'selected' : '' ?>>
+                        Business
+                    </option>
+
+                    <option value="clinic"
+                        <?= $department === 'clinic' ? 'selected' : '' ?>>
+                        Clinic
+                    </option>
+
+                    <option value="library"
+                        <?= $department === 'library' ? 'selected' : '' ?>>
+                        Library
+                    </option>
+
+                    <option value="guidance"
+                        <?= $department === 'guidance' ? 'selected' : '' ?>>
+                        Guidance Office
+                    </option>
+
+                    <option value="cashier"
+                        <?= $department === 'cashier' ? 'selected' : '' ?>>
+                        Cashier
+                    </option>
+
+                    <option value="registrar"
+                        <?= $department === 'registrar' ? 'selected' : '' ?>>
+                        Registrar
+                    </option>
+
+                    <option value="utility"
+                        <?= $department === 'utility' ? 'selected' : '' ?>>
+                        Utility
+                    </option>
+
+                    <option value="admin"
+                        <?= $department === 'admin' ? 'selected' : '' ?>>
+                        Admin Office
+                    </option>
+
+                    <option value="saso"
+                        <?= $department === 'saso' ? 'selected' : '' ?>>
+                        SASO
+                    </option>
+
+                    <option value="csu"
+                        <?= $department === 'csu' ? 'selected' : '' ?>>
+                        CSU
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="position">Position</label>
+                <select id="position" class="filter-select">
+
+                    <option value="all"
+                        <?= $position === '' || $position === 'all' ? 'selected' : '' ?>>
+                        All Positions
+                    </option>
+
+                    <option value="teaching staff"
+                        <?= $position === 'teaching staff' ? 'selected' : '' ?>>
+                        Teaching Staff
+                    </option>
+
+                    <option value="non-teaching staff"
+                        <?= $position === 'non-teaching staff' ? 'selected' : '' ?>>
+                        Non-Teaching Staff
+                    </option>
+
+                </select>
+            </div>
+
+        </div>
 
     </section>
 
@@ -310,21 +551,21 @@ $result = mysqli_query($conn, $sql);
                         <!-- PREVIOUS -->
                         <?php if ($currentPage > 1): ?>
 
-                        <a
-                            href="?page=<?= $currentPage - 1 ?>"
-                            class="btn-page"
+                            <a
+                                href="<?= pageUrl($currentPage - 1, $queryParams) ?>"
+                                class="btn-page"
                             >
-                            <i class="bx bx-chevron-left"></i>
-                        </a>
+                                <i class="bx bx-chevron-left"></i>
+                            </a>
 
                         <?php else: ?>
 
-                        <button
-                            class="btn-page"
-                            disabled
+                            <button
+                                class="btn-page"
+                                disabled
                             >
-                            <i class="bx bx-chevron-left"></i>
-                        </button>
+                                <i class="bx bx-chevron-left"></i>
+                            </button>
 
                         <?php endif; ?>
 
@@ -332,25 +573,12 @@ $result = mysqli_query($conn, $sql);
                         <!-- PAGE NUMBERS -->
                         <?php for ($page = 1; $page <= $totalPages; $page++): ?>
 
-                        <?php if ($page == $currentPage): ?>
-
                             <a
-                                href="?page=<?= $page ?>"
-                                class="btn-page active"
-                                >
+                                href="<?= pageUrl($page, $queryParams) ?>"
+                                class="btn-page <?= $page == $currentPage ? 'active' : '' ?>"
+                            >
                                 <?= $page ?>
                             </a>
-
-                        <?php else: ?>
-
-                            <a
-                                href="?page=<?= $page ?>"
-                                class="btn-page"
-                                >
-                                <?= $page ?>
-                            </a>
-
-                        <?php endif; ?>
 
                         <?php endfor; ?>
 
@@ -359,9 +587,9 @@ $result = mysqli_query($conn, $sql);
                         <?php if ($currentPage < $totalPages): ?>
 
                             <a
-                                href="?page=<?= $currentPage + 1 ?>"
+                                href="<?= pageUrl($currentPage + 1, $queryParams) ?>"
                                 class="btn-page"
-                                >
+                            >
                                 <i class="bx bx-chevron-right"></i>
                             </a>
 
@@ -370,7 +598,7 @@ $result = mysqli_query($conn, $sql);
                             <button
                                 class="btn-page"
                                 disabled
-                                >
+                            >
                                 <i class="bx bx-chevron-right"></i>
                             </button>
 

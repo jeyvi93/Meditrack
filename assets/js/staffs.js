@@ -4,62 +4,100 @@ document.addEventListener("DOMContentLoaded", function () {
     const departmentFilter = document.getElementById("department");
     const positionFilter = document.getElementById("position");
 
-    function normalize(text) {
-        return (text || "").trim().toLowerCase();
-    }
+    // =========================
+    // LIVE SERVER-SIDE SEARCH
+    // =========================
 
-    function filterTable() {
+    if (searchInput) {
 
-        const search = normalize(searchInput.value);
+        let searchTimeout;
 
-        const selectedDepartment = normalize(
-            departmentFilter.options[departmentFilter.selectedIndex].text
-        );
+        searchInput.addEventListener("input", function () {
 
-        const selectedPosition = normalize(
-            positionFilter.options[positionFilter.selectedIndex].text
-        );
+            clearTimeout(searchTimeout);
 
-        document.querySelectorAll("tbody tr").forEach(row => {
+            searchTimeout = setTimeout(() => {
 
-            const id = normalize(row.cells[0].textContent);
-            const name = normalize(row.cells[1].textContent);
-            const sex = normalize(row.cells[2].textContent);
-            const position = normalize(row.cells[3].textContent);
-            const designation = normalize(row.cells[4].textContent);
-            const department = normalize(row.cells[5].textContent);
+                const search = searchInput.value.trim();
 
-            const matchesSearch =
-                id.includes(search) ||
-                name.includes(search) ||
-                sex.includes(search) ||
-                position.includes(search) ||
-                designation.includes(search) ||
-                department.includes(search);
+                const params = new URLSearchParams();
 
-            const matchesDepartment =
-                selectedDepartment === "all departments" ||
-                department === selectedDepartment;
+                if (search !== "") {
+                    params.set("search", search);
+                }
 
-            const matchesPosition =
-                selectedPosition === "all positions" ||
-                position === selectedPosition;
+                // Preserve department
+                if (departmentFilter && departmentFilter.value !== "all") {
+                    params.set("department", departmentFilter.value);
+                }
 
-            row.style.display =
-                matchesSearch &&
-                matchesDepartment &&
-                matchesPosition
-                    ? ""
-                    : "none";
+                // Preserve position
+                if (positionFilter && positionFilter.value !== "all") {
+                    params.set("position", positionFilter.value);
+                }
+
+                // ALWAYS start search from page 1
+                params.set("page", "1");
+
+                window.location.href =
+                    "staffs.php?" + params.toString();
+
+            }, 300);
+
         });
 
     }
 
-    searchInput.addEventListener("input", filterTable);
-    departmentFilter.addEventListener("change", filterTable);
-    positionFilter.addEventListener("change", filterTable);
 
-    filterTable();
+    // =========================
+    // LIVE SERVER-SIDE FILTER
+    // =========================
+
+    function applyFilters() {
+
+        const params = new URLSearchParams();
+
+        const search = searchInput
+            ? searchInput.value.trim()
+            : "";
+
+        const department = departmentFilter
+            ? departmentFilter.value
+            : "all";
+
+        const position = positionFilter
+            ? positionFilter.value
+            : "all";
+
+
+        if (search !== "") {
+            params.set("search", search);
+        }
+
+        if (department !== "all") {
+            params.set("department", department);
+        }
+
+        if (position !== "all") {
+            params.set("position", position);
+        }
+
+        // Always reset to page 1
+        params.set("page", "1");
+
+        window.location.href =
+            "staffs.php?" + params.toString();
+
+    }
+
+
+    if (departmentFilter) {
+        departmentFilter.addEventListener("change", applyFilters);
+    }
+
+    if (positionFilter) {
+        positionFilter.addEventListener("change", applyFilters);
+    }
 
 });
 

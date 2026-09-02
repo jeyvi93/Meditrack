@@ -1,62 +1,97 @@
-const searchInput = document.getElementById("searchInput");
-const patientFilter = document.getElementById("patientFilter");
-const tableRows = document.querySelectorAll(".logs-table tbody tr");
+document.addEventListener("DOMContentLoaded", function () {
 
-// Run filter whenever user types or changes dropdown
-searchInput.addEventListener("input", filterTable);
-patientFilter.addEventListener("change", filterTable);
+    const searchInput = document.getElementById("searchInput");
+    const patientFilter = document.getElementById("patientFilter");
 
-function filterTable() {
 
-    const searchValue = searchInput.value.toLowerCase().trim();
-    const filterValue = patientFilter.value.toLowerCase();
+    // =========================
+    // LIVE SERVER-SIDE SEARCH
+    // =========================
 
-    tableRows.forEach(row => {
+    if (searchInput) {
 
-        const name = row.children[1].innerText.toLowerCase();
-        const type = row.children[2].innerText.toLowerCase();
-        const department = row.children[3].innerText.toLowerCase();
-        const details = row.children[4].innerText.toLowerCase();
+        let searchTimeout;
 
-        // SEARCH MATCH
-        const matchesSearch =
-            name.includes(searchValue) ||
-            type.includes(searchValue) ||
-            department.includes(searchValue) ||
-            details.includes(searchValue);
+        searchInput.addEventListener("input", function () {
 
-        // FILTER MATCH
-        let matchesFilter = true;
+            clearTimeout(searchTimeout);
 
-        if (filterValue === "student") {
+            searchTimeout = setTimeout(() => {
 
-            matchesFilter = type.includes("student");
+                const search = searchInput.value.trim();
 
-        } else if (filterValue === "tstaff") {
+                const params = new URLSearchParams();
 
-            matchesFilter =
-                type.includes("teaching") &&
-                !type.includes("non");
+                if (search !== "") {
+                    params.set("search", search);
+                }
 
-        } else if (filterValue === "nstaff") {
+                // Preserve patient type filter
+                if (
+                    patientFilter &&
+                    patientFilter.value !== "all"
+                ) {
+                    params.set(
+                        "patient_type",
+                        patientFilter.value
+                    );
+                }
 
-            matchesFilter =
-                type.includes("non-teaching") ||
-                type.includes("non teaching");
+                // ALWAYS reset search to page 1
+                params.set("page", "1");
 
-        }
+                window.location.href =
+                    "view_consultation.php?" +
+                    params.toString();
 
-        // FINAL SHOW / HIDE
-        if (matchesSearch && matchesFilter) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
+            }, 300);
 
-    });
+        });
 
-    updateCount();
-}
+    }
+
+
+    // =========================
+    // PATIENT TYPE FILTER
+    // =========================
+
+    if (patientFilter) {
+
+        patientFilter.addEventListener("change", function () {
+
+            const params = new URLSearchParams();
+
+            const search = searchInput
+                ? searchInput.value.trim()
+                : "";
+
+            const patientType =
+                patientFilter.value;
+
+
+            if (search !== "") {
+                params.set("search", search);
+            }
+
+            if (patientType !== "all") {
+                params.set(
+                    "patient_type",
+                    patientType
+                );
+            }
+
+            // ALWAYS reset filter to page 1
+            params.set("page", "1");
+
+            window.location.href =
+                "view_consultation.php?" +
+                params.toString();
+
+        });
+
+    }
+
+});
 
 // ==========================
 // VIEW CONSULTATION MODAL

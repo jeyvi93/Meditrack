@@ -1,66 +1,32 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    // =====================
+    // LIVE SERVER-SIDE SEARCH
+    // =====================
+
     const searchInput = document.getElementById("studentSearch");
-    const filterPills = document.querySelectorAll(".filter-pill");
-    const rows = document.querySelectorAll("tbody tr");
-
-    let activeDepartment = "All";
-
-    const normalize = (text) => (text || "").toString().trim().toLowerCase();
-
-    // =====================
-    // SEARCH & FILTER
-    // =====================
-
-    function filterTable() {
-
-        const searchValue = normalize(searchInput.value);
-
-        rows.forEach(row => {
-
-            const id = normalize(row.cells[0].textContent);
-            const name = normalize(row.cells[1].textContent);
-            const sex = normalize(row.cells[2].textContent);
-            const course = normalize(row.cells[3].textContent);
-            const year = normalize(row.cells[4].textContent);
-            const department = normalize(row.cells[5].textContent);
-
-            const matchesSearch =
-                id.includes(searchValue) ||
-                name.includes(searchValue) ||
-                sex.includes(searchValue) ||
-                course.includes(searchValue) ||
-                year.includes(searchValue) ||
-                department.includes(searchValue);
-
-            const matchesDepartment =
-                activeDepartment === "All" ||
-                department === normalize(activeDepartment);
-
-            row.style.display = (matchesSearch && matchesDepartment) ? "" : "none";
-
-        });
-
-    }
 
     if (searchInput) {
-        searchInput.addEventListener("input", filterTable);
-    }
 
-    filterPills.forEach(pill => {
+        let searchTimeout;
 
-        pill.addEventListener("click", function () {
+        searchInput.addEventListener("input", function () {
 
-            filterPills.forEach(btn => btn.classList.remove("active"));
-            this.classList.add("active");
+            clearTimeout(searchTimeout);
 
-            activeDepartment = this.textContent.trim();
+            searchTimeout = setTimeout(() => {
 
-            filterTable();
+                const form = searchInput.closest("form");
+
+                if (form) {
+                    form.submit();
+                }
+
+            }, 300);
 
         });
 
-    });
+    }
 
     // =====================
     // AUTO AGE
@@ -93,6 +59,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+    // =====================
+    // AUTO AGE
+    // =====================
+
+    const dobInput = document.getElementById("e_dob");
+
+    if (dobInput) {
+
+        dobInput.addEventListener("change", function () {
+
+            const dob = new Date(this.value);
+            const today = new Date();
+
+            let age = today.getFullYear() - dob.getFullYear();
+
+            const month = today.getMonth() - dob.getMonth();
+
+            if (
+                month < 0 ||
+                (month === 0 && today.getDate() < dob.getDate())
+            ) {
+                age--;
+            }
+
+            document.getElementById("e_age").value = age;
+
+        });
+
+    }
 
 
 // =====================

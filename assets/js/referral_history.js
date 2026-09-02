@@ -101,34 +101,38 @@ document.addEventListener("keydown", function (event) {
 });
 
 // ===============================
-// SEARCH FUNCTION
+// LIVE SERVER-SIDE SEARCH
 // ===============================
 
 const searchInput = document.getElementById("searchInput");
 
 if (searchInput) {
-    searchInput.addEventListener("input", filterTable);
-}
 
-function filterTable() {
+    let searchTimeout;
 
-    const searchValue = searchInput.value
-        .trim()
-        .toLowerCase();
+    searchInput.addEventListener("input", function () {
 
-    const tableRows = document.querySelectorAll(
-        ".logs-table tbody tr"
-    );
+        clearTimeout(searchTimeout);
 
-    tableRows.forEach(row => {
+        searchTimeout = setTimeout(() => {
 
-        const rowText = row.innerText.toLowerCase();
+            const search = searchInput.value.trim();
 
-        if (rowText.includes(searchValue)) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
+            const params = new URLSearchParams();
+
+            if (search !== "") {
+                params.set("search", search);
+            }
+
+            // ALWAYS RESET SEARCH TO PAGE 1
+            params.set("page", "1");
+
+            window.location.href =
+                "referral_history.php?" +
+                params.toString();
+
+        }, 300);
 
     });
+
 }

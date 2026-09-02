@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 require_once "../config/database.php";
 
 // ==========================
-// PAGINATION
+// SEARCH + FILTER + PAGINATION
 // ==========================
 
 $recordsPerPage = 20;
@@ -22,25 +22,138 @@ if ($currentPage < 1) {
     $currentPage = 1;
 }
 
-// TOTAL RECORDS
-$countSql = "SELECT COUNT(*) AS total FROM students";
-$countResult = mysqli_query($conn, $countSql);
+// ==========================
+// SEARCH
+// ==========================
+
+$search = isset($_GET['search'])
+    ? trim($_GET['search'])
+    : '';
+
+// ==========================
+// DEPARTMENT FILTER
+// ==========================
+
+$department = isset($_GET['department'])
+    ? trim($_GET['department'])
+    : '';
+
+// ==========================
+// BUILD WHERE CONDITION
+// ==========================
+
+$where = [];
+$params = [];
+$types = "";
+
+if ($search !== '') {
+
+    $where[] = "(
+        student_id_number LIKE ?
+        OR full_name LIKE ?
+        OR philhealth_number LIKE ?
+    )";
+
+    $searchParam = "%" . $search . "%";
+
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+
+    $types .= "sss";
+}
+
+if ($department !== '') {
+
+    $where[] = "department = ?";
+
+    $params[] = $department;
+
+    $types .= "s";
+}
+
+$whereSql = '';
+
+if (!empty($where)) {
+    $whereSql = "WHERE " . implode(" AND ", $where);
+}
+
+// ==========================
+// COUNT FILTERED RECORDS
+// ==========================
+
+$countSql = "SELECT COUNT(*) AS total FROM students $whereSql";
+
+$countStmt = mysqli_prepare($conn, $countSql);
+
+if (!$countStmt) {
+    die("Count prepare failed: " . mysqli_error($conn));
+}
+
+if (!empty($params)) {
+    mysqli_stmt_bind_param($countStmt, $types, ...$params);
+}
+
+mysqli_stmt_execute($countStmt);
+
+$countResult = mysqli_stmt_get_result($countStmt);
+
 $totalRecords = mysqli_fetch_assoc($countResult)['total'];
+
+mysqli_stmt_close($countStmt);
 
 $totalPages = ceil($totalRecords / $recordsPerPage);
 
+// ==========================
 // OFFSET
+// ==========================
+
 $offset = ($currentPage - 1) * $recordsPerPage;
 
-// GET STUDENTS FOR CURRENT PAGE
+// ==========================
+// GET STUDENTS
+// ==========================
+
 $sql = "
     SELECT *
     FROM students
+    $whereSql
     ORDER BY full_name ASC
     LIMIT $recordsPerPage OFFSET $offset
 ";
 
-$result = mysqli_query($conn, $sql);
+$stmt = mysqli_prepare($conn, $sql);
+
+if (!$stmt) {
+    die("Student query prepare failed: " . mysqli_error($conn));
+}
+
+if (!empty($params)) {
+    mysqli_stmt_bind_param($stmt, $types, ...$params);
+}
+
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
+
+// ==========================
+// PAGINATION QUERY PARAMETERS
+// ==========================
+
+$queryParams = [];
+
+if ($search !== '') {
+    $queryParams['search'] = $search;
+}
+
+if ($department !== '') {
+    $queryParams['department'] = $department;
+}
+
+function pageUrl($page, $queryParams) {
+    $queryParams['page'] = $page;
+    return '?' . http_build_query($queryParams);
+}
 ?>
 
 <!DOCTYPE html>
@@ -86,18 +199,60 @@ $result = mysqli_query($conn, $sql);
         <!-- FILTER + SEARCH -->
         <section class="filter-section">
 
-            <div class="search-box">
+            <form class="search-box" method="GET" action="students.php">
+
                 <i class='bx bx-search'></i>
-                <input type="text" id="studentSearch" placeholder="Search by ID, Name, or PhilHealth...">
-            </div>
+
+                <input
+                    type="text"
+                    name="search"
+                    id="studentSearch"
+                    value="<?= htmlspecialchars($search) ?>"
+                    placeholder="Search by ID, Name, or PhilHealth..."
+                >
+
+                <?php if ($department !== ''): ?>
+                    <input
+                        type="hidden"
+                        name="department"
+                        value="<?= htmlspecialchars($department) ?>"
+                    >
+                <?php endif; ?>
+
+            </form>
 
             <div class="department-filters">
+
                 <span class="filter-label">Department:</span>
 
-                <button class="filter-pill active">All</button>
-                <button class="filter-pill">Technology</button>
-                <button class="filter-pill">Education</button>
-                <button class="filter-pill">Business</button>
+                <a
+                    href="?page=1<?= $search !== '' ? '&search=' . urlencode($search) : '' ?>"
+                    class="filter-pill <?= $department === '' ? 'active' : '' ?>"
+                >
+                    All
+                </a>
+
+                <a
+                    href="?page=1&department=Technology<?= $search !== '' ? '&search=' . urlencode($search) : '' ?>"
+                    class="filter-pill <?= $department === 'Technology' ? 'active' : '' ?>"
+                >
+                    Technology
+                </a>
+
+                <a
+                    href="?page=1&department=Education<?= $search !== '' ? '&search=' . urlencode($search) : '' ?>"
+                    class="filter-pill <?= $department === 'Education' ? 'active' : '' ?>"
+                >
+                    Education
+                </a>
+
+                <a
+                    href="?page=1&department=Business<?= $search !== '' ? '&search=' . urlencode($search) : '' ?>"
+                    class="filter-pill <?= $department === 'Business' ? 'active' : '' ?>"
+                >
+                    Business
+                </a>
+
             </div>
 
         </section>
@@ -283,21 +438,21 @@ onclick='openEditStudentModal({
                         <!-- PREVIOUS -->
                         <?php if ($currentPage > 1): ?>
 
-                        <a
-                            href="?page=<?= $currentPage - 1 ?>"
-                            class="btn-page"
+                            <a
+                                href="<?= pageUrl($currentPage - 1, $queryParams) ?>"
+                                class="btn-page"
                             >
-                            <i class="bx bx-chevron-left"></i>
-                        </a>
+                                <i class="bx bx-chevron-left"></i>
+                            </a>
 
                         <?php else: ?>
 
-                        <button
-                            class="btn-page"
-                            disabled
+                            <button
+                                class="btn-page"
+                                disabled
                             >
-                            <i class="bx bx-chevron-left"></i>
-                        </button>
+                                <i class="bx bx-chevron-left"></i>
+                            </button>
 
                         <?php endif; ?>
 
@@ -305,25 +460,12 @@ onclick='openEditStudentModal({
                         <!-- PAGE NUMBERS -->
                         <?php for ($page = 1; $page <= $totalPages; $page++): ?>
 
-                        <?php if ($page == $currentPage): ?>
-
                             <a
-                                href="?page=<?= $page ?>"
-                                class="btn-page active"
-                                >
+                                href="<?= pageUrl($page, $queryParams) ?>"
+                                class="btn-page <?= $page == $currentPage ? 'active' : '' ?>"
+                            >
                                 <?= $page ?>
                             </a>
-
-                        <?php else: ?>
-
-                            <a
-                                href="?page=<?= $page ?>"
-                                class="btn-page"
-                                >
-                                <?= $page ?>
-                            </a>
-
-                        <?php endif; ?>
 
                         <?php endfor; ?>
 
@@ -332,9 +474,9 @@ onclick='openEditStudentModal({
                         <?php if ($currentPage < $totalPages): ?>
 
                             <a
-                                href="?page=<?= $currentPage + 1 ?>"
+                                href="<?= pageUrl($currentPage + 1, $queryParams) ?>"
                                 class="btn-page"
-                                >
+                            >
                                 <i class="bx bx-chevron-right"></i>
                             </a>
 
@@ -343,7 +485,7 @@ onclick='openEditStudentModal({
                             <button
                                 class="btn-page"
                                 disabled
-                                >
+                            >
                                 <i class="bx bx-chevron-right"></i>
                             </button>
 
@@ -354,6 +496,7 @@ onclick='openEditStudentModal({
                     <?php endif; ?>
 
                 </div>
+
             </div>
         </div>
 

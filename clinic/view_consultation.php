@@ -8,9 +8,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-
 // ==========================
-// PAGINATION
+// SEARCH + FILTER + PAGINATION
 // ==========================
 
 $recordsPerPage = 15;
@@ -23,31 +22,125 @@ if ($currentPage < 1) {
     $currentPage = 1;
 }
 
-$offset = ($currentPage - 1) * $recordsPerPage;
+// ==========================
+// SEARCH
+// ==========================
 
+$search = isset($_GET['search'])
+    ? trim($_GET['search'])
+    : '';
 
 // ==========================
-// TOTAL RECORDS
+// PATIENT TYPE FILTER
+// ==========================
+
+$patientType = isset($_GET['patient_type'])
+    ? trim($_GET['patient_type'])
+    : '';
+
+// ==========================
+// BUILD WHERE CONDITION
+// ==========================
+
+$where = [];
+$params = [];
+$types = "";
+
+if ($search !== '') {
+
+    $where[] = "(
+        full_name LIKE ?
+        OR department LIKE ?
+        OR course LIKE ?
+        OR year_level LIKE ?
+        OR position LIKE ?
+        OR patient_type LIKE ?
+        OR complaint LIKE ?
+        OR treatment_given LIKE ?
+        OR remarks LIKE ?
+    )";
+
+    $searchParam = "%" . $search . "%";
+
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
+
+    $types .= "sssssssss";
+}
+
+if ($patientType !== '' && $patientType !== 'all') {
+
+    $where[] = "patient_type = ?";
+
+    $params[] = $patientType;
+
+    $types .= "s";
+}
+
+$whereSql = '';
+
+if (!empty($where)) {
+    $whereSql = "WHERE " . implode(" AND ", $where);
+}
+
+// ==========================
+// COUNT FILTERED RECORDS
 // ==========================
 
 $countSql = "
     SELECT COUNT(*) AS total
     FROM consultations
+    $whereSql
 ";
 
-$countResult = $conn->query($countSql);
+$countStmt = $conn->prepare($countSql);
 
-$totalRecords = $countResult->fetch_assoc()['total'];
+if (!$countStmt) {
+    die("Count prepare failed: " . $conn->error);
+}
+
+if (!empty($params)) {
+    $countStmt->bind_param($types, ...$params);
+}
+
+$countStmt->execute();
+
+$countResult = $countStmt->get_result();
+
+$totalRecords = (int) $countResult->fetch_assoc()['total'];
+
+$countStmt->close();
+
+// ==========================
+// TOTAL PAGES
+// ==========================
 
 $totalPages = ceil($totalRecords / $recordsPerPage);
 
+// ==========================
+// PREVENT INVALID PAGE
+// ==========================
 
-// Prevent invalid page
 if ($totalPages > 0 && $currentPage > $totalPages) {
     $currentPage = $totalPages;
-    $offset = ($currentPage - 1) * $recordsPerPage;
 }
 
+if ($totalPages === 0) {
+    $currentPage = 1;
+}
+
+// ==========================
+// OFFSET
+// ==========================
+
+$offset = ($currentPage - 1) * $recordsPerPage;
 
 // ==========================
 // GET CONSULTATIONS
@@ -65,16 +158,45 @@ $sql = "
         year_level,
         position
     FROM consultations
+    $whereSql
     ORDER BY date DESC, time DESC
     LIMIT $recordsPerPage OFFSET $offset
 ";
 
-$result = $conn->query($sql);
+$stmt = $conn->prepare($sql);
 
-if (!$result) {
-    die("Error loading consultation logs: " . $conn->error);
+if (!$stmt) {
+    die("Consultation query prepare failed: " . $conn->error);
 }
 
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
+
+$stmt->execute();
+
+$result = $stmt->get_result();
+
+// ==========================
+// PAGINATION QUERY PARAMETERS
+// ==========================
+
+$queryParams = [];
+
+if ($search !== '') {
+    $queryParams['search'] = $search;
+}
+
+if ($patientType !== '' && $patientType !== 'all') {
+    $queryParams['patient_type'] = $patientType;
+}
+
+function pageUrl($page, $queryParams) {
+
+    $queryParams['page'] = $page;
+
+    return '?' . http_build_query($queryParams);
+}
 ?>
 
 <!DOCTYPE html>
@@ -116,17 +238,53 @@ if (!$result) {
                 
                 <!-- TOOLBAR -->
                 <div class="logs-toolbar">
-                    <div class="search-wrapper">
+                    <form class="search-wrapper" method="GET" action="view_consultation.php">
+
                         <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search by name, department, or details...">
-                    </div>
+
+                        <input
+                            type="text"
+                            name="search"
+                            id="searchInput"
+                            value="<?= htmlspecialchars($search) ?>"
+                            placeholder="Search by name, department, or details..."
+                        >
+
+                        <?php if ($patientType !== '' && $patientType !== 'all'): ?>
+
+                            <input
+                                type="hidden"
+                                name="patient_type"
+                                value="<?= htmlspecialchars($patientType) ?>"
+                            >
+
+                        <?php endif; ?>
+
+                    </form>
                     
                     <div class="filter-group">
                         <select class="filter-select" id="patientFilter">
-                            <option value="all">All Patient Types</option>
-                            <option value="student">Student</option>
-                            <option value="tstaff">Teaching Staff</option>
-                            <option value="nstaff">Non-Teaching Staff</option>
+
+                            <option value="all"
+                                <?= $patientType === '' || $patientType === 'all' ? 'selected' : '' ?>>
+                                All Patient Types
+                            </option>
+
+                            <option value="student"
+                                <?= $patientType === 'student' ? 'selected' : '' ?>>
+                                Student
+                            </option>
+
+                            <option value="tstaff"
+                                <?= $patientType === 'tstaff' ? 'selected' : '' ?>>
+                                Teaching Staff
+                            </option>
+
+                            <option value="nstaff"
+                                <?= $patientType === 'nstaff' ? 'selected' : '' ?>>
+                                Non-Teaching Staff
+                            </option>
+
                         </select>
                     </div>
                 </div>
@@ -262,21 +420,21 @@ if (!$result) {
                         <!-- PREVIOUS -->
                         <?php if ($currentPage > 1): ?>
 
-                        <a
-                            href="?page=<?= $currentPage - 1 ?>"
-                            class="btn-page"
+                            <a
+                                href="<?= pageUrl($currentPage - 1, $queryParams) ?>"
+                                class="btn-page"
                             >
-                            <i class="bx bx-chevron-left"></i>
-                        </a>
+                                <i class="bx bx-chevron-left"></i>
+                            </a>
 
                         <?php else: ?>
 
-                        <button
-                            class="btn-page"
-                            disabled
+                            <button
+                                class="btn-page"
+                                disabled
                             >
-                            <i class="bx bx-chevron-left"></i>
-                        </button>
+                                <i class="bx bx-chevron-left"></i>
+                            </button>
 
                         <?php endif; ?>
 
@@ -284,25 +442,12 @@ if (!$result) {
                         <!-- PAGE NUMBERS -->
                         <?php for ($page = 1; $page <= $totalPages; $page++): ?>
 
-                        <?php if ($page == $currentPage): ?>
-
                             <a
-                                href="?page=<?= $page ?>"
-                                class="btn-page active"
-                                >
+                                href="<?= pageUrl($page, $queryParams) ?>"
+                                class="btn-page <?= $page == $currentPage ? 'active' : '' ?>"
+                            >
                                 <?= $page ?>
                             </a>
-
-                        <?php else: ?>
-
-                            <a
-                                href="?page=<?= $page ?>"
-                                class="btn-page"
-                                >
-                                <?= $page ?>
-                            </a>
-
-                        <?php endif; ?>
 
                         <?php endfor; ?>
 
@@ -311,9 +456,9 @@ if (!$result) {
                         <?php if ($currentPage < $totalPages): ?>
 
                             <a
-                                href="?page=<?= $currentPage + 1 ?>"
+                                href="<?= pageUrl($currentPage + 1, $queryParams) ?>"
                                 class="btn-page"
-                                >
+                            >
                                 <i class="bx bx-chevron-right"></i>
                             </a>
 
@@ -322,7 +467,7 @@ if (!$result) {
                             <button
                                 class="btn-page"
                                 disabled
-                                >
+                            >
                                 <i class="bx bx-chevron-right"></i>
                             </button>
 

@@ -54,13 +54,16 @@ if (!isset($_SESSION['user_id'])) {
                             <div class="input-row">
                                 <div class="input-group">
                                     <label>Staff ID</label>
-                                    <input type="text" name="staff_id_number" placeholder="2024-00001" required>
-                                </div>
+                                    <input type="text" name="staff_id_number" placeholder="Enter Staff ID" maxlength="20" pattern="[0-9-]{3,20}" title="Staff ID must be 3–20 characters and contain numbers and hyphens only." required>   
                             </div>
                             <div class="input-row two-cols">
                                 <div class="input-group">
                                     <label>Position</label>
-                                    <input type="text" name="position" placeholder="Teaching Staff" required>
+                                    <select name="position" required>
+                                        <option value="">Select Position</option>
+                                        <option value="Teaching Staff">Teaching Staff</option>
+                                        <option value="Non-Teaching Staff">Non-Teaching Staff</option>
+                                    </select>
                                 </div>
 
                                 <div class="input-group">
@@ -69,7 +72,21 @@ if (!isset($_SESSION['user_id'])) {
                                 </div>
                                 <div class="input-group">
                                     <label>Department</label>
-                                    <input type="text" name="department" placeholder="Technology">
+                                    <select name="department">
+                                        <option value="">Select Department</option>
+                                        <option value="technology">Technology</option>
+                                        <option value="education">Education</option>
+                                        <option value="business">Business</option>
+                                        <option value="clinic">Clinic</option>
+                                        <option value="library">Library</option>
+                                        <option value="guidance">Guidance Office</option>
+                                        <option value="cashier">Cashier</option>
+                                        <option value="registrar">Registrar</option>
+                                        <option value="utility">Utility</option>
+                                        <option value="admin">Admin Office</option>
+                                        <option value="saso">SASO</option>
+                                        <option value="csu">CSU</option>
+                                    </select>
                                 </div>
                             </div>
                         </section>
@@ -82,7 +99,7 @@ if (!isset($_SESSION['user_id'])) {
                             </div>
                             <div class="input-group">
                                 <label>Full Name</label>
-                                <input type="text" name="full_name" placeholder="Last Name, First Name Middle Name" required>
+                                <input type="text" name="full_name" placeholder="Last Name, First Name Middle Name" pattern="[A-Za-zÀ-ÿ\s.,'-]+" title="Full name should contain letters, spaces, and common name punctuation only." oninput="this.value = this.value.replace(/[0-9]/g, '')" required>
                             </div>
                             <div class="input-row three-cols">
                                 <div class="input-group">
@@ -104,7 +121,7 @@ if (!isset($_SESSION['user_id'])) {
                             <div class="input-row two-cols">
                                 <div class="input-group">
                                     <label>Contact Number</label>
-                                    <input type="tel" name="contact_number" placeholder="09XX XXX XXXX" required>
+                                    <input type="tel" name="contact_number" placeholder="09XXXXXXXXX" maxlength="11" minlength="11" pattern="09[0-9]{9}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Contact number must contain exactly 11 digits and start with 09." required>
                                 </div>
                                 <div class="input-group">
                                     <label>Address</label>
@@ -121,16 +138,16 @@ if (!isset($_SESSION['user_id'])) {
                             </div>
                             <div class="input-group">
                                 <label>Contact Name</label>
-                                <input type="text" name="emergency_name" placeholder="Guardian Full Name">
+                                <input type="text" name="emergency_name" placeholder="Guardian Full Name" pattern="[A-Za-zÀ-ÿ\s.,'-]+" title="Contact name should contain letters, spaces, and common name punctuation only.">
                             </div>
                             <div class="input-row two-cols">
                                 <div class="input-group">
                                     <label>Relationship</label>
-                                    <input type="text" name="emergency_relationship" placeholder="e.g. Mother">
+                                    <input type="text" name="emergency_relationship" placeholder="e.g. Mother" pattern="[A-Za-zÀ-ÿ\s-]+" title="Relationship should contain letters and spaces only.">
                                 </div>
                                 <div class="input-group">
                                     <label>Phone Number</label>
-                                    <input type="tel" name="emergency_contact" placeholder="09XX XXX XXXX">
+                                    <input type="tel" name="emergency_contact" placeholder="09XXXXXXXXX" maxlength="11" minlength="11" pattern="09[0-9]{9}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Phone number must contain exactly 11 digits and start with 09.">
                                 </div>
                             </div>
                         </section>
@@ -157,11 +174,11 @@ if (!isset($_SESSION['user_id'])) {
                                 </div>
                                 <div class="input-group">
                                     <label>Height (cm)</label>
-                                    <input type="number" step="0.01" name="height" placeholder="170">
+                                    <input type="number" name="height" placeholder="170" min="1" step="1">
                                 </div>
                                 <div class="input-group">
                                     <label>Weight (kg)</label>
-                                    <input type="number" step="0.01" name="weight" placeholder="60">
+                                    <input type="number" name="weight" placeholder="60" min="1" step="1">
                                 </div>
                             </div>
                             <div class="input-group">
