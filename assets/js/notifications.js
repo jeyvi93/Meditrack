@@ -7,7 +7,7 @@ function closeLogoutModal() {
 }
 
 function confirmLogout() {
-    window.location.href = '../index.php';
+    window.location.href = "../auth/logout.php";
 }
 
 // MARK AS READ FUNCTIONALITY

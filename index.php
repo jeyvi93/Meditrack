@@ -1,10 +1,26 @@
 <?php
 session_start();
 
-// If user is already logged in, redirect to dashboard
 if (isset($_SESSION['user_id'])) {
-    header("Location: pages/dashboard.php");
-    exit();
+
+    if (
+        $_SESSION['role'] == "Admin" ||
+        $_SESSION['role'] == "Clinic Staff"
+    ) {
+
+        header("Location: clinic/dashboard.php");
+        exit();
+
+    } elseif (
+        $_SESSION['role'] == "Student" ||
+        $_SESSION['role'] == "Teaching Staff" ||
+        $_SESSION['role'] == "Non-Teaching Staff"
+    ) {
+
+        header("Location: patient/view_appointments.php");
+        exit();
+
+    }
 }
 ?>
 
@@ -29,7 +45,7 @@ if (isset($_SESSION['user_id'])) {
             </div>
             <div class="nav-auth">
                 <a href="patient/register.html" class="register-link">Register</a>
-                <a href="patient/login.php" class="btn-login">Login</a>
+                <a href="login.php" class="btn-login">Login</a>
             </div>
         </nav>
     </header>

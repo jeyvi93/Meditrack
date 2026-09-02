@@ -11,7 +11,7 @@
     }
 
     function confirmLogout() {
-        window.location.href = '../index.html';
+        window.location.href = "../auth/logout.php";
     }
 
 

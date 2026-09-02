@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 // PAGINATION
 // ==========================
 
-$recordsPerPage = 1;
+$recordsPerPage = 10;
 
 $currentPage = isset($_GET['page'])
     ? (int) $_GET['page']

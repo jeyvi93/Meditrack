@@ -18,8 +18,6 @@ The clinic side provides the main tools for managing the school's clinic operati
 #### Dashboard
 Provides an overview of clinic activities and important information through summarized data and statistics.
 
-> 🚧 Currently under development.
-
 #### Student Profiles
 Allows clinic personnel to manage and view student information and patient records.
 

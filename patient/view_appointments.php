@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +32,7 @@
         <a href="book_appointment.html">Book Appointment</a>
         <a href="notifications.html">Notifications</a>
         <a href="view_profile.html">Profile</a>
-        <a href="#" class="btn-logout-small" onclick="openLogoutModal(); return false;">Logout</a>
+        <a href="../auth/logout.php" class="btn-logout-small" onclick="openLogoutModal(); return false;">Logout</a>
     </div>
 </nav>
 
@@ -249,7 +258,7 @@
     }
 
     function confirmLogout() {
-        window.location.href = '../index.php';
+        window.location.href = "../auth/logout.php";
     }
 </script>
 

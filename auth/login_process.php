@@ -25,31 +25,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Temporary (plain text password)
         if ($password == $user["password"]) {
 
+            // ==========================
+            // STORE USER SESSION
+            // ==========================
+
             $_SESSION["user_id"] = $user["id"];
             $_SESSION["full_name"] = $user["full_name"];
             $_SESSION["email"] = $user["email"];
             $_SESSION["role"] = $user["role"];
 
-            header("Location: ../clinic/dashboard.php");
-            exit();
+
+            // ==========================
+            // ROLE-BASED REDIRECTION
+            // ==========================
+
+            // CLINIC SIDE
+            if (
+                $user["role"] == "Admin" ||
+                $user["role"] == "Clinic Staff"
+            ) {
+
+                header("Location: ../clinic/dashboard.php");
+                exit();
+
+            }
+
+
+            // STUDENT / STAFF SIDE
+            elseif (
+                $user["role"] == "Student" ||
+                $user["role"] == "Teaching Staff" ||
+                $user["role"] == "Non-Teaching Staff"
+            ) {
+
+                header("Location: ../patient/view_appointments.php");
+                exit();
+
+            }
+
+
+            // UNKNOWN ROLE
+            else {
+
+                header("Location: ../login.php?error=invalid_role");
+                exit();
+
+            }
 
         } else {
 
-            header("Location: ../index.php?error=1");
+            // Wrong password
+            header("Location: ../login.php?error=1");
             exit();
 
         }
 
     } else {
 
-        header("Location: ../index.php?error=1");
+        // Email not found
+        header("Location: ../login.php?error=1");
         exit();
 
     }
 
 } else {
 
-    header("Location: ../index.php");
+    // Direct access to login_process.php
+    header("Location: ../login.php");
     exit();
 
 }

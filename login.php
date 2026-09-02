@@ -7,10 +7,10 @@
     <title>Login | MediTrack</title>
 
     <!-- Shared Styles -->
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 
     <!-- Login Page Styles -->
-    <link rel="stylesheet" href="../assets/css/login.css">
+    <link rel="stylesheet" href="assets/css/login.css">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
@@ -29,12 +29,12 @@
         <!-- NAVBAR -->
         <nav class="navbar">
             <div class="logo">
-                <img src="../assets/images/med.png" alt="MediTrack Logo">
+                <img src="assets/images/med.png" alt="MediTrack Logo">
             </div>
 
             <div class="nav-auth">
-                <a href="../index.php" class="register-link">Home</a>
-                <a href="../patient/register.html" class="btn-login">Register</a>
+                <a href="index.php" class="register-link">Home</a>
+                <a href="patient/register.html" class="btn-login">Register</a>
             </div>
         </nav>
 
@@ -95,7 +95,7 @@
                     </div>
 
 
-                    <form action="../auth/login_process.php" method="POST" class="login-form">
+                    <form action="auth/login_process.php" method="POST" class="login-form">
 
                         <!-- EMAIL -->
                         <div class="input-group">
@@ -130,7 +130,7 @@
                                     Password
                                 </label>
 
-                                <a href="forgot_password.html" class="forgot-link">
+                                <a href="patient/forgot_password.html" class="forgot-link">
                                     Forgot Password?
                                 </a>
 
@@ -164,7 +164,7 @@
                     <!-- REGISTER LINK -->
                     <p class="register-hint">
                         Don't have an account?
-                        <a href="register.html">Register here</a>
+                        <a href="patient/register.html">Register here</a>
                     </p>
 
                 </div>
