@@ -73,7 +73,7 @@ body {
     gap: 20px;
 }
 
-.register-link {
+.home-link {
     text-decoration: none;
     color: var(--text-main);
     font-weight: 600;
@@ -81,7 +81,7 @@ body {
     transition: color 0.3s;
 }
 
-.register-link:hover { color: var(--primary-blue); }
+.home-link:hover { color: var(--primary-blue); }
 
 .btn-login {
     background: var(--primary-blue);

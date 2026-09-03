@@ -33,8 +33,8 @@
             </div>
 
             <div class="nav-auth">
-                <a href="index.php" class="register-link">Home</a>
-                <a href="patient/register.html" class="btn-login">Register</a>
+                <a href="index.php" class="home-link">Home</a>
+                <a href="patient/register.php" class="btn-login">Register</a>
             </div>
         </nav>
 
@@ -130,7 +130,7 @@
                                     Password
                                 </label>
 
-                                <a href="patient/forgot_password.html" class="forgot-link">
+                                <a href="patient/forgot_password.php" class="forgot-link">
                                     Forgot Password?
                                 </a>
 
@@ -164,7 +164,7 @@
                     <!-- REGISTER LINK -->
                     <p class="register-hint">
                         Don't have an account?
-                        <a href="patient/register.html">Register here</a>
+                        <a href="patient/register.php">Register here</a>
                     </p>
 
                 </div>

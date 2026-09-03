@@ -5,20 +5,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =========================
-    // LIVE SERVER-SIDE SEARCH
+    // AJAX LIVE SERVER-SIDE SEARCH
     // =========================
 
     if (searchInput) {
 
         let searchTimeout;
+        let searchController;
 
         searchInput.addEventListener("input", function () {
 
             clearTimeout(searchTimeout);
 
-            searchTimeout = setTimeout(() => {
+            searchTimeout = setTimeout(async () => {
 
                 const search = searchInput.value.trim();
+
+                // Cancel previous request if still running
+                if (searchController) {
+                    searchController.abort();
+                }
+
+                searchController = new AbortController();
 
                 const params = new URLSearchParams();
 
@@ -37,16 +45,94 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
                 }
 
-                // ALWAYS reset search to page 1
+                // ALWAYS RESET SEARCH TO PAGE 1
                 params.set("page", "1");
 
-                window.location.href =
-                    "view_consultation.php?" +
-                    params.toString();
+                try {
+
+                    const response = await fetch(
+                        "view_consultation.php?" + params.toString(),
+                        {
+                            signal: searchController.signal
+                        }
+                    );
+
+                    const html = await response.text();
+
+                    const parser = new DOMParser();
+
+                    const doc = parser.parseFromString(
+                        html,
+                        "text/html"
+                    );
+
+
+                    // =========================
+                    // UPDATE TABLE
+                    // =========================
+
+                    const newTable =
+                        doc.querySelector(".logs-table");
+
+                    const currentTable =
+                        document.querySelector(".logs-table");
+
+                    if (newTable && currentTable) {
+
+                        currentTable.innerHTML =
+                            newTable.innerHTML;
+
+                    }
+
+
+                    // =========================
+                    // UPDATE FOOTER
+                    // =========================
+
+                    const newFooter =
+                        doc.querySelector(".table-footer");
+
+                    const currentFooter =
+                        document.querySelector(".table-footer");
+
+                    if (newFooter && currentFooter) {
+
+                        currentFooter.innerHTML =
+                            newFooter.innerHTML;
+
+                    }
+
+
+                    // =========================
+                    // KEEP SEARCH FOCUSED
+                    // =========================
+
+                    searchInput.focus();
+
+                    searchInput.setSelectionRange(
+                        searchInput.value.length,
+                        searchInput.value.length
+                    );
+
+
+                } catch (error) {
+
+                    if (error.name !== "AbortError") {
+
+                        console.error(
+                            "Consultation search error:",
+                            error
+                        );
+
+                    }
+
+                }
 
             }, 300);
 
         });
+
+
 
     }
 

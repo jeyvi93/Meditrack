@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user = mysqli_fetch_assoc($result);
 
         // Temporary (plain text password)
-        if ($password == $user["password"]) {
+        if (password_verify($password, $user["password"])) {
 
             // ==========================
             // STORE USER SESSION

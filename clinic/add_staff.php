@@ -54,9 +54,13 @@ if (!isset($_SESSION['user_id'])) {
                             <div class="input-row">
                                 <div class="input-group">
                                     <label>Staff ID</label>
-                                    <input type="text" name="staff_id_number" placeholder="Enter Staff ID" maxlength="20" pattern="[0-9-]{3,20}" title="Staff ID must be 3–20 characters and contain numbers and hyphens only." required>   
-                            </div>
-                            <div class="input-row two-cols">
+                                    <input type="text" name="staff_id_number" placeholder="Enter Staff ID"
+                                    maxlength="9"
+                                    pattern="[0-9]{3}-[0-9]{5}"
+                                    title="Staff ID must be in the format 123-45678"
+                                    required>
+                                </div>
+
                                 <div class="input-group">
                                     <label>Position</label>
                                     <select name="position" required>
@@ -74,18 +78,18 @@ if (!isset($_SESSION['user_id'])) {
                                     <label>Department</label>
                                     <select name="department">
                                         <option value="">Select Department</option>
-                                        <option value="technology">Technology</option>
-                                        <option value="education">Education</option>
-                                        <option value="business">Business</option>
-                                        <option value="clinic">Clinic</option>
-                                        <option value="library">Library</option>
-                                        <option value="guidance">Guidance Office</option>
-                                        <option value="cashier">Cashier</option>
-                                        <option value="registrar">Registrar</option>
-                                        <option value="utility">Utility</option>
-                                        <option value="admin">Admin Office</option>
-                                        <option value="saso">SASO</option>
-                                        <option value="csu">CSU</option>
+                                        <option value="Technology">Technology</option>
+                                        <option value="Education">Education</option>
+                                        <option value="Business">Business</option>
+                                        <option value="Clinic">Clinic</option>
+                                        <option value="Library">Library</option>
+                                        <option value="Guidance Office">Guidance Office</option>
+                                        <option value="Cashier">Cashier</option>
+                                        <option value="Registrar">Registrar</option>
+                                        <option value="Utility">Utility</option>
+                                        <option value="Admin Office">Admin Office</option>
+                                        <option value="SASO">SASO</option>
+                                        <option value="CSU">CSU</option>
                                     </select>
                                 </div>
                             </div>
@@ -125,7 +129,7 @@ if (!isset($_SESSION['user_id'])) {
                                 </div>
                                 <div class="input-group">
                                     <label>Address</label>
-                                    <input type="text" name="address" placeholder="City / Province">
+                                    <input type="text" name="address" placeholder="Street, Barangay, City, Province">
                                 </div>
                             </div>
                         </section>

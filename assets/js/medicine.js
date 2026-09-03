@@ -69,8 +69,107 @@ function filterMedicines() {
     });
 }
 
-// Search while typing
-medicineSearch.addEventListener("input", filterMedicines);
+// ==========================
+// SERVER-SIDE DISPOSED SEARCH
+// ==========================
+
+let disposedSearchTimer;
+let disposedSearchController = null;
+
+medicineSearch.addEventListener("input", function () {
+
+    // Only use server-side search when Disposed Records is active
+    const disposedPane = document.getElementById("disposed");
+
+    if (!disposedPane.classList.contains("active")) {
+        filterMedicines();
+        return;
+    }
+
+    clearTimeout(disposedSearchTimer);
+
+    disposedSearchTimer = setTimeout(() => {
+
+        const search = medicineSearch.value.trim();
+
+        // Cancel previous request
+        if (disposedSearchController) {
+            disposedSearchController.abort();
+        }
+
+        disposedSearchController = new AbortController();
+
+        const url =
+            "medicine.php?disposed_page=1" +
+            "&disposed_search=" +
+            encodeURIComponent(search) +
+            "#disposed";
+
+        fetch(url, {
+            signal: disposedSearchController.signal
+        })
+        .then(response => response.text())
+        .then(html => {
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(
+                html,
+                "text/html"
+            );
+
+            const newTable =
+                doc.querySelector("#disposed .inventory-table");
+
+            const newFooter =
+                doc.querySelector("#disposed .table-footer");
+
+            const currentTable =
+                document.querySelector("#disposed .inventory-table");
+
+            const currentFooter =
+                document.querySelector("#disposed .table-footer");
+
+            if (newTable && currentTable) {
+                currentTable.innerHTML =
+                    newTable.innerHTML;
+            }
+
+            if (newFooter && currentFooter) {
+                currentFooter.innerHTML =
+                    newFooter.innerHTML;
+            }
+
+            // Update browser URL without reloading
+            window.history.replaceState(
+                {},
+                "",
+                url
+            );
+
+            // Keep search box focused
+            medicineSearch.focus();
+
+            // Put cursor at the end
+            medicineSearch.setSelectionRange(
+                medicineSearch.value.length,
+                medicineSearch.value.length
+            );
+
+        })
+        .catch(error => {
+
+            if (error.name !== "AbortError") {
+                console.error(
+                    "Disposed search error:",
+                    error
+                );
+            }
+
+        });
+
+    }, 300);
+
+});
 
 // Filter when dropdown changes
 statusFilter.addEventListener("change", filterMedicines);
@@ -714,3 +813,26 @@ function openRestock(id, medicineName) {
 
     window.location.href = url;
 }
+
+// ==========================
+// DISPOSED RECORDS PAGINATION
+// ==========================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // If URL contains #disposed,
+    // automatically open the Disposed Records tab
+    if (window.location.hash === "#disposed") {
+
+        const disposedTab = document.querySelector(
+            '.tab-link[onclick*="disposed"]'
+        );
+
+        if (disposedTab) {
+
+            disposedTab.click();
+
+        }
+    }
+
+});

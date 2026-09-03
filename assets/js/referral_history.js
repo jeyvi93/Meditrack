@@ -101,7 +101,7 @@ document.addEventListener("keydown", function (event) {
 });
 
 // ===============================
-// LIVE SERVER-SIDE SEARCH
+// AJAX LIVE SERVER-SIDE SEARCH
 // ===============================
 
 const searchInput = document.getElementById("searchInput");
@@ -109,14 +109,21 @@ const searchInput = document.getElementById("searchInput");
 if (searchInput) {
 
     let searchTimeout;
+    let searchController;
 
     searchInput.addEventListener("input", function () {
 
         clearTimeout(searchTimeout);
 
-        searchTimeout = setTimeout(() => {
+        searchTimeout = setTimeout(async () => {
 
             const search = searchInput.value.trim();
+
+            if (searchController) {
+                searchController.abort();
+            }
+
+            searchController = new AbortController();
 
             const params = new URLSearchParams();
 
@@ -124,12 +131,88 @@ if (searchInput) {
                 params.set("search", search);
             }
 
-            // ALWAYS RESET SEARCH TO PAGE 1
+            // ALWAYS RESET TO PAGE 1
             params.set("page", "1");
 
-            window.location.href =
-                "referral_history.php?" +
-                params.toString();
+            try {
+
+                const response = await fetch(
+                    "referral_history.php?" + params.toString(),
+                    {
+                        signal: searchController.signal
+                    }
+                );
+
+                const html = await response.text();
+
+                const parser = new DOMParser();
+
+                const doc = parser.parseFromString(
+                    html,
+                    "text/html"
+                );
+
+
+                // ===============================
+                // UPDATE TABLE
+                // ===============================
+
+                const newTable =
+                    doc.querySelector(".logs-table");
+
+                const currentTable =
+                    document.querySelector(".logs-table");
+
+                if (newTable && currentTable) {
+
+                    currentTable.innerHTML =
+                        newTable.innerHTML;
+
+                }
+
+
+                // ===============================
+                // UPDATE FOOTER
+                // ===============================
+
+                const newFooter =
+                    doc.querySelector(".table-footer");
+
+                const currentFooter =
+                    document.querySelector(".table-footer");
+
+                if (newFooter && currentFooter) {
+
+                    currentFooter.innerHTML =
+                        newFooter.innerHTML;
+
+                }
+
+
+                // ===============================
+                // KEEP SEARCH FOCUSED
+                // ===============================
+
+                searchInput.focus();
+
+                searchInput.setSelectionRange(
+                    searchInput.value.length,
+                    searchInput.value.length
+                );
+
+
+            } catch (error) {
+
+                if (error.name !== "AbortError") {
+
+                    console.error(
+                        "Referral search error:",
+                        error
+                    );
+
+                }
+
+            }
 
         }, 300);
 

@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     // =====================
-    // LIVE SERVER-SIDE SEARCH
+    // AJAX LIVE SERVER-SIDE SEARCH
     // =====================
 
     const searchInput = document.getElementById("studentSearch");
@@ -9,22 +9,135 @@ document.addEventListener("DOMContentLoaded", function () {
     if (searchInput) {
 
         let searchTimeout;
+        let searchController;
 
         searchInput.addEventListener("input", function () {
 
             clearTimeout(searchTimeout);
 
-            searchTimeout = setTimeout(() => {
+            searchTimeout = setTimeout(async () => {
 
-                const form = searchInput.closest("form");
+                const search = searchInput.value.trim();
 
-                if (form) {
-                    form.submit();
+                // Cancel previous request if still running
+                if (searchController) {
+                    searchController.abort();
+                }
+
+                searchController = new AbortController();
+
+                const params = new URLSearchParams();
+
+                if (search !== "") {
+                    params.set("search", search);
+                }
+
+                // Preserve current department filter
+                const departmentInput =
+                    document.querySelector(
+                        'input[name="department"]'
+                    );
+
+                if (
+                    departmentInput &&
+                    departmentInput.value !== ""
+                ) {
+                    params.set(
+                        "department",
+                        departmentInput.value
+                    );
+                }
+
+                // ALWAYS RESET SEARCH TO PAGE 1
+                params.set("page", "1");
+
+                try {
+
+                    const response = await fetch(
+                        "students.php?" + params.toString(),
+                        {
+                            signal: searchController.signal
+                        }
+                    );
+
+                    const html = await response.text();
+
+                    const parser = new DOMParser();
+
+                    const doc = parser.parseFromString(
+                        html,
+                        "text/html"
+                    );
+
+
+                    // =====================
+                    // UPDATE TABLE
+                    // =====================
+
+                    const newTable =
+                        doc.querySelector(".table-wrapper table");
+
+                    const currentTable =
+                        document.querySelector(
+                            ".table-wrapper table"
+                        );
+
+                    if (newTable && currentTable) {
+
+                        currentTable.innerHTML =
+                            newTable.innerHTML;
+
+                    }
+
+
+                    // =====================
+                    // UPDATE FOOTER
+                    // =====================
+
+                    const newFooter =
+                        doc.querySelector(".table-footer");
+
+                    const currentFooter =
+                        document.querySelector(".table-footer");
+
+                    if (newFooter && currentFooter) {
+
+                        currentFooter.innerHTML =
+                            newFooter.innerHTML;
+
+                    }
+
+
+                    // =====================
+                    // KEEP SEARCH FOCUSED
+                    // =====================
+
+                    searchInput.focus();
+
+                    searchInput.setSelectionRange(
+                        searchInput.value.length,
+                        searchInput.value.length
+                    );
+
+
+                } catch (error) {
+
+                    if (error.name !== "AbortError") {
+
+                        console.error(
+                            "Student search error:",
+                            error
+                        );
+
+                    }
+
                 }
 
             }, 300);
 
         });
+
+
 
     }
 

@@ -402,3 +402,11 @@
 
     transform: translateY(-1px);
 }
+
+.field-error {
+    display: block;
+    margin-top: 6px;
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 500;
+}

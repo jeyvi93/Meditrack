@@ -44,7 +44,7 @@ if (isset($_SESSION['user_id'])) {
                 <img src="assets/images/med.png" alt="MediTrack Logo">
             </div>
             <div class="nav-auth">
-                <a href="patient/register.html" class="register-link">Register</a>
+                <a href="patient/register.php" class="home-link">Register</a>
                 <a href="login.php" class="btn-login">Login</a>
             </div>
         </nav>

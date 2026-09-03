@@ -32,10 +32,75 @@ $quarantined_medicines = mysqli_query($conn, "
     ORDER BY medicine_name ASC
 ");
 
+// ==========================
+// DISPOSED RECORDS PAGINATION
+// ==========================
+
+$recordsPerPage = 20;
+
+$disposedPage = isset($_GET['disposed_page'])
+    ? (int) $_GET['disposed_page']
+    : 1;
+
+$disposedSearch = isset($_GET['disposed_search'])
+    ? trim($_GET['disposed_search'])
+    : '';
+
+if ($disposedPage < 1) {
+    $disposedPage = 1;
+}
+
+// Count total disposed records
+$disposedSearchEscaped = mysqli_real_escape_string(
+    $conn,
+    $disposedSearch
+);
+
+$disposedWhere = '';
+
+if ($disposedSearch !== '') {
+    $disposedWhere = "
+        WHERE medicine_name LIKE '%$disposedSearchEscaped%'
+        OR batch_number LIKE '%$disposedSearchEscaped%'
+        OR quantity_disposed LIKE '%$disposedSearchEscaped%'
+        OR disposal_date LIKE '%$disposedSearchEscaped%'
+        OR disposal_reason LIKE '%$disposedSearchEscaped%'
+    ";
+}
+
+$disposedCountResult = mysqli_query($conn, "
+    SELECT COUNT(*) AS total
+    FROM disposed_medicines
+    $disposedWhere
+");
+
+$disposedTotalRecords =
+    (int) mysqli_fetch_assoc($disposedCountResult)['total'];
+
+$disposedTotalPages =
+    ceil($disposedTotalRecords / $recordsPerPage);
+
+if (
+    $disposedTotalPages > 0 &&
+    $disposedPage > $disposedTotalPages
+) {
+    $disposedPage = $disposedTotalPages;
+}
+
+if ($disposedTotalPages === 0) {
+    $disposedPage = 1;
+}
+
+$disposedOffset =
+    ($disposedPage - 1) * $recordsPerPage;
+
+// Get only the records for the current page
 $disposed_medicines = mysqli_query($conn, "
     SELECT *
     FROM disposed_medicines
+    $disposedWhere
     ORDER BY disposal_date DESC
+    LIMIT $recordsPerPage OFFSET $disposedOffset
 ");
 ?>
 
@@ -95,7 +160,12 @@ $disposed_medicines = mysqli_query($conn, "
                 <div class="inventory-toolbar">
                     <div class="search-wrapper">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="medicineSearch" placeholder="Search medicine, batch, or supplier...">
+                            <input
+                            type="text"
+                            id="medicineSearch"
+                            value="<?= htmlspecialchars($disposedSearch); ?>"
+                            placeholder="Search medicine, batch, or supplier..."
+                        >
                     </div>
                 <div class="toolbar-right" id="toolbarRight">
                     <div class="filter-group" id="filterGroup">
@@ -472,6 +542,84 @@ $disposed_medicines = mysqli_query($conn, "
                             <?php endif; ?>
                             </tbody>
                         </table>
+                        <div class="table-footer">
+
+                            <p>
+                                Showing
+                                <?= $disposedTotalRecords > 0
+                                    ? (($disposedPage - 1) * $recordsPerPage + 1)
+                                    : 0
+                                ?>
+                                -
+                                <?= min(
+                                    $disposedPage * $recordsPerPage,
+                                    $disposedTotalRecords
+                                ) ?>
+                                of
+                                <?= $disposedTotalRecords ?>
+                                <?= $disposedTotalRecords === 1 ? 'record' : 'records' ?>
+                            </p>
+
+                            <?php if ($disposedTotalPages > 1): ?>
+
+                            <div class="pagination">
+
+                                <?php if ($disposedPage > 1): ?>
+
+                                    <a
+                                        href="?disposed_page=<?= $disposedPage - 1 ?>&disposed_search=<?= urlencode($disposedSearch) ?>#disposed"
+                                        class="btn-page"
+                                    >
+                                        <i class="bx bx-chevron-left"></i>
+                                    </a>
+
+                                <?php else: ?>
+
+                                    <button class="btn-page" disabled>
+                                        <i class="bx bx-chevron-left"></i>
+                                    </button>
+
+                                <?php endif; ?>
+
+
+                                <?php for (
+                                    $page = 1;
+                                    $page <= $disposedTotalPages;
+                                    $page++
+                                ): ?>
+
+                                    <a
+                                        href="?disposed_page=<?= $page ?>&disposed_search=<?= urlencode($disposedSearch) ?>#disposed"
+                                        class="btn-page <?= $page == $disposedPage ? 'active' : '' ?>"
+                                    >
+                                        <?= $page ?>
+                                    </a>
+
+                                <?php endfor; ?>
+
+
+                                <?php if ($disposedPage < $disposedTotalPages): ?>
+
+                                    <a
+                                        href="?disposed_page=<?= $disposedPage + 1 ?>&disposed_search=<?= urlencode($disposedSearch) ?>#disposed"
+                                        class="btn-page"
+                                    >
+                                        <i class="bx bx-chevron-right"></i>
+                                    </a>
+
+                                <?php else: ?>
+
+                                    <button class="btn-page" disabled>
+                                        <i class="bx bx-chevron-right"></i>
+                                    </button>
+
+                                <?php endif; ?>
+
+                            </div>
+
+                            <?php endif; ?>
+
+                        </div>
                     </div>
                 </div>
 

@@ -41,7 +41,6 @@ $approved_today = mysqli_query($conn, "
     ORDER BY a.appointment_time ASC
 ");
 
-
 $approved_upcoming = mysqli_query($conn, "
     SELECT
         a.*,
@@ -57,21 +56,113 @@ $approved_upcoming = mysqli_query($conn, "
     ORDER BY a.appointment_date ASC, a.appointment_time ASC
 ");
 
-$completed = mysqli_query($conn, "
-    SELECT
-        a.*,
-        u.full_name,
-        s.student_id_number,
-        st.staff_id_number
-    FROM appointments a
-    INNER JOIN users u ON a.user_id = u.id
-    LEFT JOIN students s ON u.student_id = s.id
-    LEFT JOIN staffs st ON u.staff_id = st.id
-    WHERE a.status = 'Completed'
-    ORDER BY a.appointment_date DESC
-");
 
-$rejected = mysqli_query($conn, "
+// =====================================================
+// COMPLETED PAGINATION + SEARCH
+// =====================================================
+
+$recordsPerPage = 15;
+
+$completedPage = isset($_GET['completed_page'])
+    ? (int) $_GET['completed_page']
+    : 1;
+
+if ($completedPage < 1) {
+    $completedPage = 1;
+}
+
+$completedSearch = isset($_GET['completed_search'])
+    ? trim($_GET['completed_search'])
+    : '';
+
+$completedWhere = "WHERE a.status = 'Completed'";
+$completedParams = [];
+$completedTypes = "";
+
+if ($completedSearch !== '') {
+
+    $completedWhere .= "
+        AND (
+            u.full_name LIKE ?
+            OR s.student_id_number LIKE ?
+            OR st.staff_id_number LIKE ?
+            OR a.appointment_date LIKE ?
+            OR a.purpose LIKE ?
+            OR a.status LIKE ?
+        )
+    ";
+
+    $searchParam = "%" . $completedSearch . "%";
+
+    $completedParams[] = $searchParam;
+    $completedParams[] = $searchParam;
+    $completedParams[] = $searchParam;
+    $completedParams[] = $searchParam;
+    $completedParams[] = $searchParam;
+    $completedParams[] = $searchParam;
+
+    $completedTypes = "ssssss";
+}
+
+
+// COUNT COMPLETED
+
+$completedCountSql = "
+    SELECT COUNT(*) AS total
+    FROM appointments a
+    INNER JOIN users u ON a.user_id = u.id
+    LEFT JOIN students s ON u.student_id = s.id
+    LEFT JOIN staffs st ON u.staff_id = st.id
+    $completedWhere
+";
+
+$completedCountStmt = $conn->prepare($completedCountSql);
+
+if (!$completedCountStmt) {
+    die("Completed count prepare failed: " . $conn->error);
+}
+
+if (!empty($completedParams)) {
+    $completedCountStmt->bind_param(
+        $completedTypes,
+        ...$completedParams
+    );
+}
+
+$completedCountStmt->execute();
+
+$completedCountResult = $completedCountStmt->get_result();
+
+$totalCompleted = (int) $completedCountResult
+    ->fetch_assoc()['total'];
+
+$completedCountStmt->close();
+
+
+// TOTAL COMPLETED PAGES
+
+$totalCompletedPages = ceil(
+    $totalCompleted / $recordsPerPage
+);
+
+if (
+    $totalCompletedPages > 0 &&
+    $completedPage > $totalCompletedPages
+) {
+    $completedPage = $totalCompletedPages;
+}
+
+if ($totalCompletedPages === 0) {
+    $completedPage = 1;
+}
+
+$completedOffset =
+    ($completedPage - 1) * $recordsPerPage;
+
+
+// GET COMPLETED RECORDS
+
+$completedSql = "
     SELECT
         a.*,
         u.full_name,
@@ -81,9 +172,166 @@ $rejected = mysqli_query($conn, "
     INNER JOIN users u ON a.user_id = u.id
     LEFT JOIN students s ON u.student_id = s.id
     LEFT JOIN staffs st ON u.staff_id = st.id
-    WHERE a.status IN ('Rejected','Cancelled')
-    ORDER BY a.appointment_date DESC
-");
+    $completedWhere
+    ORDER BY a.appointment_date DESC, a.id DESC
+    LIMIT $recordsPerPage OFFSET $completedOffset
+";
+
+$completedStmt = $conn->prepare($completedSql);
+
+if (!$completedStmt) {
+    die("Completed query prepare failed: " . $conn->error);
+}
+
+if (!empty($completedParams)) {
+    $completedStmt->bind_param(
+        $completedTypes,
+        ...$completedParams
+    );
+}
+
+$completedStmt->execute();
+
+$completed = $completedStmt->get_result();
+
+
+// =====================================================
+// REJECTED / CANCELLED PAGINATION + SEARCH
+// =====================================================
+
+$rejectedPage = isset($_GET['rejected_page'])
+    ? (int) $_GET['rejected_page']
+    : 1;
+
+if ($rejectedPage < 1) {
+    $rejectedPage = 1;
+}
+
+$rejectedSearch = isset($_GET['rejected_search'])
+    ? trim($_GET['rejected_search'])
+    : '';
+
+$rejectedWhere = "
+    WHERE a.status IN ('Rejected', 'Cancelled')
+";
+
+$rejectedParams = [];
+$rejectedTypes = "";
+
+if ($rejectedSearch !== '') {
+
+    $rejectedWhere .= "
+        AND (
+            u.full_name LIKE ?
+            OR s.student_id_number LIKE ?
+            OR st.staff_id_number LIKE ?
+            OR a.appointment_date LIKE ?
+            OR a.reason LIKE ?
+            OR a.status LIKE ?
+        )
+    ";
+
+    $searchParam = "%" . $rejectedSearch . "%";
+
+    $rejectedParams[] = $searchParam;
+    $rejectedParams[] = $searchParam;
+    $rejectedParams[] = $searchParam;
+    $rejectedParams[] = $searchParam;
+    $rejectedParams[] = $searchParam;
+    $rejectedParams[] = $searchParam;
+
+    $rejectedTypes = "ssssss";
+}
+
+
+// COUNT REJECTED / CANCELLED
+
+$rejectedCountSql = "
+    SELECT COUNT(*) AS total
+    FROM appointments a
+    INNER JOIN users u ON a.user_id = u.id
+    LEFT JOIN students s ON u.student_id = s.id
+    LEFT JOIN staffs st ON u.staff_id = st.id
+    $rejectedWhere
+";
+
+$rejectedCountStmt = $conn->prepare($rejectedCountSql);
+
+if (!$rejectedCountStmt) {
+    die("Rejected count prepare failed: " . $conn->error);
+}
+
+if (!empty($rejectedParams)) {
+    $rejectedCountStmt->bind_param(
+        $rejectedTypes,
+        ...$rejectedParams
+    );
+}
+
+$rejectedCountStmt->execute();
+
+$rejectedCountResult = $rejectedCountStmt->get_result();
+
+$totalRejected = (int) $rejectedCountResult
+    ->fetch_assoc()['total'];
+
+$rejectedCountStmt->close();
+
+
+// TOTAL REJECTED PAGES
+
+$totalRejectedPages = ceil(
+    $totalRejected / $recordsPerPage
+);
+
+if (
+    $totalRejectedPages > 0 &&
+    $rejectedPage > $totalRejectedPages
+) {
+    $rejectedPage = $totalRejectedPages;
+}
+
+if ($totalRejectedPages === 0) {
+    $rejectedPage = 1;
+}
+
+$rejectedOffset =
+    ($rejectedPage - 1) * $recordsPerPage;
+
+
+// GET REJECTED / CANCELLED RECORDS
+
+$rejectedSql = "
+    SELECT
+        a.*,
+        u.full_name,
+        s.student_id_number,
+        st.staff_id_number
+    FROM appointments a
+    INNER JOIN users u ON a.user_id = u.id
+    LEFT JOIN students s ON u.student_id = s.id
+    LEFT JOIN staffs st ON u.staff_id = st.id
+    $rejectedWhere
+    ORDER BY a.appointment_date DESC, a.id DESC
+    LIMIT $recordsPerPage OFFSET $rejectedOffset
+";
+
+$rejectedStmt = $conn->prepare($rejectedSql);
+
+if (!$rejectedStmt) {
+    die("Rejected query prepare failed: " . $conn->error);
+}
+
+if (!empty($rejectedParams)) {
+    $rejectedStmt->bind_param(
+        $rejectedTypes,
+        ...$rejectedParams
+    );
+}
+
+$rejectedStmt->execute();
+
+$rejected = $rejectedStmt->get_result();
 ?>
     
     <!DOCTYPE html>
@@ -457,7 +705,13 @@ $rejected = mysqli_query($conn, "
                             <h2>Completed History</h2>
                             <div class="search-box">
                                 <i class="fas fa-search"></i>
-                                <input type="text" class="table-search" placeholder="Search history...">
+                                <input
+                                    type="text"
+                                    id="completedSearch"
+                                    class="table-search"
+                                    value="<?= htmlspecialchars($completedSearch); ?>"
+                                    placeholder="Search history..."
+                                >
                             </div>
                         </div>
                         <table class="appointment-table read-only">
@@ -514,6 +768,84 @@ $rejected = mysqli_query($conn, "
 
                             </tbody>
                         </table>
+                        <div class="table-footer">
+
+                                <p>
+                                    Showing
+                                    <?= $totalCompleted > 0
+                                        ? (($completedPage - 1) * $recordsPerPage + 1)
+                                        : 0
+                                    ?>
+                                    -
+                                    <?= min(
+                                        $completedPage * $recordsPerPage,
+                                        $totalCompleted
+                                    ) ?>
+                                    of
+                                    <?= $totalCompleted ?>
+                                    <?= $totalCompleted === 1 ? 'record' : 'records' ?>
+                                </p>
+
+                                <?php if ($totalCompletedPages > 1): ?>
+
+                                <div class="pagination">
+
+                                    <?php if ($completedPage > 1): ?>
+
+                                        <a
+                                            href="?completed_page=<?= $completedPage - 1 ?>&completed_search=<?= urlencode($completedSearch) ?>#completed"
+                                            class="btn-page"
+                                        >
+                                            <i class="bx bx-chevron-left"></i>
+                                        </a>
+
+                                    <?php else: ?>
+
+                                        <button class="btn-page" disabled>
+                                            <i class="bx bx-chevron-left"></i>
+                                        </button>
+
+                                    <?php endif; ?>
+
+
+                                    <?php for (
+                                        $page = 1;
+                                        $page <= $totalCompletedPages;
+                                        $page++
+                                    ): ?>
+
+                                        <a
+                                            href="?completed_page=<?= $page ?>&completed_search=<?= urlencode($completedSearch) ?>#completed"
+                                            class="btn-page <?= $page == $completedPage ? 'active' : '' ?>"
+                                        >
+                                            <?= $page ?>
+                                        </a>
+
+                                    <?php endfor; ?>
+
+
+                                    <?php if ($completedPage < $totalCompletedPages): ?>
+
+                                        <a
+                                            href="?completed_page=<?= $completedPage + 1 ?>&completed_search=<?= urlencode($completedSearch) ?>#completed"
+                                            class="btn-page"
+                                        >
+                                            <i class="bx bx-chevron-right"></i>
+                                        </a>
+
+                                    <?php else: ?>
+
+                                        <button class="btn-page" disabled>
+                                            <i class="bx bx-chevron-right"></i>
+                                        </button>
+
+                                    <?php endif; ?>
+
+                                </div>
+
+                                <?php endif; ?>
+
+                            </div>
                     </div>
 
                     <!-- 4. REJECTED SECTION -->
@@ -522,7 +854,13 @@ $rejected = mysqli_query($conn, "
                             <h2>Rejected / Cancelled</h2>
                             <div class="search-box">
                                 <i class="fas fa-search"></i>
-                                <input type="text" class="table-search" placeholder="Search rejected...">
+                                <input
+                                    type="text"
+                                    id="rejectedSearch"
+                                    class="table-search"
+                                    value="<?= htmlspecialchars($rejectedSearch); ?>"
+                                    placeholder="Search rejected..."
+                                >
                             </div>
                         </div>
                         <table class="appointment-table read-only">
@@ -579,6 +917,84 @@ $rejected = mysqli_query($conn, "
 
                             </tbody>
                         </table>
+                        <div class="table-footer">
+
+                                <p>
+                                    Showing
+                                    <?= $totalRejected > 0
+                                        ? (($rejectedPage - 1) * $recordsPerPage + 1)
+                                        : 0
+                                    ?>
+                                    -
+                                    <?= min(
+                                        $rejectedPage * $recordsPerPage,
+                                        $totalRejected
+                                    ) ?>
+                                    of
+                                    <?= $totalRejected ?>
+                                    <?= $totalRejected === 1 ? 'record' : 'records' ?>
+                                </p>
+
+                                <?php if ($totalRejectedPages > 1): ?>
+
+                                <div class="pagination">
+
+                                    <?php if ($rejectedPage > 1): ?>
+
+                                        <a
+                                            href="?rejected_page=<?= $rejectedPage - 1 ?>&rejected_search=<?= urlencode($rejectedSearch) ?>#rejected"
+                                            class="btn-page"
+                                        >
+                                            <i class="bx bx-chevron-left"></i>
+                                        </a>
+
+                                    <?php else: ?>
+
+                                        <button class="btn-page" disabled>
+                                            <i class="bx bx-chevron-left"></i>
+                                        </button>
+
+                                    <?php endif; ?>
+
+
+                                    <?php for (
+                                        $page = 1;
+                                        $page <= $totalRejectedPages;
+                                        $page++
+                                    ): ?>
+
+                                        <a
+                                            href="?rejected_page=<?= $page ?>&rejected_search=<?= urlencode($rejectedSearch) ?>#rejected"
+                                            class="btn-page <?= $page == $rejectedPage ? 'active' : '' ?>"
+                                        >
+                                            <?= $page ?>
+                                        </a>
+
+                                    <?php endfor; ?>
+
+
+                                    <?php if ($rejectedPage < $totalRejectedPages): ?>
+
+                                        <a
+                                            href="?rejected_page=<?= $rejectedPage + 1 ?>&rejected_search=<?= urlencode($rejectedSearch) ?>#rejected"
+                                            class="btn-page"
+                                        >
+                                            <i class="bx bx-chevron-right"></i>
+                                        </a>
+
+                                    <?php else: ?>
+
+                                        <button class="btn-page" disabled>
+                                            <i class="bx bx-chevron-right"></i>
+                                        </button>
+
+                                    <?php endif; ?>
+
+                                </div>
+
+                                <?php endif; ?>
+
+                            </div>
                     </div>
 
                 </div>

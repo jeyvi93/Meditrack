@@ -64,46 +64,292 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 // ===============================
-// TABLE SEARCH
+// AJAX TABLE SEARCH
 // ===============================
-document.querySelectorAll(".table-search").forEach(search => {
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const completedSearch =
+        document.getElementById("completedSearch");
+
+    const rejectedSearch =
+        document.getElementById("rejectedSearch");
 
 
-    search.addEventListener("keyup", function(){
+    // ===============================
+    // COMPLETED SEARCH
+    // ===============================
+
+    if (completedSearch) {
+
+        let completedTimeout;
+        let completedController;
+
+        completedSearch.addEventListener("input", function () {
+
+            clearTimeout(completedTimeout);
+
+            completedTimeout = setTimeout(async () => {
+
+                const search =
+                    completedSearch.value.trim();
+
+                if (completedController) {
+                    completedController.abort();
+                }
+
+                completedController =
+                    new AbortController();
+
+                const params =
+                    new URLSearchParams();
+
+                if (search !== "") {
+                    params.set(
+                        "completed_search",
+                        search
+                    );
+                }
+
+                params.set(
+                    "completed_page",
+                    "1"
+                );
+
+                params.set(
+                    "ajax",
+                    "completed"
+                );
 
 
-        let keyword = this.value.toLowerCase();
+                try {
+
+                    const response =
+                        await fetch(
+                            "appointments.php?" +
+                            params.toString(),
+                            {
+                                signal:
+                                    completedController.signal
+                            }
+                        );
+
+                    const html =
+                        await response.text();
 
 
-        let table = this.closest(".tab-content")
-                        .querySelector("tbody");
+                    const parser =
+                        new DOMParser();
+
+                    const doc =
+                        parser.parseFromString(
+                            html,
+                            "text/html"
+                        );
 
 
-        let rows = table.querySelectorAll("tr");
+                    const newTbody =
+                        doc.querySelector(
+                            "#completed .appointment-table tbody"
+                        );
+
+                    const currentTbody =
+                        document.querySelector(
+                            "#completed .appointment-table tbody"
+                        );
 
 
-        rows.forEach(row => {
+                    const newFooter =
+                        doc.querySelector(
+                            "#completed .table-footer"
+                        );
+
+                    const currentFooter =
+                        document.querySelector(
+                            "#completed .table-footer"
+                        );
 
 
-            let text = row.textContent.toLowerCase();
+                    if (newTbody && currentTbody) {
+
+                        currentTbody.innerHTML =
+                            newTbody.innerHTML;
+
+                    }
 
 
-            if(text.includes(keyword)){
+                    if (newFooter && currentFooter) {
 
-                row.style.display = "";
+                        currentFooter.innerHTML =
+                            newFooter.innerHTML;
 
-            }else{
+                    }
 
-                row.style.display = "none";
 
-            }
+                    // KEEP SEARCH BOX FOCUSED
 
+                    completedSearch.focus();
+
+                    completedSearch.setSelectionRange(
+                        completedSearch.value.length,
+                        completedSearch.value.length
+                    );
+
+
+                } catch (error) {
+
+                    if (error.name !== "AbortError") {
+                        console.error(
+                            "Completed search error:",
+                            error
+                        );
+                    }
+
+                }
+
+            }, 300);
 
         });
 
+    }
 
-    });
 
+    // ===============================
+    // REJECTED / CANCELLED SEARCH
+    // ===============================
+
+    if (rejectedSearch) {
+
+        let rejectedTimeout;
+        let rejectedController;
+
+        rejectedSearch.addEventListener("input", function () {
+
+            clearTimeout(rejectedTimeout);
+
+            rejectedTimeout = setTimeout(async () => {
+
+                const search =
+                    rejectedSearch.value.trim();
+
+                if (rejectedController) {
+                    rejectedController.abort();
+                }
+
+                rejectedController =
+                    new AbortController();
+
+                const params =
+                    new URLSearchParams();
+
+                if (search !== "") {
+                    params.set(
+                        "rejected_search",
+                        search
+                    );
+                }
+
+                params.set(
+                    "rejected_page",
+                    "1"
+                );
+
+                params.set(
+                    "ajax",
+                    "rejected"
+                );
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "appointments.php?" +
+                            params.toString(),
+                            {
+                                signal:
+                                    rejectedController.signal
+                            }
+                        );
+
+                    const html =
+                        await response.text();
+
+
+                    const parser =
+                        new DOMParser();
+
+                    const doc =
+                        parser.parseFromString(
+                            html,
+                            "text/html"
+                        );
+
+
+                    const newTbody =
+                        doc.querySelector(
+                            "#rejected .appointment-table tbody"
+                        );
+
+                    const currentTbody =
+                        document.querySelector(
+                            "#rejected .appointment-table tbody"
+                        );
+
+
+                    const newFooter =
+                        doc.querySelector(
+                            "#rejected .table-footer"
+                        );
+
+                    const currentFooter =
+                        document.querySelector(
+                            "#rejected .table-footer"
+                        );
+
+
+                    if (newTbody && currentTbody) {
+
+                        currentTbody.innerHTML =
+                            newTbody.innerHTML;
+
+                    }
+
+
+                    if (newFooter && currentFooter) {
+
+                        currentFooter.innerHTML =
+                            newFooter.innerHTML;
+
+                    }
+
+
+                    // KEEP SEARCH BOX FOCUSED
+
+                    rejectedSearch.focus();
+
+                    rejectedSearch.setSelectionRange(
+                        rejectedSearch.value.length,
+                        rejectedSearch.value.length
+                    );
+
+
+                } catch (error) {
+
+                    if (error.name !== "AbortError") {
+                        console.error(
+                            "Rejected search error:",
+                            error
+                        );
+                    }
+
+                }
+
+            }, 300);
+
+        });
+
+    }
 
 });
 
