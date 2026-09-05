@@ -10,37 +10,193 @@ require_once "../config/database.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // Staff ID
-    $staff_id = $_POST['staff_id_number'];
+    // ==========================
+    // STAFF ID
+    // ==========================
 
-    // Personal Information
-    $full_name = $_POST['full_name'];
-    $date_of_birth = $_POST['date_of_birth'];
-    $sex = $_POST['sex'];
-    $position = $_POST['position'];
-    $designation = $_POST['designation'];
-    $department = $_POST['department'];
-    $contact_number = $_POST['contact_number'];
-    $address = $_POST['address'];
+    $staff_id = trim($_POST['staff_id_number'] ?? '');
 
-    // Health Information
-    $blood_type = $_POST['blood_type'];
-    $height = $_POST['height'];
-    $weight = $_POST['weight'];
-    $allergies = $_POST['allergies'];
-    $medical_history = $_POST['medical_history'];
-    $current_medications = $_POST['current_medications'];
-    $vaccines = $_POST['vaccines'];
 
-    // Insurance Information
-    $philhealth_number = $_POST['philhealth_number'];
-    $insurance_number = $_POST['insurance_number'];
-    $insurance_company = $_POST['insurance_company'];
 
-    // Emergency Contact
-    $emergency_name = $_POST['emergency_name'];
-    $emergency_relationship = $_POST['emergency_relationship'];
-    $emergency_contact = $_POST['emergency_contact'];
+    // ==========================
+    // PERSONAL INFORMATION
+    // ==========================
+
+    $full_name = trim($_POST['full_name'] ?? '');
+    $date_of_birth = $_POST['date_of_birth'] ?? '';
+    $sex = $_POST['sex'] ?? '';
+    $position = $_POST['position'] ?? '';
+    $designation = trim($_POST['designation'] ?? '');
+    $department = $_POST['department'] ?? '';
+    $contact_number = trim($_POST['contact_number'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+
+
+    // ==========================
+    // FULL NAME VALIDATION
+    // ==========================
+
+    if ($full_name === '') {
+        $_SESSION['error'] = "Full name is required.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+    if (!preg_match("/^[A-Za-zÀ-ÿ\s.,'-]+$/", $full_name)) {
+        $_SESSION['error'] = "Full name should contain letters, spaces, and common name punctuation only.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+
+    // ==========================
+    // DATE OF BIRTH VALIDATION
+    // ==========================
+
+    if ($date_of_birth === '') {
+        $_SESSION['error'] = "Date of birth is required.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+
+    // ==========================
+    // POSITION / DESIGNATION / DEPARTMENT
+    // ==========================
+
+    $allowedPositions = [
+        "Teaching Staff",
+        "Non-Teaching Staff"
+    ];
+
+    if (!in_array($position, $allowedPositions, true)) {
+        $_SESSION['error'] = "Please select a valid position.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+    if ($designation === '') {
+        $_SESSION['error'] = "Designation is required.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+    $allowedDepartments = [
+        "Technology",
+        "Education",
+        "Business",
+        "Clinic",
+        "Library",
+        "Guidance Office",
+        "Cashier",
+        "Registrar",
+        "Utility",
+        "Admin Office",
+        "SASO",
+        "CSU"
+    ];
+
+    if (!in_array($department, $allowedDepartments, true)) {
+        $_SESSION['error'] = "Please select a valid department.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+
+    // ==========================
+    // CONTACT NUMBER
+    // ==========================
+
+    if (!preg_match('/^09[0-9]{9}$/', $contact_number)) {
+        $_SESSION['error'] = "Contact number must contain exactly 11 digits and start with 09.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+
+    // ==========================
+    // HEALTH INFORMATION
+    // ==========================
+
+    $blood_type = $_POST['blood_type'] ?? '';
+    $height = $_POST['height'] ?? '';
+    $weight = $_POST['weight'] ?? '';
+    $allergies = trim($_POST['allergies'] ?? '');
+    $medical_history = trim($_POST['medical_history'] ?? '');
+    $current_medications = trim($_POST['current_medications'] ?? '');
+    $vaccines = trim($_POST['vaccines'] ?? '');
+
+
+    // Validate height if provided
+    if ($height !== '' && (!is_numeric($height) || $height < 1)) {
+        $_SESSION['error'] = "Height must be a valid number greater than 0.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+
+    // Validate weight if provided
+    if ($weight !== '' && (!is_numeric($weight) || $weight < 1)) {
+        $_SESSION['error'] = "Weight must be a valid number greater than 0.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+
+    // ==========================
+    // INSURANCE INFORMATION
+    // ==========================
+
+    $philhealth_number = trim($_POST['philhealth_number'] ?? '');
+    $insurance_number = trim($_POST['insurance_number'] ?? '');
+    $insurance_company = trim($_POST['insurance_company'] ?? '');
+
+
+    // ==========================
+    // EMERGENCY CONTACT
+    // ==========================
+
+    $emergency_name = trim($_POST['emergency_name'] ?? '');
+    $emergency_relationship = trim($_POST['emergency_relationship'] ?? '');
+    $emergency_contact = trim($_POST['emergency_contact'] ?? '');
+
+
+    // Emergency name validation if provided
+    if (
+        $emergency_name !== '' &&
+        !preg_match("/^[A-Za-zÀ-ÿ\s.,'-]+$/", $emergency_name)
+    ) {
+        $_SESSION['error'] = "Emergency contact name should contain letters, spaces, and common name punctuation only.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+
+    // Emergency relationship validation if provided
+    if (
+        $emergency_relationship !== '' &&
+        !preg_match("/^[A-Za-zÀ-ÿ\s-]+$/", $emergency_relationship)
+    ) {
+        $_SESSION['error'] = "Emergency relationship should contain letters and spaces only.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+
+    // Emergency contact validation if provided
+    if (
+        $emergency_contact !== '' &&
+        !preg_match('/^09[0-9]{9}$/', $emergency_contact)
+    ) {
+        $_SESSION['error'] = "Emergency contact must contain exactly 11 digits and start with 09.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+
+    // ==========================
+    // UPDATE STAFF RECORD
+    // ==========================
 
     $sql = "UPDATE staffs SET
         full_name = ?,
@@ -69,14 +225,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = mysqli_prepare($conn, $sql);
 
     if (!$stmt) {
-        $_SESSION['error'] = "Database error: " . mysqli_error($conn);
+        $_SESSION['error'] = "Database error while preparing the update.";
+        mysqli_close($conn);
+
         header("Location: ../clinic/staffs.php");
         exit();
     }
 
+
+    // ==========================
+    // BIND PARAMETERS
+    // ==========================
+
     mysqli_stmt_bind_param(
         $stmt,
-        "ssssssssssssddssssssss",
+        "sssssssssddsssssssssss",
         $full_name,
         $date_of_birth,
         $sex,
@@ -101,6 +264,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $staff_id
     );
 
+
+    // ==========================
+    // EXECUTE UPDATE
+    // ==========================
+
     if (mysqli_stmt_execute($stmt)) {
 
         $_SESSION['success'] = "Staff profile updated successfully.";
@@ -110,6 +278,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['error'] = "Failed to update staff profile.";
 
     }
+
 
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
@@ -123,3 +292,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 
 }
+?>

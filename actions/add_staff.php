@@ -25,15 +25,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $blood_type = $_POST['blood_type'];
     $height = $_POST['height'];
     $weight = $_POST['weight'];
-    $allergies = $_POST['allergies'];
-    $medical_history = $_POST['medical_history'];
-    $current_medications = $_POST['current_medications'];
-    $vaccines = $_POST['vaccines'];
+    $allergies = trim($_POST['allergies'] ?? '') ?: 'N/A';
+    $medical_history = trim($_POST['medical_history'] ?? '') ?: 'N/A';
+    $current_medications = trim($_POST['current_medications'] ?? '') ?: 'N/A';
+    $vaccines = trim($_POST['vaccines'] ?? '') ?: 'N/A';
 
     // Insurance Information
-    $philhealth_number = $_POST['philhealth_number'];
-    $insurance_number = $_POST['insurance_number'];
-    $insurance_company = $_POST['insurance_company'];
+    $philhealth_number = trim($_POST['philhealth_number'] ?? '') ?: 'N/A';
+    $insurance_number = trim($_POST['insurance_number'] ?? '') ?: 'N/A';
+    $insurance_company = trim($_POST['insurance_company'] ?? '') ?: 'N/A';
 
     // Emergency Contact
     $emergency_name = $_POST['emergency_name'];
@@ -101,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     mysqli_stmt_bind_param(
         $stmt,
-        "sssssssssddsssssssssss",
+        "ssssssssssddssssssssss",
         $staff_id,
         $full_name,
         $date_of_birth,

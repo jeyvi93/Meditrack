@@ -120,7 +120,7 @@ unset($_SESSION['login_email']);
                                     type="email"
                                     id="email"
                                     name="email"
-                                    placeholder="email@mcc.edu.ph"
+                                    placeholder="email@gmail.com"
                                     value="<?php echo htmlspecialchars($loginEmail); ?>"
                                     required
                                 >

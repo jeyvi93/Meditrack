@@ -93,7 +93,7 @@ unset($_SESSION['error_field']);
                                 <label>Email Address</label>
                                 <div class="input-box">
                                     <i class="fas fa-envelope"></i>
-                                    <input type="email"  name="email" placeholder="email@mcc.edu.ph" value="<?php echo htmlspecialchars($oldEmail); ?>" required>
+                                    <input type="email"  name="email" placeholder="email@gmail.com" value="<?php echo htmlspecialchars($oldEmail); ?>" required>
                                 </div>
                                 <?php if ($errorField === 'email'): ?>
                                     <span class="field-error"><?php echo htmlspecialchars($errorMessage); ?></span>
@@ -120,10 +120,13 @@ unset($_SESSION['error_field']);
                                 <label>ID Number</label>
                                 <div class="input-box">
                                     <i class="fas fa-id-card"></i>
-                                    <input type="text" name="id_number" placeholder="XXX-XXXX"
-                                    pattern="[0-9]{3}-[0-9]{5}"
-                                    maxlength="9"
-                                    title="Student ID must be in the format 123-45678"
+                                    <input type="text"
+                                    name="id_number"
+                                    placeholder="Enter ID Number"
+                                    maxlength="20"
+                                    pattern="[0-9!@#$%^&*()_+=\-./ ]+"
+                                    oninput="this.value = this.value.replace(/[A-Za-z]/g, '')"
+                                    title="ID number can contain numbers and symbols only."
                                     value="<?php echo htmlspecialchars($oldIdNumber); ?>"
                                     required>
                                 </div>

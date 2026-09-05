@@ -1,3 +1,23 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit();
+}
+
+require_once "../config/database.php";
+
+$user_id = $_SESSION['user_id'];
+$full_name = $_SESSION['full_name'] ?? '';
+
+$successMessage = $_SESSION['success'] ?? '';
+$errorMessage = $_SESSION['error'] ?? '';
+
+unset($_SESSION['success']);
+unset($_SESSION['error']);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,10 +40,10 @@
     </div>
 
     <div class="desktop-menu">
-        <a href="view_appointments.html">My Appointments</a>
-        <a href="book_appointment.html" style="color: var(--primary-blue);">Book Appointment</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="view_profile.html">Profile</a>
+        <a href="view_appointments.php">My Appointments</a>
+        <a href="book_appointment.php" style="color: var(--primary-blue);">Book Appointment</a>
+        <a href="notifications.php">Notifications</a>
+        <a href="view_profile.php">Profile</a>
         <a href="../auth/logout.php" class="btn-logout-small" onclick="openLogoutModal(); return false;">Logout</a>
     </div>
 </nav>
@@ -58,39 +78,36 @@
             </div>
 
             <!-- Right Side: The Actual Form -->
-            <form action="#" class="appointment-card" onsubmit="openAppointmentModal(event)">
+            <form action="../actions/book_appointment.php" method="POST" class="appointment-card" onsubmit="openAppointmentModal(event)">
                 <div class="form-row">
                     <div class="input-group">
                         <label>Logged-in User</label>
                         <div class="input-box disabled">
                             <i class='bx bx-user'></i>
-                            <input type="text" value="John Doe (Student)" disabled>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Contact Number</label>
-                        <div class="input-box">
-                            <i class='bx bx-phone'></i>
-                            <input type="text" placeholder="0912 345 6789" required>
+                            <input
+                                type="text"
+                                value="<?= htmlspecialchars($full_name) ?>"
+                                disabled>
                         </div>
                     </div>
                 </div>
 
                 <div class="input-group">
                     <label>Purpose of Visit</label>
+
                     <div class="input-box">
                         <i class='bx bx-notepad'></i>
-                        <input type="text" placeholder="Enter reason (e.g. Fever, Consultation)" required>
+                        <textarea
+                            name="purpose"
+                            rows="2"
+                            maxlength="255"
+                            placeholder="Please state your main concern or reason for visiting the clinic."
+                            required></textarea>
                     </div>
-                </div>
 
-                <div class="input-group">
-                    <label>Symptoms / Additional Notes</label>
-                    <div class="input-box">
-                        <i class='bx bx-detail'></i>
-                        <textarea placeholder="Describe how you feel..."></textarea>
-                    </div>
+                    <small class="input-hint">
+                        Example: Fever and headache, medical consultation, or minor injury.
+                    </small>
                 </div>
 
                 <div class="form-row">
@@ -98,7 +115,11 @@
                         <label>Select Date</label>
                         <div class="input-box">
                             <i class='bx bx-calendar'></i>
-                            <input type="date" required>
+                            <input
+                                type="date"
+                                name="appointment_date"
+                                min="<?= date('Y-m-d') ?>"
+                                required>
                         </div>
                     </div>
 
@@ -106,12 +127,12 @@
                         <label>Preferred Time</label>
                         <div class="input-box">
                             <i class='bx bx-time'></i>
-                            <select required>
+                            <select name="appointment_time" required>
                                 <option value="">Select Time</option>
-                                <option>8:30 AM</option>
-                                <option>10:00 AM</option>
-                                <option>1:30 PM</option>
-                                <option>3:00 PM</option>
+                                <option value="08:30:00">8:30 AM</option>
+                                <option value="10:00:00">10:00 AM</option>
+                                <option value="13:30:00">1:30 PM</option>
+                                <option value="15:00:00">3:00 PM</option>
                             </select>
                         </div>
                     </div>
@@ -194,23 +215,31 @@
 
 <!-- MOBILE BOTTOM TAB BAR -->
 <nav class="bottom-nav">
-    <a href="view_appointments.html" class="nav-item">
+    <a href="view_appointments.php" class="nav-item">
         <i class='bx bx-calendar-event'></i>
         <span>My Appointments</span>
     </a>
-    <a href="book_appointment.html" class="nav-item active">
+    <a href="book_appointment.php" class="nav-item active">
         <i class='bx bx-plus-circle'></i>
         <span>Book Appointment</span>
     </a>
-    <a href="notifications.html" class="nav-item">
+    <a href="notifications.php" class="nav-item">
         <i class='bx bx-bell'></i>
         <span>Notifications</span>
     </a>
-    <a href="view_profile.html" class="nav-item">
+    <a href="view_profile.php" class="nav-item">
         <i class='bx bx-user-circle'></i>
         <span>Profile</span>
     </a>
 </nav>
+
+<script>
+<?php if ($successMessage): ?>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("successAppointmentModal").classList.remove("hidden");
+    });
+<?php endif; ?>
+</script>
 
 <script src="../assets/js/book_appointment.js"></script>
 </body>

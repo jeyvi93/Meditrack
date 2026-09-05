@@ -69,9 +69,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
 
-    // Validate ID format
-    if (!preg_match("/^[0-9]{3}-[0-9]{5}$/", $id_number)) {
-        $_SESSION['error'] = "ID number must be in the format 123-45678.";
+    // Validate ID number
+    if ($id_number === '' || preg_match('/[A-Za-z]/', $id_number)) {
+        $_SESSION['error'] = "ID number can contain numbers and symbols only.";
         $_SESSION['error_field'] = 'id_number';
 
         header("Location: ../patient/register.php");

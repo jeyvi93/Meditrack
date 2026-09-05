@@ -695,10 +695,14 @@ onclick='openEditStudentModal({
 
         <div class="summary-info">
             <input
-                type="text"
-                id="e_fullName"
-                name="full_name"
-                placeholder="Full Name">
+            type="text"
+            id="e_fullName"
+            name="full_name"
+            placeholder="Last Name, First Name Middle Name"
+            pattern="[A-Za-zÀ-ÿ\s.,'-]+"
+            title="Full name should contain letters, spaces, and common name punctuation only."
+            oninput="this.value = this.value.replace(/[0-9]/g, '')"
+            required>
 
             <!-- Display only -->
             <input
@@ -741,17 +745,37 @@ onclick='openEditStudentModal({
 
             <div class="data-group">
                 <label>Year Level</label>
-                <input type="number" id="e_year" name="year_level" min="1" max="4">
+                <input
+                type="number"
+                id="e_year"
+                name="year_level"
+                min="1"
+                max="4"
+                required>
             </div>
 
             <div class="data-group">
                 <label>Department</label>
-                <input type="text" id="e_department" name="department">
+                <select id="e_department" name="department" required>
+                    <option value="Technology">Technology</option>
+                    <option value="Education">Education</option>
+                    <option value="Business">Business</option>
+                </select>
             </div>
 
             <div class="data-group">
                 <label>Contact Number</label>
-                <input type="text" id="e_contact" name="contact_number">
+                <input
+                    type="tel"
+                    id="e_contact"
+                    name="contact_number"
+                    maxlength="11"
+                    minlength="11"
+                    pattern="09[0-9]{9}"
+                    inputmode="numeric"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                    title="Contact number must contain exactly 11 digits and start with 09."
+                    required>
             </div>
 
             <div class="data-group full-width">
@@ -772,17 +796,27 @@ onclick='openEditStudentModal({
 
             <div class="data-group">
                 <label>Blood Type</label>
-                <input type="text" id="e_blood" name="blood_type">
+                <select id="e_blood" name="blood_type">
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
             </div>
 
             <div class="data-group">
                 <label>Height (cm)</label>
-                <input type="number" step="0.01" id="e_height" name="height">
+                <input type="number" step="0.01" id="e_height" name="height" required>
             </div>
 
             <div class="data-group">
                 <label>Weight (kg)</label>
-                <input type="number" step="0.01" id="e_weight" name="weight">
+                <input type="number" step="0.01" id="e_weight" name="weight" required>
             </div>
 
             <div class="data-group">
@@ -853,17 +887,41 @@ onclick='openEditStudentModal({
 
             <div class="data-group">
                 <label>Name</label>
-                <input type="text" id="e_emergencyName" name="emergency_name">
+                <input
+                type="text"
+                id="e_emergencyName"
+                name="emergency_name"
+                pattern="[A-Za-zÀ-ÿ\s.,'-]+"
+                title="Contact name should contain letters, spaces, and common name punctuation only."
+                oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                required>
             </div>
 
             <div class="data-group">
                 <label>Relationship</label>
-                <input type="text" id="e_relationship" name="emergency_relationship">
+                <input
+                type="text"
+                id="e_relationship"
+                name="emergency_relationship"
+                pattern="[A-Za-zÀ-ÿ\s-]+"
+                title="Relationship should contain letters and spaces only."
+                oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                required>
             </div>
 
             <div class="data-group">
                 <label>Contact Number</label>
-                <input type="text" id="e_emergencyNumber" name="emergency_contact">
+                <input
+                type="tel"
+                id="e_emergencyNumber"
+                name="emergency_contact"
+                maxlength="11"
+                minlength="11"
+                pattern="09[0-9]{9}"
+                inputmode="numeric"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                title="Contact number must contain exactly 11 digits and start with 09."
+                required>
             </div>
 
         </div>

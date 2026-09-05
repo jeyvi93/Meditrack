@@ -11,12 +11,9 @@ function closeAppointmentModal() {
 }
 
 function confirmAppointment() {
-    // Close confirmation modal
     closeAppointmentModal();
 
-    // Show success modal
-    document.getElementById('successAppointmentModal')
-        .classList.remove('hidden');
+    document.querySelector('.appointment-card').submit();
 }
 
 function closeSuccessModal() {

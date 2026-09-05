@@ -2,8 +2,58 @@
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../index.php");
+    header("Location: ../login.php");
     exit();
+}
+
+require_once "../config/database.php";
+
+$user_id = $_SESSION['user_id'];
+
+$stmt = $conn->prepare("
+    SELECT 
+        id,
+        appointment_date,
+        appointment_time,
+        purpose,
+        status,
+        reason,
+        note
+    FROM appointments
+    WHERE user_id = ?
+    ORDER BY appointment_date ASC, appointment_time ASC
+");
+
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+
+$result = $stmt->get_result();
+
+$appointments = [];
+
+while ($row = $result->fetch_assoc()) {
+    $appointments[] = $row;
+}
+
+$stmt->close();
+
+$pendingAppointments = [];
+$approvedAppointments = [];
+$completedAppointments = [];
+$cancelledAppointments = [];
+
+foreach ($appointments as $appointment) {
+    $status = strtolower(trim($appointment['status'] ?? ''));
+
+    if ($status === 'pending') {
+        $pendingAppointments[] = $appointment;
+    } elseif ($status === 'approved') {
+        $approvedAppointments[] = $appointment;
+    } elseif ($status === 'completed') {
+        $completedAppointments[] = $appointment;
+    } elseif ($status === 'rejected' || $status === 'cancelled') {
+        $cancelledAppointments[] = $appointment;
+    }
 }
 ?>
 
@@ -28,10 +78,10 @@ if (!isset($_SESSION['user_id'])) {
         <img src="../assets/images/med.png" alt="Logo">
     </div>
     <div class="desktop-menu">
-        <a href="view_appointments.html" style="color: var(--primary-blue);">My Appointments</a>
-        <a href="book_appointment.html">Book Appointment</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="view_profile.html">Profile</a>
+        <a href="view_appointments.php" style="color: var(--primary-blue);">My Appointments</a>
+        <a href="book_appointment.php">Book Appointment</a>
+        <a href="notifications.php">Notifications</a>
+        <a href="view_profile.php">Profile</a>
         <a href="../auth/logout.php" class="btn-logout-small" onclick="openLogoutModal(); return false;">Logout</a>
     </div>
 </nav>
@@ -78,100 +128,278 @@ if (!isset($_SESSION['user_id'])) {
 
                 <!-- PENDING -->
                 <div id="pending" class="tab-content active">
-                    <div class="appointments-list-wrapper">
-                        <div class="inner-card">
-                            <div class="card-date-info">
-                                <span class="day">27</span>
-                                <span class="month">JUN</span>
-                            </div>
-                            <div class="card-text">
-                                <span class="status-pill pending">Pending</span>
-                                <h3>Medicine Request</h3>
-                                <p><i class='bx bx-time'></i> 02:30 PM</p>
-                            </div>
-                            <button class="btn-cancel-mini" onclick="openModal()">Cancel</button>
-                        </div>
-                    </div>
-                </div>
 
-                <div id="pending" class="tab-content active">
                     <div class="appointments-list-wrapper">
-                        <div class="inner-card">
-                            <div class="card-date-info">
-                                <span class="day">28</span>
-                                <span class="month">JUN</span>
-                            </div>
-                            <div class="card-text">
-                                <span class="status-pill pending">Pending</span>
-                                <h3>Medicine Request</h3>
-                                <p><i class='bx bx-time'></i> 02:30 PM</p>
-                            </div>
-                            <button class="btn-cancel-mini" onclick="openModal()">Cancel</button>
-                        </div>
-                    </div>
-                </div>
 
-                <div id="pending" class="tab-content active">
-                    <div class="appointments-list-wrapper">
-                        <div class="inner-card">
-                            <div class="card-date-info">
-                                <span class="day">29</span>
-                                <span class="month">JUN</span>
+                        <?php if (empty($pendingAppointments)): ?>
+
+                            <div class="empty-appointments">
+                                <div class="empty-icon pending-icon">
+                                    <i class='bx bx-time-five'></i>
+                                </div>
+
+                                <h3>No Pending Appointments</h3>
+
+                                <p>
+                                    You don't have any appointment requests waiting for review.
+                                    New requests will appear here after you submit an appointment.
+                                </p>
+
+                                <a href="book_appointment.php" class="empty-action">
+                                    <i class='bx bx-plus'></i>
+                                    Book an Appointment
+                                </a>
                             </div>
-                            <div class="card-text">
-                                <span class="status-pill pending">Pending</span>
-                                <h3>Medicine Request</h3>
-                                <p><i class='bx bx-time'></i> 02:30 PM</p>
-                            </div>
-                            <button class="btn-cancel-mini" onclick="openModal()">Cancel</button>
-                        </div>
+
+                        <?php else: ?>
+
+                            <?php foreach ($pendingAppointments as $appointment): ?>
+
+                                <div class="inner-card">
+
+                                    <div class="card-date-info">
+                                        <span class="day">
+                                            <?= date('d', strtotime($appointment['appointment_date'])) ?>
+                                        </span>
+
+                                        <span class="month">
+                                            <?= strtoupper(date('M', strtotime($appointment['appointment_date']))) ?>
+                                        </span>
+                                    </div>
+
+                                    <div class="card-text">
+
+                                        <span class="status-pill pending">
+                                            Pending
+                                        </span>
+
+                                        <h3>
+                                            <?= htmlspecialchars($appointment['purpose']) ?>
+                                        </h3>
+
+                                        <p>
+                                            <i class='bx bx-time'></i>
+                                            <?= date('h:i A', strtotime($appointment['appointment_time'])) ?>
+                                        </p>
+
+                                    </div>
+
+                                    <button
+                                        class="btn-cancel-mini"
+                                        onclick="openModal(<?= (int)$appointment['id'] ?>)">
+                                        Cancel
+                                    </button>
+
+                                </div>
+
+                            <?php endforeach; ?>
+
+                        <?php endif; ?>
+
                     </div>
+
                 </div>
 
                 <!-- APPROVED -->
                 <div id="approved" class="tab-content">
+
                     <div class="appointments-list-wrapper">
-                        <div class="inner-card">
-                            <div class="card-date-info confirmed">
-                                <span class="day">24</span>
-                                <span class="month">JUN</span>
+
+                        <?php if (empty($approvedAppointments)): ?>
+
+                            <div class="empty-appointments">
+                                <div class="empty-icon">
+                                    <i class='bx bx-calendar-check'></i>
+                                </div>
+
+                                <h3>No Approved Appointments</h3>
+
+                                <p>
+                                    You don't have any approved appointments yet.
+                                    Once the clinic approves your request, it will appear here.
+                                </p>
+
+                                <a href="book_appointment.php" class="empty-action">
+                                    <i class='bx bx-plus'></i>
+                                    Book an Appointment
+                                </a>
                             </div>
-                            <div class="card-text">
-                                <span class="status-pill confirmed">Approved</span>
-                                <h3>General Check-up</h3>
-                                <p><i class='bx bx-time'></i> 09:30 AM</p>
-                            </div>
-                            <button class="btn-cancel-mini" onclick="openModal()">Cancel</button>
-                        </div>
+
+                        <?php else: ?>
+
+                            <?php foreach ($approvedAppointments as $appointment): ?>
+
+                                <div class="inner-card">
+
+                                    <div class="card-date-info confirmed">
+                                        <span class="day">
+                                            <?= date('d', strtotime($appointment['appointment_date'])) ?>
+                                        </span>
+
+                                        <span class="month">
+                                            <?= strtoupper(date('M', strtotime($appointment['appointment_date']))) ?>
+                                        </span>
+                                    </div>
+
+                                    <div class="card-text">
+
+                                        <span class="status-pill confirmed">
+                                            Approved
+                                        </span>
+
+                                        <h3>
+                                            <?= htmlspecialchars($appointment['purpose']) ?>
+                                        </h3>
+
+                                        <p>
+                                            <i class='bx bx-time'></i>
+                                            <?= date('h:i A', strtotime($appointment['appointment_time'])) ?>
+                                        </p>
+
+                                    </div>
+
+                                    <button
+                                        class="btn-cancel-mini"
+                                        onclick="openModal(<?= (int)$appointment['id'] ?>)">
+                                        Cancel
+                                    </button>
+
+                                </div>
+
+                            <?php endforeach; ?>
+
+                        <?php endif; ?>
+
                     </div>
+
                 </div>
 
                 <!-- COMPLETED (TABLE) -->
                 <div id="completed" class="tab-content">
+
                     <div class="table-container">
+
                         <table class="appointment-table">
+
                             <thead>
-                                <tr><th>Date</th><th>Purpose</th><th>Status</th></tr>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                </tr>
                             </thead>
+
                             <tbody>
-                                <tr><td>Jun 30, 2026</td><td>Dental Check-up</td><td><span class="status-pill completed">Completed</span></td></tr>
+
+                                <?php if (empty($completedAppointments)): ?>
+
+                                    <tr>
+                                        <td colspan="3" style="text-align: center;">
+                                            No completed appointments yet.
+                                        </td>
+                                    </tr>
+
+                                <?php else: ?>
+
+                                    <?php foreach ($completedAppointments as $appointment): ?>
+
+                                        <tr>
+                                            <td>
+                                                <?= date('M d, Y', strtotime($appointment['appointment_date'])) ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($appointment['purpose']) ?>
+                                            </td>
+
+                                            <td>
+                                                <span class="status-pill completed">
+                                                    Completed
+                                                </span>
+                                            </td>
+                                        </tr>
+
+                                    <?php endforeach; ?>
+
+                                <?php endif; ?>
+
                             </tbody>
+
                         </table>
+
                     </div>
+
                 </div>
 
-                <!-- CANCELLED (TABLE) -->
+                <!-- CANCELLED -->
                 <div id="cancelled" class="tab-content">
+
                     <div class="table-container">
+
                         <table class="appointment-table">
+
                             <thead>
-                                <tr><th>Date</th><th>Purpose</th><th>Status</th></tr>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                </tr>
                             </thead>
+
                             <tbody>
-                                <tr><td>Jun 25, 2026</td><td>General Checkup</td><td><span class="status-pill cancelled">Rejected</span></td></tr>
+
+                                <?php if (empty($cancelledAppointments)): ?>
+
+                                    <tr>
+                                        <td colspan="3" style="text-align: center;">
+                                            No rejected or cancelled appointments.
+                                        </td>
+                                    </tr>
+
+                                <?php else: ?>
+
+                                    <?php foreach ($cancelledAppointments as $appointment): ?>
+
+                                        <tr>
+
+                                            <td>
+                                                <?= date('M d, Y', strtotime($appointment['appointment_date'])) ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($appointment['purpose']) ?>
+                                            </td>
+
+                                            <td>
+
+                                                <?php if (strtolower($appointment['status']) === 'rejected'): ?>
+
+                                                    <span class="status-pill cancelled">
+                                                        Rejected
+                                                    </span>
+
+                                                <?php else: ?>
+
+                                                    <span class="status-pill cancelled">
+                                                        Cancelled
+                                                    </span>
+
+                                                <?php endif; ?>
+
+                                            </td>
+
+                                        </tr>
+
+                                    <?php endforeach; ?>
+
+                                <?php endif; ?>
+
                             </tbody>
+
                         </table>
+
                     </div>
+
                 </div>
 
             </div>
@@ -181,19 +409,19 @@ if (!isset($_SESSION['user_id'])) {
 
 <!-- MOBILE BOTTOM TAB BAR -->
 <nav class="bottom-nav">
-    <a href="view_appointments.html" class="nav-item active">
+    <a href="view_appointments.php" class="nav-item active">
         <i class='bx bx-calendar-event'></i>
         <span>My Appointments</span>
     </a>
-    <a href="book_appointment.html" class="nav-item">
+    <a href="book_appointment.php" class="nav-item">
         <i class='bx bx-plus-circle'></i>
         <span>Book Appointment</span>
     </a>
-    <a href="notifications.html" class="nav-item">
+    <a href="notifications.php" class="nav-item">
         <i class='bx bx-bell'></i>
         <span>Notifications</span>
     </a>
-    <a href="view_profile.html" class="nav-item">
+    <a href="view_profile.php" class="nav-item">
         <i class='bx bx-user-circle'></i>
         <span>Profile</span>
     </a>

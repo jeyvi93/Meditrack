@@ -63,7 +63,7 @@ unset($_SESSION['error']);
                             <div class="input-row two-cols">
                                 <div class="input-group">
                                     <label>Course</label>
-                                    <input type="text" name="course" placeholder="BS IT" pattern="[A-Za-z0-9 .&-]+" title="Course should contain valid letters, numbers, spaces, periods, or hyphens." required>
+                                    <input type="text" name="course" placeholder="BS Information Technology" pattern="[A-Za-z0-9 .&-]+" title="Course should contain valid letters, numbers, spaces, periods, or hyphens." required>
                                 </div>
                                 <div class="input-group">
                                     <label>Department</label>
@@ -135,16 +135,16 @@ unset($_SESSION['error']);
                             </div>
                             <div class="input-group">
                                 <label>Contact Name</label>
-                                <input type="text" name="emergency_name" placeholder="Guardian Full Name" pattern="[A-Za-zÀ-ÿ\s.,'-]+" title="Contact name should contain letters, spaces, and common name punctuation only.">
+                                <input type="text" name="emergency_name" placeholder="Guardian Full Name" pattern="[A-Za-zÀ-ÿ\s.,'-]+" title="Contact name should contain letters, spaces, and common name punctuation only." required>
                             </div>
                             <div class="input-row two-cols">
                                 <div class="input-group">
                                     <label>Relationship</label>
-                                    <input type="text" name="emergency_relationship" placeholder="e.g. Mother" pattern="[A-Za-zÀ-ÿ\s-]+" title="Relationship should contain letters and spaces only.">
+                                    <input type="text" name="emergency_relationship" placeholder="e.g. Mother" pattern="[A-Za-zÀ-ÿ\s-]+" title="Relationship should contain letters and spaces only." required>
                                 </div>
                                 <div class="input-group">
                                     <label>Phone Number</label>
-                                    <input type="tel" name="emergency_contact" placeholder="09XXXXXXXXX" maxlength="11" minlength="11" pattern="09[0-9]{9}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Phone number must contain exactly 11 digits and start with 09.">
+                                    <input type="tel" name="emergency_contact" placeholder="09XXXXXXXXX" maxlength="11" minlength="11" pattern="09[0-9]{9}" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Phone number must contain exactly 11 digits and start with 09." required    >
                                 </div>
                             </div>
                         </section>

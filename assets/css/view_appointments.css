@@ -89,3 +89,75 @@
 
 @media (max-width: 992px) { .booking-grid { grid-template-columns: 1fr; } .info-side { display: none; } }
 @media (max-width: 768px) { .desktop-menu { display: none; } .bottom-nav { display: flex; } .page-header h1 { font-size: 2rem; } .appointment-card { padding: 20px; } }
+
+.empty-appointments {
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 35px 25px;
+}
+
+.empty-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #eff6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+}
+
+.empty-icon i {
+    font-size: 34px;
+    color: #2563eb;
+}
+
+.empty-appointments h3 {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.empty-appointments p {
+    max-width: 380px;
+    margin: 0 auto 20px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #64748b;
+}
+
+.empty-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--primary-blue);
+    color: white;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.empty-action:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+.empty-action i {
+    font-size: 17px;
+}
+
+.pending-icon {
+    background: #fff7ed;
+}
+
+.pending-icon i {
+    color: #f59e0b;
+}

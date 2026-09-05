@@ -443,7 +443,7 @@ function pageUrl($page, $queryParams) {
                     contact: <?= json_encode($staff["contact_number"]) ?>,
                     address: <?= json_encode($staff["address"]) ?>,
 
-                    blood: <?= json_encode($staff["blood_type"]) ?>,
+                    blood: <?= json_encode((string)$staff["blood_type"]) ?>,
                     height: <?= json_encode($staff["height"]) ?>,
                     weight: <?= json_encode($staff["weight"]) ?>,
                     allergies: <?= json_encode($staff["allergies"]) ?>,
@@ -798,7 +798,16 @@ function pageUrl($page, $queryParams) {
             </div>
 
             <div class="summary-info">
-                <input type="text" id="e_fullName" name="full_name" placeholder="Full Name">
+                <input
+                    type="text"
+                    id="e_fullName"
+                    name="full_name"
+                    placeholder="Last Name, First Name Middle Name"
+                    pattern="[A-Za-zÀ-ÿ\s.,'-]+"
+                    title="Full name should contain letters, spaces, and common name punctuation only."
+                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                    required
+                >
                 <input type="hidden" id="e_staffId" name="staff_id_number">
                 <input type="text" id="e_staffIdDisplay" readonly>
             </div>
@@ -813,7 +822,12 @@ function pageUrl($page, $queryParams) {
 
                 <div class="data-group">
                     <label>Date of Birth</label>
-                    <input type="date" id="e_dob" name="date_of_birth">
+                    <input
+                        type="date"
+                        id="e_dob"
+                        name="date_of_birth"
+                        required
+                    >
                 </div>
 
                 <div class="data-group">
@@ -831,22 +845,58 @@ function pageUrl($page, $queryParams) {
 
                 <div class="data-group">
                     <label>Position</label>
-                    <input type="text" id="e_position" name="position">
+                    <select id="e_position" name="position" required>
+                        <option value="">Select Position</option>
+                        <option value="Teaching Staff">Teaching Staff</option>
+                        <option value="Non-Teaching Staff">Non-Teaching Staff</option>
+                    </select>
                 </div>
 
                 <div class="data-group">
                     <label>Designation</label>
-                    <input type="text" id="e_designation" name="designation">
+                    <input
+                        type="text"
+                        id="e_designation"
+                        name="designation"
+                        placeholder="Instructor"
+                        required
+>
                 </div>
 
                 <div class="data-group">
                     <label>Department</label>
-                    <input type="text" id="e_department" name="department">
+                    <select id="e_department" name="department" required>
+                        <option value="">Select Department</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Education">Education</option>
+                        <option value="Business">Business</option>
+                        <option value="Clinic">Clinic</option>
+                        <option value="Library">Library</option>
+                        <option value="Guidance Office">Guidance Office</option>
+                        <option value="Cashier">Cashier</option>
+                        <option value="Registrar">Registrar</option>
+                        <option value="Utility">Utility</option>
+                        <option value="Admin Office">Admin Office</option>
+                        <option value="SASO">SASO</option>
+                        <option value="CSU">CSU</option>
+                    </select>
                 </div>
 
                 <div class="data-group">
                     <label>Contact Number</label>
-                    <input type="text" id="e_contact" name="contact_number">
+                    <input
+                        type="tel"
+                        id="e_contact"
+                        name="contact_number"
+                        placeholder="09XXXXXXXXX"
+                        maxlength="11"
+                        minlength="11"
+                        pattern="09[0-9]{9}"
+                        inputmode="numeric"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        title="Contact number must contain exactly 11 digits and start with 09."
+                        required
+                    >
                 </div>
 
                 <div class="data-group full-width">
@@ -865,17 +915,41 @@ function pageUrl($page, $queryParams) {
 
                 <div class="data-group">
                     <label>Blood Type</label>
-                    <input type="text" id="e_blood" name="blood_type">
+                    <select id="e_blood" name="blood_type">
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="Unknown">Unknown</option>
+                    </select>
                 </div>
 
                 <div class="data-group">
                     <label>Height</label>
-                    <input type="text" id="e_height" name="height">
+                    <input
+                        type="number"
+                        id="e_height"
+                        name="height"
+                        placeholder="170"
+                        min="1"
+                        step="1"
+                    >
                 </div>
 
                 <div class="data-group">
                     <label>Weight</label>
-                    <input type="text" id="e_weight" name="weight">
+                    <input
+                        type="number"
+                        id="e_weight"
+                        name="weight"
+                        placeholder="60"
+                        min="1"
+                        step="1"
+                    >
                 </div>
 
                 <div class="data-group">
@@ -944,17 +1018,42 @@ function pageUrl($page, $queryParams) {
 
                 <div class="data-group">
                     <label>Name</label>
-                    <input type="text" id="e_emergencyName" name="emergency_name">
+                    <input
+                        type="text"
+                        id="e_emergencyName"
+                        name="emergency_name"
+                        placeholder="Guardian Full Name"
+                        pattern="[A-Za-zÀ-ÿ\s.,'-]+"
+                        title="Contact name should contain letters, spaces, and common name punctuation only."
+                    >
                 </div>
 
                 <div class="data-group">
                     <label>Relationship</label>
-                    <input type="text" id="e_relationship" name="emergency_relationship">
+                    <input
+                        type="text"
+                        id="e_relationship"
+                        name="emergency_relationship"
+                        placeholder="e.g. Mother"
+                        pattern="[A-Za-zÀ-ÿ\s-]+"
+                        title="Relationship should contain letters and spaces only."
+                    >
                 </div>
 
                 <div class="data-group">
                     <label>Contact Number</label>
-                    <input type="text" id="e_emergencyNumber" name="emergency_contact">
+                    <input
+                        type="tel"
+                        id="e_emergencyNumber"
+                        name="emergency_contact"
+                        placeholder="09XXXXXXXXX"
+                        maxlength="11"
+                        minlength="11"
+                        pattern="09[0-9]{9}"
+                        inputmode="numeric"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        title="Phone number must contain exactly 11 digits and start with 09."
+                    >
                 </div>
 
             </div>
@@ -968,6 +1067,7 @@ function pageUrl($page, $queryParams) {
 
     </form>
 </div>
+
 <!-- DELETE STAFF MODAL -->
 <div id="deleteStaffModal" class="modal">
     <div class="modal-content modal-container delete-mode">
@@ -1011,8 +1111,8 @@ function pageUrl($page, $queryParams) {
 
     <div class="modal-content message-modal">
 
-        <div class="message-icon success">
-            <i class='bx bx-check-circle'></i>
+        <div class="message-icon <?= isset($_SESSION['success']) ? 'success' : 'error' ?>">
+            <i class="<?= isset($_SESSION['success']) ? 'bx bx-check-circle' : 'bx bx-error-circle' ?>"></i>
         </div>
 
         <h2>
