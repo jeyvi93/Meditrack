@@ -8,6 +8,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST["email"]);
     $password = trim($_POST["password"]);
 
+    $_SESSION["login_email"] = $email;
+
     $sql = "SELECT * FROM users WHERE email = ?";
 
     $stmt = mysqli_prepare($conn, $sql);
@@ -22,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $user = mysqli_fetch_assoc($result);
 
-        // Temporary (plain text password)
+        // Verify hashed password
         if (password_verify($password, $user["password"])) {
 
             // ==========================

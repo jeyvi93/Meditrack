@@ -9,6 +9,11 @@ $oldEmail = $_SESSION['old_email'] ?? '';
 $oldRole = $_SESSION['old_role'] ?? '';
 $oldIdNumber = $_SESSION['old_id_number'] ?? '';
 
+unset($_SESSION['old_full_name']);
+unset($_SESSION['old_email']);
+unset($_SESSION['old_role']);
+unset($_SESSION['old_id_number']);
+
 unset($_SESSION['success']);
 unset($_SESSION['error']);
 unset($_SESSION['error_field']);

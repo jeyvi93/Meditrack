@@ -133,14 +133,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     if (mysqli_stmt_execute($stmt)) {
+    $_SESSION['success'] = "Student added successfully.";
 
-        $_SESSION['success'] = "Student added successfully.";
+    mysqli_stmt_close($stmt);
+    mysqli_close($conn);
 
-    } else {
+    header("Location: ../clinic/students.php");
+    exit();
 
-        $_SESSION['error'] = "Failed to add student.";
+} else {
+    $_SESSION['error'] = "Failed to add student.";
 
-    }
+    mysqli_stmt_close($stmt);
+    mysqli_close($conn);
+
+    header("Location: ../clinic/add_student.php");
+    exit();
+}
 
 
     mysqli_stmt_close($stmt);

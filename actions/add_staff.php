@@ -129,21 +129,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (mysqli_stmt_execute($stmt)) {
 
-        $_SESSION['success'] = "Staff profile added successfully.";
-
-    } else {
-
-        $_SESSION['error'] = "Failed to add staff profile.";
-
-    }
-
+    $_SESSION['success'] = "Staff profile added successfully.";
 
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
 
-
     header("Location: ../clinic/staffs.php");
     exit();
 
+} else {
+
+    $_SESSION['error'] = "Failed to add staff profile.";
+
+    mysqli_stmt_close($stmt);
+    mysqli_close($conn);
+
+    header("Location: ../clinic/add_staff.php");
+    exit();
+}
 }
 ?>

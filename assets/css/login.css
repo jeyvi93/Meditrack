@@ -416,3 +416,18 @@
         padding: 14px;
     }
 }
+
+.login-error {
+    display: block;
+
+    height: 15px;
+
+    color: #dc2626;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.login-error-container {
+    height: 2px;
+}

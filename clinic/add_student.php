@@ -5,6 +5,9 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
     exit();
 }
+
+$errorMessage = $_SESSION['error'] ?? '';
+unset($_SESSION['error']);
 ?>
 
 <!DOCTYPE html>
@@ -237,7 +240,25 @@ if (!isset($_SESSION['user_id'])) {
                         
                     </div>
 
-                    
+                    <?php if (!empty($errorMessage)): ?>
+                        <div class="error-modal" id="errorModal">
+                            <div class="error-modal-content">
+                                <i class="fas fa-circle-exclamation"></i>
+
+                                <h2>Unable to Add Student</h2>
+
+                                <p><?php echo htmlspecialchars($errorMessage); ?></p>
+
+                                <button type="button" onclick="closeErrorModal()">OK</button>
+                            </div>
+                        </div>
+
+                        <script>
+                            function closeErrorModal() {
+                                document.getElementById("errorModal").style.display = "none";
+                            }
+                        </script>
+                    <?php endif; ?>
 
 
                     

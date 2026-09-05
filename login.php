@@ -1,3 +1,11 @@
+<?php
+session_start();
+
+$error = $_GET['error'] ?? '';
+$loginEmail = $_SESSION['login_email'] ?? '';
+
+unset($_SESSION['login_email']);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -113,6 +121,7 @@
                                     id="email"
                                     name="email"
                                     placeholder="email@mcc.edu.ph"
+                                    value="<?php echo htmlspecialchars($loginEmail); ?>"
                                     required
                                 >
 
@@ -149,9 +158,21 @@
                                 >
 
                             </div>
-
                         </div>
 
+                        <div class="login-error-container">
+                            <?php if ($error === '1'): ?>
+                                <span class="login-error">
+                                    <i class="fas fa-circle-exclamation"></i>
+                                    Invalid email or password.
+                                </span>
+                            <?php elseif ($error === 'invalid_role'): ?>
+                                <span class="login-error">
+                                    <i class="fas fa-circle-exclamation"></i>
+                                    Your account has an invalid role. Please contact the clinic administrator.
+                                </span>
+                            <?php endif; ?>
+                        </div>
 
                         <!-- LOGIN BUTTON -->
                         <button type="submit" class="btn-submit">
