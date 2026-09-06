@@ -226,11 +226,17 @@
 }
 
 .error-modal-content button {
-    background: #1e40af;
+    background: #dc2626;
     color: #ffffff;
     border: none;
     padding: 10px 24px;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.error-modal-content button:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
 }
