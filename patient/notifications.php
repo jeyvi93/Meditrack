@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications | MediTrack</title>
      <link rel="stylesheet" href="../assets/css/style.css">
+     <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/notifications.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -12,19 +13,7 @@
 <body>
 <div class="bg-gradient"></div>
     
-<nav class="navbar main-wrapper">
-    <div class="logo">
-        <img src="../assets/images/med.png" alt="Logo">
-    </div>
-
-    <div class="desktop-menu">
-        <a href="view_appointments.html">My Appointments</a>
-        <a href="book_appointment.html">Book Appointment</a>
-        <a href="notifications.html" style="color: var(--primary-blue);">Notifications</a>
-        <a href="view_profile.html">Profile</a>
-        <a href="../auth/logout.php" class="btn-logout-small" onclick="openLogoutModal(); return false;">Logout</a>
-    </div>
-</nav>
+<?php include '../includes/navbar.php'; ?>
 
 <main class="main-wrapper">
     <header class="page-header">
@@ -59,7 +48,7 @@
                     </div>
                     <p class="noti-text">Your request for a dental checkup on Oct 28 has been confirmed. Please bring your ID.</p>
                     <div class="noti-actions">
-                        <button class="btn-noti-primary" onclick="window.location.href='view_appointments.html'">View Appointment</button>
+                        <button class="btn-noti-primary" onclick="window.location.href='view_appointments.php'">View Appointment</button>
                         <button class="btn-noti-secondary" onclick="markAsRead(this)">Mark as Read</button>
                     </div>
                 </div>
@@ -70,45 +59,6 @@
     </div>
 </main>
 
-<nav class="bottom-nav">
-    <a href="view_appointments.html" class="nav-item">
-        <i class='bx bx-calendar-event'></i>
-        <span>My Appointments</span>
-    </a>
-    <a href="book_appointment.html" class="nav-item">
-        <i class='bx bx-plus-circle'></i>
-        <span>Book Appointment</span>
-    </a>
-    <a href="notifications.html" class="nav-item active">
-        <i class='bx bx-bell'></i>
-        <span>Notifications</span>
-    </a>
-    <a href="view_profile.html" class="nav-item">
-        <i class='bx bx-user-circle'></i>
-        <span>Profile</span>
-    </a>
-</nav>
-
-<!-- LOGOUT MODAL -->
-<div id="logoutModal" class="modal-overlay hidden">
-    <div class="modal-box">
-        <i class='bx bx-log-out-circle' style="color: #ef4444; font-size: 3.5rem;"></i>
-
-        <h3>Sign Out?</h3>
-
-        <p>Are you sure you want to end your session on this device?</p>
-
-        <div class="modal-btns">
-            <button class="btn-no" onclick="closeLogoutModal()">
-                Cancel
-            </button>
-
-            <button class="btn-yes" onclick="confirmLogout()">
-                Logout
-            </button>
-        </div>
-    </div>
-</div>
 
 <script src="../assets/js/notifications.js"></script>
 

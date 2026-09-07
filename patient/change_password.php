@@ -7,25 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/change_password.css">
 </head>
 <body>
 
 <div class="bg-gradient"></div>
 
-<!-- TOP NAVBAR (Desktop) -->
-<nav class="navbar main-wrapper">
-    <div class="logo">
-        <img src="../assets/images/med.png" alt="Logo">
-    </div>
-    <div class="desktop-menu">
-        <a href="view_appointments.html">My Appointments</a>
-        <a href="book_appointment.html">Book Appointment</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="view_profile.html" style="color: var(--primary-blue);">Profile</a>
-        <a href="../index.html" class="btn-logout-small">Logout</a>
-    </div>
-</nav>
+<?php include '../includes/navbar.php'; ?>
 
 <!-- MOBILE TOP BAR (Back button left end) -->
 <nav class="mobile-top-bar">
@@ -109,38 +98,6 @@
     </section>
 </main>
 
-<!-- MOBILE BOTTOM TAB BAR -->
-<nav class="bottom-nav">
-    <a href="view_appointments.html" class="nav-item">
-        <i class='bx bx-calendar-event'></i>
-        <span>My Appointments</span>
-    </a>
-    <a href="book_appointment.html" class="nav-item">
-        <i class='bx bx-plus-circle'></i>
-        <span>Book Appointment</span>
-    </a>
-    <a href="notifications.html" class="nav-item">
-        <i class='bx bx-bell'></i>
-        <span>Notifications</span>
-    </a>
-    <a href="view_profile.html" class="nav-item active">
-        <i class='bx bx-user-circle'></i>
-        <span>Profile</span>
-    </a>
-</nav>
-
-<!-- LOGOUT MODAL -->
-<div id="logoutModal" class="modal-overlay hidden">
-    <div class="modal-box">
-        <i class='bx bx-log-out-circle' style="color: #ef4444; font-size: 3.5rem;"></i>
-        <h3>Sign Out?</h3>
-        <p>Are you sure you want to end your session?</p>
-        <div class="modal-btns">
-            <button class="btn-no" onclick="closeLogoutModal()">Cancel</button>
-            <button class="btn-yes" onclick="confirmLogout()">Logout</button>
-        </div>
-    </div>
-</div>
 
 <!-- PASSWORD SUCCESS MODAL -->
 <div id="passwordSuccessModal" class="modal-overlay hidden">

@@ -64,7 +64,8 @@ foreach ($appointments as $appointment) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Appointments | MediTrack</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/view_appointments.css"> <!-- Uses same logic as book.css -->
+    <link rel="stylesheet" href="../assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/view_appointments.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
@@ -72,19 +73,7 @@ foreach ($appointments as $appointment) {
 
 <div class="bg-gradient"></div>
 
-<!-- TOP NAVBAR (Matches Book Page) -->
-<nav class="navbar main-wrapper">
-    <div class="logo">
-        <img src="../assets/images/med.png" alt="Logo">
-    </div>
-    <div class="desktop-menu">
-        <a href="view_appointments.php" style="color: var(--primary-blue);">My Appointments</a>
-        <a href="book_appointment.php">Book Appointment</a>
-        <a href="notifications.php">Notifications</a>
-        <a href="view_profile.php">Profile</a>
-        <a href="../auth/logout.php" class="btn-logout-small" onclick="openLogoutModal(); return false;">Logout</a>
-    </div>
-</nav>
+<?php include '../includes/navbar.php'; ?>
 
 <main class="main-wrapper">
     <section class="booking-section">
@@ -407,25 +396,6 @@ foreach ($appointments as $appointment) {
     </section>
 </main>
 
-<!-- MOBILE BOTTOM TAB BAR -->
-<nav class="bottom-nav">
-    <a href="view_appointments.php" class="nav-item active">
-        <i class='bx bx-calendar-event'></i>
-        <span>My Appointments</span>
-    </a>
-    <a href="book_appointment.php" class="nav-item">
-        <i class='bx bx-plus-circle'></i>
-        <span>Book Appointment</span>
-    </a>
-    <a href="notifications.php" class="nav-item">
-        <i class='bx bx-bell'></i>
-        <span>Notifications</span>
-    </a>
-    <a href="view_profile.php" class="nav-item">
-        <i class='bx bx-user-circle'></i>
-        <span>Profile</span>
-    </a>
-</nav>
 
 <!-- CANCEL MODAL (Hidden by default) -->
 <div id="cancelModal" class="modal-overlay hidden">
@@ -436,27 +406,6 @@ foreach ($appointments as $appointment) {
         <div class="modal-btns">
             <button class="btn-no" onclick="closeModal()">No, Keep it</button>
             <button class="btn-yes" onclick="confirmCancel()">Yes, Cancel</button>
-        </div>
-    </div>
-</div>
-
-<!-- LOGOUT MODAL -->
-<div id="logoutModal" class="modal-overlay hidden">
-    <div class="modal-box">
-        <i class='bx bx-log-out-circle'></i>
-
-        <h3>Sign Out?</h3>
-
-        <p>Are you sure you want to end your session on this device?</p>
-
-        <div class="modal-btns">
-            <button class="btn-no" onclick="closeLogoutModal()">
-                Cancel
-            </button>
-
-            <button class="btn-yes" onclick="confirmLogout()">
-                Logout
-            </button>
         </div>
     </div>
 </div>

@@ -7,6 +7,7 @@
     --info-text: #0284c7;
     --danger-bg: #fee2e2;
     --danger-text: #ef4444;
+    
 
     /* Spacing & Borders */
     --wrapper-width: 1140px;
@@ -290,13 +291,12 @@ h1, h2, h3, h4, h5, h6 {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.70);
-    backdrop-filter: blur(5px);
+    background: rgba(15, 23, 42, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 2000;
     padding: 20px;
-    z-index: 9999;
 }
 
 .modal-overlay.hidden {
@@ -304,22 +304,24 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .modal-box {
-    background: #ffffff;
-    width: 100%;
-    max-width: 380px;
-    padding: 35px 30px;
+    background: white;
+    padding: 30px;
     border-radius: 20px;
     text-align: center;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.20);
-    animation: logoutModalIn 0.25s ease;
+    max-width: 400px;
+    width: 100%;
+    animation: slideUp 0.3s ease;
+}
+
+.modal-box i {
+    font-size: 3rem;
+    color: #ef4444;
+    margin-bottom: 15px;
 }
 
 .modal-box h3 {
-    margin-top: 15px;
-    margin-bottom: 8px;
     color: var(--navy-dark);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 1.4rem;
+    margin-bottom: 8px;
 }
 
 .modal-box p {
@@ -331,47 +333,45 @@ h1, h2, h3, h4, h5, h6 {
 .modal-btns {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 10px;
     margin-top: 25px;
-}
-
-.btn-no,
-.btn-yes {
-    border: none;
-    padding: 13px;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s ease;
 }
 
 .btn-no {
     background: #f1f5f9;
-    color: var(--text-main);
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
 }
 
 .btn-no:hover {
     background: #e2e8f0;
 }
 
-.btn-yes {
+.btn-logout-confirm {
     background: #ef4444;
     color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
 }
 
-.btn-yes:hover {
+.btn-logout-confirm:hover {
     background: #dc2626;
 }
 
-@keyframes logoutModalIn {
+@keyframes slideUp {
     from {
+        transform: translateY(20px);
         opacity: 0;
-        transform: scale(0.95) translateY(10px);
     }
 
     to {
+        transform: translateY(0);
         opacity: 1;
-        transform: scale(1) translateY(0);
     }
 }

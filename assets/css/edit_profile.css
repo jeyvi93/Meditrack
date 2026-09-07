@@ -82,13 +82,96 @@
 .nav-item span { font-size: 0.7rem; font-weight: 600; margin-top: 2px; }
 .nav-item.active { color: var(--primary-blue); }
 
-/* --- MODAL --- */
-.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-.hidden { display: none; }
-.modal-box { background: white; padding: 30px; border-radius: 20px; text-align: center; max-width: 350px; width: 90%; }
-.modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 25px; }
-.btn-no { background: #f1f5f9; border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; }
-.btn-yes { background: #ef4444; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+/* MODAL */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+.modal-box {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    animation: slideUp 0.3s ease;
+}
+
+.modal-box i {
+    font-size: 3rem;
+    color: #ef4444;
+    margin-bottom: 15px;
+}
+
+.modal-box h3 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.modal-box p {
+    margin: 0 auto;
+    padding: 0 5px;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.modal-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.btn-no {
+    background: #f1f5f9;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-logout-confirm {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-no:hover {
+    background: #e2e8f0;
+}
+
+.btn-logout-confirm:hover {
+    background: #dc2626;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
 
 /* ==========================
    PROFILE UPDATE SUCCESS MODAL

@@ -8,34 +8,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/edit_profile.css">
 </head>
 <body>
 
 <div class="bg-gradient"></div>
 
-<!-- DESKTOP NAVBAR -->
-<nav class="navbar main-wrapper">
-    <div class="logo">
-        <img src="../assets/images/med.png" alt="Logo">
-    </div>
-    <div class="desktop-menu">
-        <a href="view_appointments.html">My Appointments</a>
-        <a href="book_appointment.html">Book Appointment</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="view_profile.html" style="color: var(--primary-blue);">Profile</a>
-        <a href="../auth/logout.php" class="btn-logout-small" onclick="openLogoutModal(); return false;">Logout</a>
-    </div>
-</nav>
-
-<!-- MOBILE TOP BAR (Back button on the left end) -->
-<nav class="mobile-top-bar">
-    <a href="view_profile.html" class="back-btn-mobile">
-        <i class='bx bx-chevron-left'></i>
-    </a>
-    <span class="nav-title">Edit Profile</span>
-    <div class="spacer-nav"></div> <!-- Keeps title centered -->
-</nav>
+<?php include '../includes/navbar.php'; ?>
 
 <main class="main-wrapper">
     <section class="booking-grid">
@@ -103,7 +83,7 @@
                                 <i class='bx bx-lock-alt'></i>
                                 <span>••••••••</span>
                             </div>
-                            <button type="button" class="btn-text-link" onclick="location.href='change_password.html'">Change</button>
+                            <button type="button" class="btn-text-link" onclick="location.href='change_password.php'">Change</button>
                         </div>
                     </div>
                 </div>
@@ -120,38 +100,6 @@
     </section>
 </main>
 
-<!-- MOBILE BOTTOM NAV -->
-<nav class="bottom-nav">
-    <a href="view_appointments.html" class="nav-item">
-        <i class='bx bx-calendar-event'></i>
-        <span>My Appointments</span>
-    </a>
-    <a href="book_appointment.html" class="nav-item">
-        <i class='bx bx-plus-circle'></i>
-        <span>Book Appointment</span>
-    </a>
-    <a href="notifications.html" class="nav-item">
-        <i class='bx bx-bell'></i>
-        <span>Notifications</span>
-    </a>
-    <a href="view_profile.html" class="nav-item active">
-        <i class='bx bx-user-circle'></i>
-        <span>Profile</span>
-    </a>
-</nav>
-
-<!-- LOGOUT MODAL -->
-<div id="logoutModal" class="modal-overlay hidden">
-    <div class="modal-box">
-        <i class='bx bx-log-out-circle' style="color: #ef4444; font-size: 3.5rem;"></i>
-        <h3>Sign Out?</h3>
-        <p>Are you sure you want to log out?</p>
-        <div class="modal-btns">
-            <button class="btn-no" onclick="closeLogoutModal()">Cancel</button>
-            <button class="btn-yes" onclick="confirmLogout()">Logout</button>
-        </div>
-    </div>
-</div>
 
 <!-- PROFILE UPDATE SUCCESS MODAL -->
 <div id="successModal" class="modal-overlay hidden">

@@ -1,0 +1,178 @@
+/* ================================
+   PATIENT DESKTOP NAVBAR
+================================ */
+
+.desktop-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.desktop-menu > a,
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 12px;
+    border: none;
+    background: transparent;
+    color: #475569;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.desktop-menu > a:hover,
+.profile-trigger:hover {
+    background: #eff6ff;
+    color: var(--primary-blue);
+}
+
+.desktop-menu > a.active {
+    color: var(--primary-blue);
+    background: #eff6ff;
+}
+
+.desktop-menu i,
+.profile-trigger > i:first-child {
+    font-size: 18px;
+}
+
+
+/* ================================
+   PROFILE DROPDOWN
+================================ */
+
+.profile-dropdown {
+    position: relative;
+    margin-left: 12px;
+}
+
+.profile-trigger {
+    max-width: 220px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 8px 12px;
+
+    background: #f8fafc;
+    border: 1px solid #dbe3ed;
+    border-radius: 12px;
+
+    color: #1e293b;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.profile-trigger:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.profile-trigger > i:first-child {
+    font-size: 25px !important;
+    color: var(--primary-blue);
+}
+
+.profile-trigger span {
+    max-width: 145px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 0.86rem;
+}
+
+.profile-arrow {
+    font-size: 18px !important;
+    color: #64748b;
+    transition: transform 0.2s ease;
+}
+
+.profile-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+
+    width: 190px;
+
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    padding: 7px;
+
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+
+    display: none;
+    z-index: 1000;
+}
+
+.profile-dropdown-menu.show {
+    display: block;
+}
+
+.profile-dropdown-menu a,
+.profile-dropdown-menu button {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 10px 11px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #334155;
+
+    text-decoration: none;
+
+    font-size: 0.84rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    text-align: left;
+
+    transition: all 0.15s ease;
+}
+
+.profile-dropdown-menu a:hover {
+    background: #eff6ff;
+    color: var(--primary-blue);
+}
+
+.profile-dropdown-menu button:hover {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.profile-dropdown-menu i {
+    font-size: 18px;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 5px 3px;
+}
+
+
+/* ================================
+   MOBILE BOTTOM NAV
+================================ */
+
+.bottom-nav {
+    display: none;
+}
