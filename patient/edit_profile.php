@@ -17,9 +17,19 @@
 
 <?php include '../includes/navbar.php'; ?>
 
+<!-- MOBILE TOP BAR -->
+        <nav class="mobile-top-bar">
+            <a href="view_profile.php" class="back-btn-mobile">
+                <i class='bx bx-chevron-left'></i>
+            </a>
+            <span class="nav-title">Edit Profile</span>
+            <div class="spacer-nav"></div>
+        </nav>
+
 <main class="main-wrapper">
     <section class="booking-grid">
         
+
         <!-- SIDEBAR (Visible on Web, Hidden on Mobile) -->
         <div class="info-side">
             <div class="status-card">

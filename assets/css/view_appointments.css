@@ -1,11 +1,15 @@
+html, body {
+    overflow-x: hidden;
+}
+
 /* REUSING BOOKING DESIGN SYSTEM */
-.booking-section { padding: 40px 0 100px 0; }
+.booking-section { padding: 40px 0 100px 0; min-width: 0; }
 .page-header { text-align: center; margin-bottom: 40px; }
 .page-header h1 { font-size: 2.5rem; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--navy-dark); }
 
 
 /* CONTENT CARD & TABS */
-.appointment-card { background: white; padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
+.appointment-card { background: white; padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.03); min-width: 0; }
 
 .appointment-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; overflow-x: auto; }
 .tab-btn { background: #f1f5f9; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--text-muted); transition: 0.3s; white-space: nowrap; }
@@ -21,8 +25,24 @@
 .card-date-info .day { display: block; font-size: 1.5rem; font-weight: 800; }
 .card-date-info .month { font-size: 0.7rem; font-weight: 700; }
 
-.card-text { flex-grow: 1; }
-.card-text h3 { font-size: 1.1rem; color: var(--navy-dark); margin: 5px 0; }
+.card-text {
+    flex-grow: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.inner-card {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+}
+.card-text h3 {
+    font-size: 1.1rem;
+    color: var(--navy-dark);
+    margin: 5px 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
 .card-text p { font-size: 0.85rem; color: var(--text-muted); }
 
 .status-pill { font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 50px; text-transform: uppercase; }
@@ -33,7 +53,6 @@
 
 .btn-cancel-mini { background: none; border: 1px solid #fee2e2; color: #ef4444; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; }
 
-/* TABLE STYLES */
 /* TABLE STYLES */
 .table-container {
     overflow-x: auto;
@@ -52,6 +71,7 @@
     border-bottom: 1px solid var(--border-color);
     font-size: 0.9rem;
     text-align: left;
+    vertical-align: top;
 }
 
 .appointment-table th {
@@ -61,19 +81,40 @@
 }
 
 /* COLUMN WIDTHS */
-.appointment-table th:nth-child(1),
-.appointment-table td:nth-child(1) {
-    width: 25%;
+.cancelled-table th:nth-child(1),
+.cancelled-table td:nth-child(1) {
+    width: 18%;
 }
 
-.appointment-table th:nth-child(2),
-.appointment-table td:nth-child(2) {
-    width: 50%;
+.cancelled-table th:nth-child(2),
+.cancelled-table td:nth-child(2) {
+    width: 27%;
 }
 
-.appointment-table th:nth-child(3),
-.appointment-table td:nth-child(3) {
-    width: 25%;
+.cancelled-table th:nth-child(3),
+.cancelled-table td:nth-child(3) {
+    width: 18%;
+}
+
+.cancelled-table th:nth-child(4),
+.cancelled-table td:nth-child(4) {
+    width: 37%;
+}
+
+/* APPOINTMENT DETAILS */
+.appointment-details {
+    line-height: 1.5;
+    font-size: 0.85rem;
+}
+
+.appointment-details .reason-text {
+    font-weight: 600;
+}
+
+.appointment-details .note-text {
+    margin-top: 5px;
+    color: var(--text-muted);
+    font-weight: 500;
 }
 
 /* MODAL FIX */
@@ -158,10 +199,190 @@
     }
 }
 
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
 @media (max-width: 992px) { .booking-grid { grid-template-columns: 1fr; } .info-side { display: none; } }
-@media (max-width: 768px) { .desktop-menu { display: none; } .bottom-nav { display: flex; } .page-header h1 { font-size: 2rem; } .appointment-card { padding: 20px; } }
+@media (max-width: 768px) {
+    .desktop-menu {
+        display: none;
+    }
+
+    .bottom-nav {
+        display: flex;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .main-wrapper {
+        padding: 0 20px;
+    }
+
+    .info-side {
+        display: none;
+        min-width: 0;
+        
+    }
+
+    .inner-card {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .card-text {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .logo { 
+        display: none;
+    }
+
+    .appointment-card { padding: 20px 15px; border-radius: 14px; }
+
+    .page-header h1 {
+        font-size: 1.6rem;
+    }
+    .page-header p {
+        font-size: 0.72rem;
+    }
+
+    /* Tabs */
+    .appointment-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        overflow-x: visible; /* no longer needed, but reset just in case */
+    }
+    .tab-btn {
+        padding: 10px 6px;
+        font-size: 0.78rem;
+        text-align: center;
+        white-space: normal; /* let "Rejected / Cancelled" wrap if needed */
+        line-height: 1.2;
+    }
+
+    /* List cards (pending/approved) */
+    .inner-card {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px;
+    }
+    .card-date-info { min-width: 55px; padding: 8px; }
+    .card-date-info .day { font-size: 1.25rem; }
+    .card-text { flex: 1 1 140px; }
+    .btn-cancel-mini {
+        flex: 0 0 100%;
+        margin-top: 4px;
+        text-align: center;
+    }
+
+    /* Tables */
+    .appointment-table thead {
+        display: none; /* hide the header row on mobile */
+    }
+
+    .appointment-table,
+    .appointment-table tbody,
+    .appointment-table tr,
+    .appointment-table td {
+        display: block;
+        width: 100% !important;
+    }
+
+    .appointment-table tr {
+        margin-bottom: 14px;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 10px 12px;
+    }
+
+    .appointment-table td {
+        border-bottom: none;
+        padding: 6px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        text-align: right;
+    }
+
+    .appointment-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-muted);
+        text-align: left;
+        flex-shrink: 0;
+    }
+
+    /* Details cell has its own internal layout, don't force it into the label/value row */
+    .appointment-table td[data-label="Details"] {
+        display: block;
+        text-align: left;
+    }
+    .appointment-table td[data-label="Details"]::before {
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    /* Empty-state rows (colspan) shouldn't get the label/value treatment */
+    .appointment-table td[colspan] {
+        display: block;
+        text-align: center;
+        justify-content: center;
+    }
+    .appointment-table td[colspan]::before {
+        content: none;
+    }
+
+        .inner-card {
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 12px;
+    }
+    .card-date-info {
+        min-width: 44px;
+        padding: 6px;
+        border-radius: 8px;
+    }
+    .card-date-info .day {
+        font-size: 1.05rem;
+    }
+    .card-date-info .month {
+        font-size: 0.58rem;
+    }
+    .card-text {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+    .card-text h3 {
+        font-size: 0.9rem;
+        margin: 2px 0;
+    }
+    .card-text p {
+        font-size: 0.75rem;
+    }
+    .status-pill {
+        font-size: 0.6rem;
+        padding: 2px 7px;
+    }
+    .btn-cancel-mini {
+        flex: 0 0 auto;
+        width: auto;
+        padding: 6px 10px;
+        font-size: 0.72rem;
+        white-space: nowrap;
+    }
+}
 
 .empty-appointments {
     min-height: 280px;
@@ -234,3 +455,4 @@
 .pending-icon i {
     color: #f59e0b;
 }
+

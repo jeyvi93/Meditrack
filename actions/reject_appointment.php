@@ -14,6 +14,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $reason = $_POST['reason'];
     $note = $_POST['note'];
 
+
+    /* Get patient name */
+    $nameSql = "
+        SELECT u.full_name
+        FROM appointments a
+        JOIN users u ON a.user_id = u.id
+        WHERE a.id = ?
+    ";
+
+    $nameStmt = mysqli_prepare($conn, $nameSql);
+    mysqli_stmt_bind_param($nameStmt, "i", $appointment_id);
+    mysqli_stmt_execute($nameStmt);
+
+    $nameResult = mysqli_stmt_get_result($nameStmt);
+    $appointment = mysqli_fetch_assoc($nameResult);
+
+    $patientName = $appointment['full_name'] ?? 'Unknown patient';
+
+    mysqli_stmt_close($nameStmt);
+
+
+    /* Reject appointment */
     $sql = "UPDATE appointments
             SET status = 'Rejected',
                 reason = ?,
@@ -30,11 +52,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $appointment_id
     );
 
+
     if (mysqli_stmt_execute($stmt)) {
+
+        /* Activity Log */
+        $activitySql = "
+            INSERT INTO activity_logs
+            (user_id, activity_type, action, description)
+            VALUES (?, 'Appointment', 'Rejected', ?)
+        ";
+
+        $description = $patientName . "'s appointment was rejected.";
+
+        $activityStmt = mysqli_prepare($conn, $activitySql);
+
+        mysqli_stmt_bind_param(
+            $activityStmt,
+            "is",
+            $_SESSION['user_id'],
+            $description
+        );
+
+        mysqli_stmt_execute($activityStmt);
+        mysqli_stmt_close($activityStmt);
+
+
         $_SESSION['success'] = "Appointment rejected successfully.";
+
     } else {
+
         $_SESSION['error'] = "Failed to reject appointment.";
+
     }
+
 
     mysqli_stmt_close($stmt);
     mysqli_close($conn);

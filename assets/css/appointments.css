@@ -134,6 +134,26 @@ body { background-color: var(--bg-light); color: var(--text-main); }
 .appointment-table td { padding: 16px; font-size: 0.9rem; border-bottom: 1px solid #f8fafc; }
 .appointment-table tr:hover { background-color: #fafbfd; }
 
+/* =========================
+   ACTIONS COLUMN
+========================= */
+
+.appointment-table td:last-child {
+    white-space: nowrap;
+    width: 120px;
+}
+
+.appointment-table td:last-child form {
+    display: inline-flex !important;
+    margin: 0;
+    vertical-align: middle;
+}
+
+.appointment-table td:last-child .btn-icon {
+    flex-shrink: 0;
+    margin: 0 3px;
+}
+
 /* ==========================
    PAGINATION
 ========================== */

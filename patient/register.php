@@ -93,7 +93,7 @@ unset($_SESSION['error_field']);
                                 <label>Email Address</label>
                                 <div class="input-box">
                                     <i class="fas fa-envelope"></i>
-                                    <input type="email"  name="email" placeholder="email@gmail.com" value="<?php echo htmlspecialchars($oldEmail); ?>" required>
+                                    <input type="email"  name="email" placeholder="Enter your email" value="<?php echo htmlspecialchars($oldEmail); ?>" required>
                                 </div>
                                 <?php if ($errorField === 'email'): ?>
                                     <span class="field-error"><?php echo htmlspecialchars($errorMessage); ?></span>

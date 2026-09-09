@@ -76,7 +76,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
     <a href="view_appointments.php"
        class="nav-item <?= $currentPage === 'view_appointments.php' ? 'active' : '' ?>">
         <i class='bx bx-calendar-event'></i>
-        <span>Appointments</span>
+        <span>My Appointments</span>
     </a>
 
     <a href="notifications.php"

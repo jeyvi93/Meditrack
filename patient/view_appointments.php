@@ -112,7 +112,7 @@ foreach ($appointments as $appointment) {
                     <button class="tab-btn active" onclick="switchTab(event, 'pending')">Pending</button>
                     <button class="tab-btn" onclick="switchTab(event, 'approved')">Approved</button>
                     <button class="tab-btn" onclick="switchTab(event, 'completed')">History</button>
-                    <button class="tab-btn" onclick="switchTab(event, 'cancelled')">Cancelled</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'cancelled')">Rejected / Cancelled</button>
                 </div>
 
                 <!-- PENDING -->
@@ -293,15 +293,15 @@ foreach ($appointments as $appointment) {
                                     <?php foreach ($completedAppointments as $appointment): ?>
 
                                         <tr>
-                                            <td>
+                                            <td data-label="Date">
                                                 <?= date('M d, Y', strtotime($appointment['appointment_date'])) ?>
                                             </td>
 
-                                            <td>
+                                            <td data-label="Purpose">
                                                 <?= htmlspecialchars($appointment['purpose']) ?>
                                             </td>
 
-                                            <td>
+                                            <td data-label="Status">
                                                 <span class="status-pill completed">
                                                     Completed
                                                 </span>
@@ -320,18 +320,19 @@ foreach ($appointments as $appointment) {
 
                 </div>
 
-                <!-- CANCELLED -->
+                <!-- REJECTED / CANCELLED -->
                 <div id="cancelled" class="tab-content">
 
                     <div class="table-container">
 
-                        <table class="appointment-table">
+                        <table class="appointment-table cancelled-table">
 
                             <thead>
                                 <tr>
                                     <th>Date</th>
                                     <th>Purpose</th>
                                     <th>Status</th>
+                                    <th>Details</th>
                                 </tr>
                             </thead>
 
@@ -340,7 +341,7 @@ foreach ($appointments as $appointment) {
                                 <?php if (empty($cancelledAppointments)): ?>
 
                                     <tr>
-                                        <td colspan="3" style="text-align: center;">
+                                        <td colspan="4" style="text-align: center;">
                                             No rejected or cancelled appointments.
                                         </td>
                                     </tr>
@@ -351,15 +352,15 @@ foreach ($appointments as $appointment) {
 
                                         <tr>
 
-                                            <td>
+                                            <td data-label="Date">
                                                 <?= date('M d, Y', strtotime($appointment['appointment_date'])) ?>
                                             </td>
 
-                                            <td>
+                                            <td data-label="Purpose">
                                                 <?= htmlspecialchars($appointment['purpose']) ?>
                                             </td>
 
-                                            <td>
+                                            <td data-label="Status">
 
                                                 <?php if (strtolower($appointment['status']) === 'rejected'): ?>
 
@@ -375,6 +376,28 @@ foreach ($appointments as $appointment) {
 
                                                 <?php endif; ?>
 
+                                            </td>
+
+                                            <td data-label="Details">
+                                                <div class="appointment-details">
+
+                                                    <div class="reason-text">
+                                                        <strong>Reason:</strong>
+                                                        <?= !empty($appointment['reason'])
+                                                            ? htmlspecialchars($appointment['reason'])
+                                                            : 'No reason provided.' ?>
+                                                    </div>
+
+                                                    <?php if (!empty($appointment['note'])): ?>
+
+                                                        <div class="note-text">
+                                                            <strong>Note:</strong>
+                                                            <?= htmlspecialchars($appointment['note']) ?>
+                                                        </div>
+
+                                                    <?php endif; ?>
+
+                                                </div>
                                             </td>
 
                                         </tr>
