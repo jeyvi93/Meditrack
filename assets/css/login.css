@@ -431,3 +431,170 @@
 .login-error-container {
     height: 2px;
 }
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media (max-width: 900px) {
+
+    .login-section {
+        padding: 25px 16px 45px;
+        min-height: calc(100vh - 80px);
+    }
+
+    .login-card {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        border-radius: 16px;
+    }
+
+    .login-info {
+        display: none;
+    }
+
+    .login-form-container {
+        padding: 30px 24px;
+    }
+
+    .login-form-container .form-header {
+        margin-bottom: 25px;
+    }
+
+    .login-form-container .form-header h1 {
+        font-size: 1.65rem;
+        margin-bottom: 5px;
+    }
+
+    .login-form-container .form-header p {
+        font-size: 0.84rem;
+        line-height: 1.45;
+    }
+
+    .login-form {
+        gap: 17px;
+    }
+
+    .login-form .input-group label {
+        font-size: 0.76rem;
+        margin-bottom: 6px;
+    }
+
+    .login-form .input-box {
+        padding: 11px 13px;
+        min-height: 43px;
+        border-radius: 10px;
+    }
+
+    .login-form .input-box i {
+        margin-right: 10px;
+        font-size: 0.95rem;
+    }
+
+    .login-form .input-box input {
+        font-size: 0.82rem;
+    }
+
+    .password-header {
+        margin-bottom: 6px;
+    }
+
+    .forgot-link {
+        font-size: 0.72rem;
+    }
+
+    .login-form .btn-submit {
+        padding: 12px;
+        font-size: 0.84rem;
+        border-radius: 10px;
+        margin-top: 8px;
+    }
+
+    .register-hint {
+        margin-top: 20px;
+        font-size: 0.82rem;
+    }
+
+    .login-error {
+        font-size: 12px;
+    }
+}
+
+
+/* ==========================
+   SMALL PHONES
+========================== */
+
+@media (max-width: 480px) {
+
+    .login-section {
+        padding: 18px 12px 35px;
+        min-height: calc(100vh - 70px);
+    }
+
+    .login-card {
+        border-radius: 14px;
+    }
+
+    .login-form-container {
+        padding: 24px 18px;
+    }
+
+    .login-form-container .form-header {
+        margin-bottom: 22px;
+    }
+
+    .login-form-container .form-header h1 {
+        font-size: 1.4rem;
+        margin-bottom: 4px;
+    }
+
+    .login-form-container .form-header p {
+        font-size: 0.76rem;
+        line-height: 1.4;
+    }
+
+    .login-form {
+        gap: 14px;
+    }
+
+    .login-form .input-group label {
+        font-size: 0.68rem;
+        margin-bottom: 5px;
+    }
+
+    .login-form .input-box {
+        padding: 10px 12px;
+        min-height: 40px;
+        border-radius: 9px;
+    }
+
+    .login-form .input-box i {
+        margin-right: 9px;
+        font-size: 0.9rem;
+    }
+
+    .login-form .input-box input {
+        font-size: 0.76rem;
+    }
+
+    .forgot-link {
+        font-size: 0.68rem;
+    }
+
+    .login-form .btn-submit {
+        padding: 11px;
+        font-size: 0.76rem;
+        border-radius: 9px;
+        margin-top: 7px;
+    }
+
+    .register-hint {
+        margin-top: 17px;
+        font-size: 0.74rem;
+    }
+
+    .login-error {
+        font-size: 11px;
+    }
+}

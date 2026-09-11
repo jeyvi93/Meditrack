@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 require_once "../config/database.php";
 
 $user_id = $_SESSION['user_id'];
+$full_name = $_SESSION['full_name'] ?? '';
 
 
 // ==========================================
@@ -235,13 +236,39 @@ mysqli_stmt_bind_param(
 
 if (mysqli_stmt_execute($stmt)) {
 
+    // ==========================================
+    // LOG APPOINTMENT ACTIVITY
+    // ==========================================
+
+    $activitySql = "
+        INSERT INTO activity_logs
+        (user_id, activity_type, action, description)
+        VALUES (?, 'Appointment', 'New', ?)
+    ";
+
+    $description = $full_name . " made an appointment.";
+
+    $activityStmt = mysqli_prepare($conn, $activitySql);
+
+    if ($activityStmt) {
+
+        mysqli_stmt_bind_param(
+            $activityStmt,
+            "is",
+            $user_id,
+            $description
+        );
+
+        mysqli_stmt_execute($activityStmt);
+        mysqli_stmt_close($activityStmt);
+    }
+
     $_SESSION['success'] = "Appointment request submitted successfully.";
 
 } else {
 
     $_SESSION['error'] = "Failed to submit appointment request.";
 }
-
 
 // ==========================================
 // CLOSE CONNECTION

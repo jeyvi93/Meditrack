@@ -139,7 +139,7 @@ unset($_SESSION['login_email']);
                                     Password
                                 </label>
 
-                                <a href="patient/forgot_password.php" class="forgot-link">
+                                <a href="patient/forgot_password.html" class="forgot-link">
                                     Forgot Password?
                                 </a>
 

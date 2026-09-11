@@ -18,7 +18,7 @@
 
 <!-- MOBILE TOP BAR (Back button left end) -->
 <nav class="mobile-top-bar">
-    <a href="edit_profile.html" class="back-btn-mobile">
+    <a href="edit_profile.php" class="back-btn-mobile">
         <i class='bx bx-chevron-left'></i>
     </a>
     <span class="nav-title">Security</span>
