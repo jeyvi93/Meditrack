@@ -1,3 +1,63 @@
+<?php
+
+session_start();
+
+require_once "../config/database.php";
+
+$userId = $_SESSION['user_id'] ?? 0;
+
+$user = null;
+
+if ($userId) {
+
+    $sql = "
+        SELECT 
+            u.full_name,
+            u.email,
+            u.role,
+            s.student_id_number,
+            st.staff_id_number
+        FROM users u
+        LEFT JOIN students s ON u.student_id = s.id
+        LEFT JOIN staffs st ON u.staff_id = st.id
+        WHERE u.id = ?
+    ";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if ($stmt) {
+
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+
+        $user = mysqli_fetch_assoc($result);
+
+        mysqli_stmt_close($stmt);
+    }
+}
+
+if (!$user) {
+    header("Location: ../auth/login.php");
+    exit();
+}
+
+$fullName = $user['full_name'];
+$email = $user['email'];
+
+$idNumber = $user['student_id_number']
+    ?? $user['staff_id_number']
+    ?? 'N/A';
+
+$successMessage = $_SESSION['success'] ?? '';
+$errorMessage = $_SESSION['error'] ?? '';
+
+unset($_SESSION['success']);
+unset($_SESSION['error']);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,20 +113,27 @@
         <!-- EDIT FORM CARD -->
         <div class="appointment-card">
             <div class="profile-header-inner">
-                <div class="avatar-circle">JD</div>
+                <div class="avatar-circle">
+                    <i class='bx bxs-user-circle'></i>
+                </div>
                 <div class="header-text">
                     <h2>Update Information</h2>
                     <p>Personalize your clinic profile details.</p>
                 </div>
             </div>
 
-            <form action="#" class="edit-form" onsubmit="handleProfileSubmit(event)">
+            <form action="../actions/update_profile.php"
+            method="POST"
+            class="edit-form">
                 <div class="info-grid">
                     <div class="info-group">
                         <label>Full Name</label>
                         <div class="input-box">
                             <i class='bx bx-user'></i>
-                            <input type="text" value="Johnathan Alexander Doe" required>
+                            <input type="text"
+                                name="full_name"
+                                value="<?= htmlspecialchars($fullName) ?>"
+                                required>
                         </div>
                     </div>
 
@@ -74,7 +141,10 @@
                         <label>Email Address</label>
                         <div class="input-box">
                             <i class='bx bx-envelope'></i>
-                            <input type="email" value="j.doe@university.edu.ph" required>
+                            <input type="email"
+                                name="email"
+                                value="<?= htmlspecialchars($email) ?>"
+                                required>
                         </div>
                     </div>
 
@@ -82,7 +152,9 @@
                         <label>ID Number</label>
                         <div class="input-box disabled">
                             <i class='bx bx-id-card'></i>
-                            <input type="text" value="2023-00451-MN-0" disabled>
+                            <input type="text"
+                                value="<?= htmlspecialchars($idNumber) ?>"
+                                disabled>
                         </div>
                     </div>
 
@@ -120,15 +192,46 @@
         <h3>Profile Updated!</h3>
 
         <p>
-            Your profile information has been successfully updated.
+            <?= htmlspecialchars($successMessage) ?>
         </p>
 
-        <button type="button" class="btn-success" onclick="closeSuccessModal()">
+        <button type="button" class="btn-success" onclick="window.location.href='view_profile.php'">
             <i class='bx bx-check'></i> Done
         </button>
 
     </div>
 </div>
+
+
+<!-- PROFILE UPDATE ERROR MODAL -->
+<div id="errorModal" class="modal-overlay hidden">
+    <div class="modal-box error-modal-box">
+
+        <i class='bx bx-error-circle error-icon'></i>
+
+        <h3>Update Failed</h3>
+
+        <p>
+            <?= htmlspecialchars($errorMessage) ?>
+        </p>
+
+        <button type="button" class="btn-error" onclick="closeErrorModal()">
+            <i class='bx bx-check'></i> Okay
+        </button>
+
+    </div>
+</div>
+
+<script>
+<?php if ($successMessage): ?>
+    document.getElementById('successModal').classList.remove('hidden');
+<?php endif; ?>
+
+<?php if ($errorMessage): ?>
+    document.getElementById('errorModal').classList.remove('hidden');
+<?php endif; ?>
+</script>
+
 <script src="../assets/js/edit_profile.js"></script>
 
 </body>

@@ -178,11 +178,36 @@
         </div>
     </div>
 
+    <!-- ERROR MODAL -->
+    <div id="errorAppointmentModal" class="modal-overlay hidden">
+        <div class="modal-box error-modal">
+            <i class='bx bx-error-circle' style="color: #ef4444;"></i>
+
+            <h3>Appointment Notice</h3>
+
+            <p>
+                <?= htmlspecialchars($errorMessage) ?>
+            </p>
+
+            <div class="modal-btns single-btn">
+                <button class="btn-error" onclick="closeErrorModal()">
+                    Okay
+                </button>
+            </div>
+        </div>
+    </div>
+
 
     <script>
     <?php if ($successMessage): ?>
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("successAppointmentModal").classList.remove("hidden");
+        });
+    <?php endif; ?>
+
+    <?php if ($errorMessage): ?>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("errorAppointmentModal").classList.remove("hidden");
         });
     <?php endif; ?>
     </script>

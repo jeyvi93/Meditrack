@@ -138,7 +138,7 @@ mysqli_stmt_close($userCheck);
 
 
 // ==========================================
-// PREVENT DUPLICATE BOOKING BY SAME USER
+// PREVENT MORE THAN ONE APPOINTMENT PER DAY
 // ==========================================
 
 $duplicateCheck = mysqli_prepare(
@@ -147,7 +147,6 @@ $duplicateCheck = mysqli_prepare(
      FROM appointments
      WHERE user_id = ?
      AND appointment_date = ?
-     AND appointment_time = ?
      AND status IN ('Pending', 'Approved')
      LIMIT 1"
 );
@@ -161,10 +160,9 @@ if (!$duplicateCheck) {
 
 mysqli_stmt_bind_param(
     $duplicateCheck,
-    "iss",
+    "is",
     $user_id,
-    $appointment_date,
-    $appointment_time
+    $appointment_date
 );
 
 mysqli_stmt_execute($duplicateCheck);
@@ -175,12 +173,59 @@ if (mysqli_stmt_num_rows($duplicateCheck) > 0) {
     mysqli_stmt_close($duplicateCheck);
     mysqli_close($conn);
 
-    $_SESSION['error'] = "You already have an appointment for this date and time.";
+    $_SESSION['error'] = "You already have an appointment for this date.";
     header("Location: ../patient/book_appointment.php");
     exit();
 }
 
 mysqli_stmt_close($duplicateCheck);
+
+
+// ==========================================
+// LIMIT EACH TIME SLOT TO 2 APPOINTMENTS
+// ==========================================
+
+$slotCheck = mysqli_prepare(
+    $conn,
+    "SELECT COUNT(*)
+     FROM appointments
+     WHERE appointment_date = ?
+     AND appointment_time = ?
+     AND status IN ('Pending', 'Approved')"
+);
+
+if (!$slotCheck) {
+    $_SESSION['error'] = "Unable to check appointment availability.";
+    mysqli_close($conn);
+    header("Location: ../patient/book_appointment.php");
+    exit();
+}
+
+mysqli_stmt_bind_param(
+    $slotCheck,
+    "ss",
+    $appointment_date,
+    $appointment_time
+);
+
+mysqli_stmt_execute($slotCheck);
+
+mysqli_stmt_bind_result(
+    $slotCheck,
+    $slotCount
+);
+
+mysqli_stmt_fetch($slotCheck);
+mysqli_stmt_close($slotCheck);
+
+if ($slotCount >= 2) {
+
+    mysqli_close($conn);
+
+    $_SESSION['error'] = "This appointment time is already full. Please select another time.";
+    header("Location: ../patient/book_appointment.php");
+    exit();
+}
 
 
 // ==========================================

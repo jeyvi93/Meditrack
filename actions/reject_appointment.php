@@ -14,10 +14,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $reason = $_POST['reason'];
     $note = $_POST['note'];
 
-
-    /* Get patient name */
+    /* Get patient name and user ID */
     $nameSql = "
-        SELECT u.full_name
+        SELECT a.user_id, u.full_name
         FROM appointments a
         JOIN users u ON a.user_id = u.id
         WHERE a.id = ?
@@ -31,9 +30,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $appointment = mysqli_fetch_assoc($nameResult);
 
     $patientName = $appointment['full_name'] ?? 'Unknown patient';
+    $patientId = $appointment['user_id'] ?? null;
 
     mysqli_stmt_close($nameStmt);
-
 
     /* Reject appointment */
     $sql = "UPDATE appointments
@@ -52,8 +51,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $appointment_id
     );
 
-
     if (mysqli_stmt_execute($stmt)) {
+
+        /* Notification */
+        $notificationSql = "
+            INSERT INTO notifications
+            (user_id, appointment_id, title, message)
+            VALUES (?, ?, ?, ?)
+        ";
+
+        $title = "Appointment Rejected";
+
+        $message = "Your appointment request has been rejected. Reason: " . $reason;
+
+        if (!empty(trim($note))) {
+            $message .= " Notes: " . $note;
+        }
+
+        $notificationStmt = mysqli_prepare($conn, $notificationSql);
+
+        if ($notificationStmt) {
+
+            mysqli_stmt_bind_param(
+                $notificationStmt,
+                "iiss",
+                $patientId,
+                $appointment_id,
+                $title,
+                $message
+            );
+
+            mysqli_stmt_execute($notificationStmt);
+            mysqli_stmt_close($notificationStmt);
+        }
 
         /* Activity Log */
         $activitySql = "
@@ -76,15 +106,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_execute($activityStmt);
         mysqli_stmt_close($activityStmt);
 
-
         $_SESSION['success'] = "Appointment rejected successfully.";
 
     } else {
-
         $_SESSION['error'] = "Failed to reject appointment.";
-
     }
-
 
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
@@ -93,3 +119,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 ?>
+

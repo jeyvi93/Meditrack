@@ -1,3 +1,73 @@
+<?php
+
+session_start();
+
+require_once "../config/database.php";
+
+$userId = $_SESSION['user_id'] ?? 0;
+
+$user = null;
+
+if ($userId) {
+
+    $sql = "
+        SELECT 
+            u.full_name,
+            u.email,
+            u.role,
+            s.student_id_number,
+            st.staff_id_number
+        FROM users u
+        LEFT JOIN students s ON u.student_id = s.id
+        LEFT JOIN staffs st ON u.staff_id = st.id
+        WHERE u.id = ?
+    ";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if ($stmt) {
+
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+
+        $user = mysqli_fetch_assoc($result);
+
+        mysqli_stmt_close($stmt);
+    }
+}
+
+if (!$user) {
+    header("Location: ../auth/login.php");
+    exit();
+}
+
+$fullName = $user['full_name'];
+$email = $user['email'];
+$role = $user['role'];
+
+$idNumber = $user['student_id_number']
+    ?? $user['staff_id_number']
+    ?? 'N/A';
+
+$initials = '';
+
+$nameParts = explode(' ', trim($fullName));
+
+foreach ($nameParts as $part) {
+
+    if (!empty($part)) {
+        $initials .= strtoupper(substr($part, 0, 1));
+    }
+
+}
+
+$initials = substr($initials, 0, 2);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,9 +118,11 @@
         <!-- Right Side: Profile Details Card -->
         <div class="appointment-card">
             <div class="profile-header-inner">
-                <div class="avatar-circle">JD</div>
+                <div class="avatar-circle">
+                    <i class='bx bxs-user-circle'></i>
+                </div>
                 <div class="header-text">
-                    <h2>Johnathan Doe</h2>
+                    <h2><?= htmlspecialchars($fullName) ?></h2>
                 </div>
             </div>
 
@@ -59,7 +131,7 @@
                     <label>Full Name</label>
                     <div class="info-value">
                         <i class='bx bx-user'></i>
-                        <span>Johnathan Alexander Doe</span>
+                        <span><?= htmlspecialchars($fullName) ?></span>
                     </div>
                 </div>
 
@@ -67,7 +139,7 @@
                     <label>Email Address</label>
                     <div class="info-value">
                         <i class='bx bx-envelope'></i>
-                        <span>j.doe@university.edu.ph</span>
+                        <span><?= htmlspecialchars($email) ?></span>
                     </div>
                 </div>
 
@@ -75,7 +147,7 @@
                     <label>ID Number</label>
                     <div class="info-value">
                         <i class='bx bx-id-card'></i>
-                        <span>2023-00451-MN-0</span>
+                        <span><?= htmlspecialchars($idNumber) ?></span>
                     </div>
                 </div>
 
@@ -83,7 +155,7 @@
                     <label>Academic Role</label>
                     <div class="info-value">
                         <i class='bx bx-briefcase'></i>
-                        <span>Student</span>
+                        <span><?= htmlspecialchars(ucfirst($role)) ?></span>
                     </div>
                 </div>
             </div>

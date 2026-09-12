@@ -176,3 +176,30 @@
 .bottom-nav {
     display: none;
 }
+
+/* Notification Badge */
+.nav-notification-icon {
+    position: relative;
+    display: inline-flex;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 20px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 0.6rem;
+    font-weight: 700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    border: 2px solid var(--white);
+}

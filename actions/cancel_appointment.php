@@ -9,17 +9,15 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once "../config/database.php";
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $appointment_id = $_POST['appointment_id'];
     $reason = $_POST['reason'];
     $note = $_POST['note'];
 
-
-    /* Get patient name */
+    /* Get patient name and user ID */
     $nameSql = "
-        SELECT u.full_name
+        SELECT a.user_id, u.full_name
         FROM appointments a
         JOIN users u ON a.user_id = u.id
         WHERE a.id = ?
@@ -33,9 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $appointment = mysqli_fetch_assoc($nameResult);
 
     $patientName = $appointment['full_name'] ?? 'Unknown patient';
+    $patientId = $appointment['user_id'] ?? null;
 
     mysqli_stmt_close($nameStmt);
-
 
     /* Cancel appointment */
     $sql = "
@@ -57,8 +55,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $appointment_id
     );
 
-
     if (mysqli_stmt_execute($stmt)) {
+
+        /* Notification */
+        $notificationSql = "
+            INSERT INTO notifications
+            (user_id, appointment_id, title, message)
+            VALUES (?, ?, ?, ?)
+        ";
+
+        $title = "Appointment Cancelled";
+
+        $message = "Your appointment has been cancelled. Reason: " . $reason;
+
+        if (!empty(trim($note))) {
+            $message .= " Notes: " . $note;
+        }
+
+        $notificationStmt = mysqli_prepare($conn, $notificationSql);
+
+        if ($notificationStmt) {
+
+            mysqli_stmt_bind_param(
+                $notificationStmt,
+                "iiss",
+                $patientId,
+                $appointment_id,
+                $title,
+                $message
+            );
+
+            mysqli_stmt_execute($notificationStmt);
+            mysqli_stmt_close($notificationStmt);
+        }
 
         /* Activity Log */
         $activitySql = "
@@ -81,22 +110,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_execute($activityStmt);
         mysqli_stmt_close($activityStmt);
 
-
         $_SESSION['success'] = "Appointment cancelled successfully.";
 
     } else {
-
         $_SESSION['error'] = "Failed to cancel appointment.";
-
     }
-
 
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
 
     header("Location: ../clinic/appointments.php");
     exit();
-
 }
-
 ?>
+

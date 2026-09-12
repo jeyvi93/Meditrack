@@ -265,50 +265,56 @@ h1 {
     .schedule-card { margin: 0 auto; width: 100%; }
 }
 
+/* ==========================
+   TABLET / MOBILE
+   ========================== */
+
 @media (max-width: 768px) {
 
     /* ==========================
-       MOBILE LANDING PAGE
-    ========================== */
+       HIDE DESKTOP HERO IMAGE
+       ========================== */
 
-    /* Hide desktop hero image */
     .hero-image {
         display: none;
     }
 
+
     /* ==========================
        NAVBAR
-    ========================== */
+       ========================== */
 
     .navbar {
-        padding: 14px 20px;
+        padding: 12px 18px;
     }
 
     .logo img {
-        height: 32px;
+        height: 30px;
+        width: auto;
     }
 
     .nav-auth {
-        gap: 10px;
+        gap: 9px;
     }
 
-    .register-link {
-        font-size: 0.85rem;
+    .home-link {
+        font-size: 0.82rem;
+        font-weight: 600;
     }
 
     .btn-login {
-        padding: 9px 18px;
-        font-size: 0.85rem;
-        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 0.82rem;
+        border-radius: 7px;
     }
 
 
     /* ==========================
        MAIN CONTENT
-    ========================== */
+       ========================== */
 
     .main-wrapper {
-        padding: 0 20px;
+        padding: 0 18px;
     }
 
     .hero {
@@ -318,7 +324,7 @@ h1 {
 
         text-align: center;
 
-        padding: 55px 0 70px;
+        padding: 50px 0 65px;
 
         min-height: auto;
         gap: 0;
@@ -336,46 +342,46 @@ h1 {
 
     /* ==========================
        SCHOOL / CAMPUS TAG
-    ========================== */
+       ========================== */
 
     .uni-tag {
-        margin-bottom: 28px;
+        margin-bottom: 26px;
 
         padding: 8px 14px;
 
-        font-size: 0.75rem;
+        font-size: 0.74rem;
     }
 
 
     /* ==========================
        MAIN HEADING
-    ========================== */
+       ========================== */
 
     h1 {
-        font-size: 2.15rem;
+        font-size: 2.1rem;
         line-height: 1.18;
 
-        margin-bottom: 24px;
+        margin-bottom: 22px;
     }
 
 
     /* ==========================
        DESCRIPTION
-    ========================== */
+       ========================== */
 
     .hero-text p {
         max-width: 440px;
 
-        font-size: 0.98rem;
-        line-height: 1.7;
+        font-size: 0.96rem;
+        line-height: 1.65;
 
-        margin-bottom: 32px;
+        margin-bottom: 30px;
     }
 
 
     /* ==========================
        TRUST INDICATORS
-    ========================== */
+       ========================== */
 
     .trust-indicators {
         width: 100%;
@@ -384,25 +390,25 @@ h1 {
         flex-direction: column;
         align-items: center;
 
-        gap: 14px;
+        gap: 13px;
 
-        margin-bottom: 36px;
+        margin-bottom: 34px;
     }
 
     .indicator {
         justify-content: center;
 
-        font-size: 0.88rem;
+        font-size: 0.86rem;
     }
 
     .indicator i {
-        font-size: 1.15rem;
+        font-size: 1.1rem;
     }
 
 
     /* ==========================
        CTA
-    ========================== */
+       ========================== */
 
     .cta-group {
         width: 100%;
@@ -411,29 +417,154 @@ h1 {
         flex-direction: column;
         align-items: center;
 
-        gap: 16px;
+        gap: 15px;
 
         margin-bottom: 0;
     }
 
     .btn-lg {
         width: 100%;
-        max-width: 380px;
+        max-width: 370px;
 
         justify-content: center;
 
-        padding: 16px 24px;
+        padding: 15px 22px;
 
-        font-size: 0.95rem;
-
-        border-radius: 12px;
+        font-size: 0.92rem;
+        border-radius: 11px;
     }
 
     .status-badge {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
     }
 }
 
+
+/* ==========================
+   SMALL PHONES
+   ========================== */
+
+@media (max-width: 480px) {
+
+    /* ==========================
+       NAVBAR
+       ========================== */
+
+    .navbar {
+        padding: 11px 16px;
+    }
+
+    .logo img {
+        height: 28px;
+        width: auto;
+    }
+
+    .nav-auth {
+        gap: 8px;
+    }
+
+    .home-link {
+        font-size: 0.8rem;
+    }
+
+    .btn-login {
+        padding: 7px 14px;
+        font-size: 0.8rem;
+        border-radius: 7px;
+    }
+
+
+    /* ==========================
+       MAIN CONTENT
+       ========================== */
+
+    .main-wrapper {
+        padding: 0 16px;
+    }
+
+    .hero {
+        padding: 42px 0 55px;
+    }
+
+
+    /* ==========================
+       SCHOOL / CAMPUS TAG
+       ========================== */
+
+    .uni-tag {
+        margin-bottom: 23px;
+
+        padding: 7px 12px;
+
+        font-size: 0.7rem;
+    }
+
+
+    /* ==========================
+       MAIN HEADING
+       ========================== */
+
+    h1 {
+        font-size: 1.9rem;
+        line-height: 1.2;
+
+        margin-bottom: 20px;
+    }
+
+
+    /* ==========================
+       DESCRIPTION
+       ========================== */
+
+    .hero-text p {
+        font-size: 0.91rem;
+        line-height: 1.65;
+
+        margin-bottom: 28px;
+    }
+
+
+    /* ==========================
+       TRUST INDICATORS
+       ========================== */
+
+    .trust-indicators {
+        gap: 11px;
+
+        margin-bottom: 30px;
+    }
+
+    .indicator {
+        font-size: 0.82rem;
+    }
+
+    .indicator i {
+        font-size: 1.05rem;
+    }
+
+
+    /* ==========================
+       CTA
+       ========================== */
+
+    .cta-group {
+        gap: 14px;
+    }
+
+    .btn-lg {
+        width: 100%;
+        max-width: 100%;
+
+        padding: 14px 20px;
+
+        font-size: 0.88rem;
+        border-radius: 10px;
+    }
+
+    .status-badge {
+        font-size: 0.8rem;
+    }
+}
 
 /* MODAL */
 .modal {

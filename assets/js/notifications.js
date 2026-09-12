@@ -13,17 +13,37 @@ function confirmLogout() {
 // MARK AS READ FUNCTIONALITY
 function markAsRead(button) {
     const notification = button.closest('.noti-card');
+    const notificationId = notification.dataset.id;
 
-    notification.classList.remove('unread');
+    fetch('../actions/mark_notification_read.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'notification_id=' + encodeURIComponent(notificationId)
+    })
+    .then(response => response.json())
+    .then(data => {
 
-    const unreadDot = notification.querySelector('.unread-dot');
-    if (unreadDot) {
-        unreadDot.remove();
-    }
+        if (data.success) {
 
-    button.remove();
+            notification.classList.remove('unread');
 
-    updateUnreadCount();
+            const unreadDot = notification.querySelector('.unread-dot');
+
+            if (unreadDot) {
+                unreadDot.remove();
+            }
+
+            button.remove();
+
+            updateUnreadCount();
+        }
+
+    })
+    .catch(error => {
+        console.error('Error marking notification as read:', error);
+    });
 }
 
 function updateUnreadCount() {

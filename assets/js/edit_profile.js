@@ -15,17 +15,10 @@
         window.location.href = "../auth/logout.php";
     }
 
-
-    // ==========================
-    // PROFILE UPDATE SUCCESS
-    // ==========================
-
-    function handleProfileSubmit(event) {
-        event.preventDefault();
-
-        document.getElementById('successModal').classList.remove('hidden');
-    }
-
     function closeSuccessModal() {
         document.getElementById('successModal').classList.add('hidden');
+    }
+
+    function closeErrorModal() {
+        document.getElementById('errorModal').classList.add('hidden');
     }

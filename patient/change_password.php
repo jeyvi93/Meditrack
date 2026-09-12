@@ -1,3 +1,15 @@
+<?php
+
+session_start();
+
+$successMessage = $_SESSION['success'] ?? '';
+$errorMessage = $_SESSION['error'] ?? '';
+
+unset($_SESSION['success']);
+unset($_SESSION['error']);
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,14 +70,24 @@
                 </div>
             </div>
 
-            <form action="#" class="password-form">
+            <form action="../actions/change_password.php" method="POST" class="password-form">
                 <div class="info-grid single-col">
+
+                    <?php if ($errorMessage): ?>
+                        <div class="password-error-message">
+                            <i class='bx bx-error-circle'></i>
+                            <span><?= htmlspecialchars($errorMessage) ?></span>
+                        </div>
+                    <?php endif; ?>
                     
                     <div class="info-group">
                         <label>Current Password</label>
                         <div class="input-box">
                             <i class='bx bx-key'></i>
-                            <input type="password" placeholder="••••••••" required>
+                            <input type="password"
+                                name="current_password"
+                                placeholder="••••••••"
+                                required>
                         </div>
                     </div>
 
@@ -73,7 +95,10 @@
                         <label>New Password</label>
                         <div class="input-box">
                             <i class='bx bx-lock-alt'></i>
-                            <input type="password" placeholder="Enter new password" required>
+                            <input type="password"
+                                name="new_password"
+                                placeholder="Enter new password"
+                                required>
                         </div>
                     </div>
 
@@ -81,7 +106,10 @@
                         <label>Confirm New Password</label>
                         <div class="input-box">
                             <i class='bx bx-shield-alt-2'></i>
-                            <input type="password" placeholder="Repeat new password" required>
+                            <input type="password"
+                                name="confirm_password"
+                                placeholder="Repeat new password"
+                                required>
                         </div>
                     </div>
 
@@ -110,8 +138,7 @@
         <h3>Password Updated!</h3>
 
         <p>
-            Your password has been changed successfully.
-            You can now continue using your MediTrack account.
+            <?= htmlspecialchars($successMessage) ?>
         </p>
 
         <button type="button"
@@ -122,6 +149,12 @@
 
     </div>
 </div>
+
+<script>
+<?php if ($successMessage): ?>
+    document.getElementById('passwordSuccessModal').classList.remove('hidden');
+<?php endif; ?>
+</script>
 
 <script src="../assets/js/change_password.js"></script>
 

@@ -1,4 +1,47 @@
 <?php
+
+/* Get notification badge count */
+$userId = $_SESSION['user_id'] ?? 0;
+
+$unreadCount = 0;
+
+$lastViewedId = $_SESSION['notifications_last_viewed_id'] ?? 0;
+
+
+if ($userId) {
+
+    require_once "../config/database.php";
+
+    $unreadSql = "
+        SELECT COUNT(*) AS unread_count
+        FROM notifications
+        WHERE user_id = ?
+        AND is_read = 0
+        AND id > ?
+    ";
+
+    $unreadStmt = mysqli_prepare($conn, $unreadSql);
+
+    if ($unreadStmt) {
+
+        mysqli_stmt_bind_param(
+            $unreadStmt,
+            "ii",
+            $userId,
+            $lastViewedId
+        );
+
+        mysqli_stmt_execute($unreadStmt);
+
+        $unreadResult = mysqli_stmt_get_result($unreadStmt);
+        $unreadData = mysqli_fetch_assoc($unreadResult);
+
+        $unreadCount = $unreadData['unread_count'] ?? 0;
+
+        mysqli_stmt_close($unreadStmt);
+    }
+}
+
 $currentPage = basename($_SERVER['PHP_SELF']);
 $full_name = $_SESSION['full_name'] ?? 'User';
 ?>
@@ -25,8 +68,23 @@ $full_name = $_SESSION['full_name'] ?? 'User';
 
         <a href="notifications.php"
            class="<?= $currentPage === 'notifications.php' ? 'active' : '' ?>">
-            <i class='bx bx-bell'></i>
+
+            <span class="nav-notification-icon">
+
+                <i class='bx bx-bell'></i>
+
+                <?php if ($unreadCount > 0): ?>
+
+                    <span class="notification-badge">
+                        <?= $unreadCount > 99 ? '99+' : $unreadCount ?>
+                    </span>
+
+                <?php endif; ?>
+
+            </span>
+
             <span>Notifications</span>
+
         </a>
 
         <!-- PROFILE DROPDOWN -->
@@ -41,6 +99,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
                 <span><?= htmlspecialchars($full_name) ?></span>
 
                 <i class='bx bx-chevron-down profile-arrow'></i>
+
             </button>
 
             <div id="profileDropdownMenu" class="profile-dropdown-menu">
@@ -58,6 +117,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
                 </button>
 
             </div>
+
         </div>
 
     </div>
@@ -69,26 +129,50 @@ $full_name = $_SESSION['full_name'] ?? 'User';
 
     <a href="book_appointment.php"
        class="nav-item <?= $currentPage === 'book_appointment.php' ? 'active' : '' ?>">
+
         <i class='bx bx-calendar-plus'></i>
         <span>Book</span>
+
     </a>
+
 
     <a href="view_appointments.php"
        class="nav-item <?= $currentPage === 'view_appointments.php' ? 'active' : '' ?>">
+
         <i class='bx bx-calendar-event'></i>
         <span>My Appointments</span>
+
     </a>
+
 
     <a href="notifications.php"
        class="nav-item <?= $currentPage === 'notifications.php' ? 'active' : '' ?>">
-        <i class='bx bx-bell'></i>
+
+        <span class="nav-notification-icon">
+
+            <i class='bx bx-bell'></i>
+
+            <?php if ($unreadCount > 0): ?>
+
+                <span class="notification-badge">
+                    <?= $unreadCount > 99 ? '99+' : $unreadCount ?>
+                </span>
+
+            <?php endif; ?>
+
+        </span>
+
         <span>Notifications</span>
+
     </a>
+
 
     <a href="view_profile.php"
        class="nav-item <?= $currentPage === 'view_profile.php' ? 'active' : '' ?>">
+
         <i class='bx bx-user-circle'></i>
         <span>Profile</span>
+
     </a>
 
 </nav>
@@ -129,6 +213,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
 
 
 <script>
+
 function toggleProfileDropdown() {
 
     const dropdown = document.getElementById("profileDropdownMenu");
@@ -172,4 +257,5 @@ function confirmLogout() {
     window.location.href = "../auth/logout.php";
 
 }
+
 </script>

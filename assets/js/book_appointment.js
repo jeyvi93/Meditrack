@@ -21,6 +21,10 @@ function closeSuccessModal() {
         .classList.add('hidden');
 }
 
+function closeErrorModal() {
+    document.getElementById("errorAppointmentModal").classList.add("hidden");
+}
+
 function openLogoutModal() {
     document.getElementById('logoutModal')
         .classList.remove('hidden');

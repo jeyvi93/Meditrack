@@ -168,26 +168,26 @@ unset($_SESSION['error_field']);
     </div>
 
     <!-- SUCCESS MODAL -->
-    <div id="successModal" class="modal-overlay hidden">
-        <div class="success-modal">
+        <div id="successModal" class="modal-overlay hidden">
+            <div class="success-modal">
 
-            <div class="success-icon">
-                <i class="fas fa-check"></i>
+                <div class="success-icon">
+                    <i class="bx bxs-envelope"></i>
+                </div>
+
+                <h2>Check Your Email</h2>
+
+                <p>
+                    A confirmation link has been sent to your email.
+                    Please check your inbox to verify your account.
+                </p>
+
+                <button class="btn-success" onclick="goToLogin()">
+                    Okay
+                </button>
+
             </div>
-
-            <h2>Registration Successful!</h2>
-
-            <p>
-                Your account has been created successfully.
-                You are now ready to log in to MediTrack.
-            </p>
-
-            <button class="btn-success" onclick="goToLogin()">
-                Go to Login
-            </button>
-
         </div>
-    </div>
 
     <script>
 

@@ -393,6 +393,27 @@
     transform: translateY(-1px);
 }
 
+/* ERROR MODAL BUTTON */
+.btn-error {
+    background: #ef4444;
+    color: #ffffff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-error:hover {
+    background: #dc2626;
+}
+
+.btn-error:active {
+    transform: scale(0.98);
+}
+
 @keyframes successModalUp {
     from {
         opacity: 0;

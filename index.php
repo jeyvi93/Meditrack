@@ -29,7 +29,7 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediTrack | School Clinic Management</title>
+    <title>MediTrack | Clinic Management System</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -58,7 +58,7 @@ if (isset($_SESSION['user_id'])) {
                     <span class="pulse"></span> Mandaue City College
                 </div>
                 <h1>Integrated Campus <span class="text-accent">Clinic Management System.</span></h1>
-                <p>A centralized platform for managing health records, clinic consultations, and medical services within the academic institution.</p>
+                <p>A centralized platform designed to streamline clinic services, health records, consultations, appointments, and other healthcare needs within the academic institution.</p>
                 
                 <div class="trust-indicators">
                     <div class="indicator">
