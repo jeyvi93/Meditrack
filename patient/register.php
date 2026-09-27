@@ -137,9 +137,10 @@ unset($_SESSION['error_field']);
 
                             <div class="input-group">
                                 <label>Password</label>
-                                <div class="input-box">
+                                <div class="input-box password-box">
                                     <i class="fas fa-lock"></i>
-                                    <input type="password" name="password" placeholder="••••••••" required>
+                                    <input type="password" name="password" id="password" placeholder="••••••••" required>
+                                    <i class="fas fa-eye password-toggle" onclick="togglePassword('password', this)"></i>
                                 </div>
                                 <?php if ($errorField === 'password'): ?>
                                     <span class="field-error"><?php echo htmlspecialchars($errorMessage); ?></span>
@@ -148,9 +149,10 @@ unset($_SESSION['error_field']);
 
                             <div class="input-group">
                                 <label>Confirm Password</label>
-                                <div class="input-box">
+                                <div class="input-box password-box">
                                     <i class="fas fa-shield-halved"></i>
-                                    <input type="password" name="confirm_password" placeholder="••••••••" required>
+                                    <input type="password" name="confirm_password" id="confirm_password" placeholder="••••••••" required>
+                                    <i class="fas fa-eye password-toggle" onclick="togglePassword('confirm_password', this)"></i>
                                 </div>
                                 <?php if ($errorField === 'confirm_password'): ?>
                                     <span class="field-error"><?php echo htmlspecialchars($errorMessage); ?></span>
@@ -208,6 +210,20 @@ unset($_SESSION['error_field']);
         }, 50);
 
         <?php endif; ?>
+
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
 
     </script>
 </body>

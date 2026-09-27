@@ -95,36 +95,6 @@
     font-size: 1.1rem;
 }
 
-/* Responsive: Hide or adjust if screen is small */
-@media (max-width: 900px) {
-    /* 1. Hide the info sidebar entirely on mobile to prioritize the form */
-    .register-info {
-        display: none;
-    }
-
-    /* 2. Adjust the parent container to be a single column */
-    .register-container, .register-card {
-        grid-template-columns: 1fr;
-        max-width: 550px; /* Keeps the form from getting too wide on tablets */
-        margin: 0 auto;
-        border-radius: 16px; /* Slightly smaller radius for mobile */
-    }
-
-    /* 3. Ensure the form side takes up the full width now that the sidebar is gone */
-    .register-form-box, .register-form-container {
-        padding: 32px 20px; /* Reduce padding for smaller screens */
-    }
-
-    /* 4. Optional: Force form inputs to stack in one column on mobile */
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .full-width {
-        grid-column: span 1;
-    }
-}
-
 /* RIGHT SIDE: FORM */
 .register-form-container {
     padding: 48px;
@@ -218,35 +188,6 @@
     text-align: center;
     margin-top: 20px;
     font-size: 0.9rem;
-}
-
-
-/* RESPONSIVE LOGIC */
-@media (max-width: 900px) {
-    .register-card {
-        grid-template-columns: 1fr; /* Stack into 1 column */
-        max-width: 500px;
-    }
-
-    .register-visual {
-        display: none; /* Hide the picture on mobile */
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr; /* Single column fields on mobile */
-    }
-
-    .full-width {
-        grid-column: span 1;
-    }
-
-    .register-form-container {
-        padding: 32px 24px;
-    }
-
-    .mobile-login-hint {
-        display: block; /* Show login link on mobile */
-    }
 }
 
 /* ==========================
@@ -411,108 +352,60 @@
     font-weight: 500;
 }
 
-@media (max-width: 900px) {
+.password-box input {
+    flex: 1;
+}
 
-    .register-section {
-        padding: 25px 16px 45px;
-        min-height: calc(100vh - 80px);
-    }
+.password-toggle {
+    margin-right: 0 !important;
+    margin-left: 8px;
+    cursor: pointer;
+    color: var(--text-muted);
+}
 
-    .register-info {
-        display: none;
-    }
-
-    .register-card {
-        grid-template-columns: 1fr;
-        max-width: 550px;
-        margin: 0 auto;
-        border-radius: 16px;
-    }
-
-    .register-form-container {
-        padding: 30px 24px;
-    }
-
-    .form-header {
-        margin-bottom: 25px;
-    }
-
-    .form-header h1 {
-        font-size: 1.65rem;
-        margin-bottom: 5px;
-    }
-
-    .form-header p {
-        font-size: 0.84rem;
-        line-height: 1.45;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .full-width {
-        grid-column: span 1;
-    }
-
-    .input-group label {
-        font-size: 0.76rem;
-        margin-bottom: 6px;
-    }
-
-    .input-box {
-        padding: 11px 13px;
-        min-height: 43px;
-        border-radius: 10px;
-    }
-
-    .input-box i {
-        margin-right: 10px;
-        font-size: 0.95rem;
-    }
-
-    .input-box input,
-    .input-box select {
-        font-size: 0.82rem;
-    }
-
-    .btn-submit {
-        padding: 12px;
-        font-size: 0.84rem;
-        border-radius: 10px;
-        margin-top: 22px;
-    }
-
-    .mobile-login-hint {
-        display: block;
-        margin-top: 18px;
-        font-size: 0.82rem;
-    }
+.password-toggle:hover {
+    color: var(--primary-blue);
 }
 
 
 /* ==========================
-   SMALL PHONES
+   RESPONSIVE: TABLETS / MOBILE
 ========================== */
 
-@media (max-width: 480px) {
+@media (max-width: 900px) {
 
+    /* REGISTER SECTION */
     .register-section {
-        padding: 18px 12px 35px;
+        padding: 18px 12px 30px;
         min-height: calc(100vh - 70px);
+        align-items: flex-start;
     }
 
-    .register-card {
+    /* Hide the left information panel */
+    .register-info,
+    .register-visual {
+        display: none;
+    }
+
+    /* Single-column registration card */
+    .register-card,
+    .register-container {
+        grid-template-columns: 1fr;
+        width: 100%;
+        max-width: 550px;
+        margin: 0 auto;
         border-radius: 14px;
     }
 
-    .register-form-container {
-        padding: 24px 18px;
+    /* FORM CONTAINER */
+    .register-form-container,
+    .register-form-box {
+        padding: 24px 20px;
     }
 
+    /* FORM HEADER */
     .form-header {
-        margin-bottom: 22px;
+        margin-bottom: 18px;
     }
 
     .form-header h1 {
@@ -525,17 +418,30 @@
         line-height: 1.4;
     }
 
+    /* FORM GRID */
     .form-grid {
-        gap: 13px;
+        grid-template-columns: 1fr;
+        gap: 11px;
     }
 
+    .full-width {
+        grid-column: span 1;
+    }
+
+    /* Space before Full Name */
+    .form-grid .input-group:first-child {
+        margin-top: 6px;
+    }
+
+    /* LABELS */
     .input-group label {
-        font-size: 0.68rem;
+        font-size: 0.72rem;
         margin-bottom: 5px;
     }
 
+    /* INPUT BOXES */
     .input-box {
-        padding: 10px 12px;
+        padding: 9px 12px;
         min-height: 40px;
         border-radius: 9px;
     }
@@ -547,18 +453,103 @@
 
     .input-box input,
     .input-box select {
-        font-size: 0.76rem;
+        font-size: 0.79rem;
+    }
+
+    /* PASSWORD TOGGLE */
+    .password-toggle {
+        margin-right: 0 !important;
+        margin-left: 8px !important;
+    }
+
+    /* SUBMIT BUTTON */
+    .btn-submit {
+        padding: 11px;
+        font-size: 0.85rem;
+        border-radius: 9px;
+        margin-top: 16px;
+    }
+
+    /* MOBILE LOGIN LINK */
+    .mobile-login-hint {
+        display: block;
+        margin-top: 14px;
+        font-size: 0.8rem;
+    }
+}
+
+
+/* ==========================
+   SMALL PHONES
+========================== */
+
+@media (max-width: 480px) {
+
+    .register-section {
+        padding: 12px 8px 24px;
+    }
+
+    .register-card {
+        border-radius: 12px;
+    }
+
+    .register-form-container {
+        padding: 20px 16px;
+    }
+
+    .form-header {
+        margin-bottom: 16px;
+    }
+
+    .form-header h1 {
+        font-size: 1.3rem;
+        margin-bottom: 4px;
+    }
+
+    .form-header p {
+        font-size: 0.72rem;
+        line-height: 1.35;
+    }
+
+    .form-grid {
+        gap: 9px;
+    }
+
+    /* Space before Full Name */
+    .form-grid .input-group:first-child {
+        margin-top: 5px;
+    }
+
+    .input-group label {
+        font-size: 0.68rem;
+        margin-bottom: 4px;
+    }
+
+    .input-box {
+        padding: 8px 11px;
+        min-height: 38px;
+        border-radius: 8px;
+    }
+
+    .input-box i {
+        margin-right: 8px;
+        font-size: 0.85rem;
+    }
+
+    .input-box input,
+    .input-box select {
+        font-size: 0.75rem;
     }
 
     .btn-submit {
-        padding: 11px;
-        font-size: 0.76rem;
-        border-radius: 9px;
-        margin-top: 18px;
+        padding: 10px;
+        font-size: 0.8rem;
+        border-radius: 8px;
+        margin-top: 14px;
     }
 
     .mobile-login-hint {
-        margin-top: 16px;
-        font-size: 0.74rem;
+        margin-top: 12px;
+        font-size: 0.72rem;
     }
 }

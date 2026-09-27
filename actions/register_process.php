@@ -2,6 +2,10 @@
 session_start();
 
 require_once "../config/database.php";
+require_once "../vendor/autoload.php";
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -230,6 +234,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Hash password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
+    // Generate email verification token
+    $verification_token = bin2hex(random_bytes(32));
+    $verification_expires = date("Y-m-d H:i:s", time() + 900);
+
 
     // Insert user account
     if ($role === 'Student') {
@@ -240,23 +248,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             full_name,
             email,
             password,
-            role
+            role,
+            email_verified,
+            verification_token,
+            verification_expires
         ) VALUES (
-            ?, NULL, ?, ?, ?, ?
+            ?, NULL, ?, ?, ?, ?, 0, ?, ?
         )";
 
         $stmt = mysqli_prepare($conn, $sql);
 
         mysqli_stmt_bind_param(
             $stmt,
-            "issss",
+            "issssss",
             $profile_id,
             $full_name,
             $email,
             $hashed_password,
-            $role
+            $role,
+            $verification_token,
+            $verification_expires
         );
-
     } else {
 
         $sql = "INSERT INTO users (
@@ -265,29 +277,130 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             full_name,
             email,
             password,
-            role
+            role,
+            email_verified,
+            verification_token,
+            verification_expires
         ) VALUES (
-            NULL, ?, ?, ?, ?, ?
+            NULL, ?, ?, ?, ?, ?, 0, ?, ?
         )";
 
         $stmt = mysqli_prepare($conn, $sql);
 
         mysqli_stmt_bind_param(
             $stmt,
-            "issss",
+            "issssss",
             $profile_id,
             $full_name,
             $email,
             $hashed_password,
-            $role
+            $role,
+            $verification_token,
+            $verification_expires
         );
     }
 
 
-    // Execute registration
+        // Execute registration
     if (mysqli_stmt_execute($stmt)) {
 
-        $_SESSION['success'] = "Registration successful. You can now log in.";
+        // Create verification link
+        $verification_link =
+            "http://localhost/MediTrack%20Clinic/api/auth/verify_email.php?token=" .
+            urlencode($verification_token);
+
+        // Send verification email
+        $mailConfig = require "../config/mail.php";
+
+        $mail = new PHPMailer(true);
+
+        try {
+
+            $mail->isSMTP();
+            $mail->Host       = $mailConfig['host'];
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $mailConfig['username'];
+            $mail->Password   = $mailConfig['password'];
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = $mailConfig['port'];
+
+            $mail->setFrom(
+                $mailConfig['username'],
+                "MediTrack Clinic"
+            );
+
+            $mail->addAddress($email, $full_name);
+
+            $mail->isHTML(true);
+            $mail->Subject = "Verify Your MediTrack Account";
+
+            $mail->Body = "
+                <h2>MediTrack Clinic</h2>
+
+                <p>Hello <strong>" . htmlspecialchars($full_name) . "</strong>,</p>
+
+                <p>
+                    Your MediTrack Clinic account has been successfully registered.
+                </p>
+
+                <p>
+                    To complete your registration and activate your account, please verify
+                    your email address by clicking the button below.
+                </p>
+
+                <p style='margin: 30px 0;'>
+                    <a href='" . $verification_link . "'
+                    style='
+                    display:inline-block;
+                    padding:12px 22px;
+                    background:#800000;
+                    color:white;
+                    text-decoration:none;
+                    border-radius:6px;
+                    font-weight:bold;'>
+                    Verify Email Address
+                    </a>
+                </p>
+
+                <p>
+                    This verification link will expire in <strong>15 minutes</strong>.
+                </p>
+
+                <p>
+                    If you did not create a MediTrack Clinic account, please disregard
+                    this message.
+                </p>
+
+                <p style='margin-top: 30px;'>
+                    Regards,<br>
+                    <strong>MediTrack Clinic</strong>
+                </p>
+            ";
+
+
+            $mail->send();
+
+            $_SESSION['success'] =
+                "Registration successful. A verification link has been sent to your email.";
+
+        } catch (Exception $e) {
+
+            // Remove the account if email could not be sent
+            mysqli_query(
+                $conn,
+                "DELETE FROM users WHERE email = '" .
+                mysqli_real_escape_string($conn, $email) . "'"
+            );
+
+            $_SESSION['error'] =
+                "Registration failed because the verification email could not be sent.";
+
+            mysqli_stmt_close($stmt);
+            mysqli_close($conn);
+
+            header("Location: ../patient/register.php");
+            exit();
+        }
 
         // Clear saved form values after successful registration
         unset($_SESSION['old_full_name']);
@@ -317,4 +430,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: ../patient/register.php");
     exit();
 }
+
 ?>

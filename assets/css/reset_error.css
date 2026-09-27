@@ -1,0 +1,257 @@
+/* ==========================
+   RESET ERROR PAGE
+========================== */
+
+.reset-page {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px 20px;
+
+    position: relative;
+    z-index: 1;
+}
+
+
+/* ==========================
+   CARD
+========================== */
+
+.reset-card {
+    width: 100%;
+    max-width: 460px;
+
+    background: #ffffff;
+
+    border-radius: 20px;
+
+    padding: 45px 35px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.08);
+
+    border:
+        1px solid rgba(15, 23, 42, 0.08);
+}
+
+
+/* ==========================
+   STATUS ICON
+========================== */
+
+.reset-icon {
+    width: 80px;
+    height: 80px;
+
+    margin: 0 auto 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 2.4rem;
+}
+
+
+/* EXPIRED */
+
+.reset-icon.expired {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+
+/* ERROR */
+
+.reset-icon.error {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+
+/* ==========================
+   TEXT
+========================== */
+
+.reset-card h1 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+
+    color: #0f172a;
+
+    font-size: 1.6rem;
+
+    margin: 0 0 12px;
+}
+
+
+.reset-card p {
+    color: #64748b;
+
+    font-size: 0.92rem;
+
+    line-height: 1.7;
+
+    margin: 0 auto 28px;
+
+    max-width: 380px;
+}
+
+
+/* ==========================
+   BUTTON
+========================== */
+
+.reset-button {
+    display: block;
+
+    width: 100%;
+
+    padding: 13px 20px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    font-size: 0.9rem;
+
+    transition: 0.3s;
+}
+
+
+.reset-button:hover {
+    background: #0f172a;
+
+    transform: translateY(-1px);
+}
+
+
+/* ==========================
+   LOGIN LINK
+========================== */
+
+.login-link {
+    display: inline-block;
+
+    margin-top: 18px;
+
+    color: #64748b;
+
+    text-decoration: none;
+
+    font-size: 0.85rem;
+
+    font-weight: 500;
+
+    transition: 0.2s;
+}
+
+
+.login-link:hover {
+    color: #2563eb;
+}
+
+
+/* ==========================
+   LOGO
+========================== */
+
+.reset-logo {
+    margin-bottom: 28px;
+}
+
+
+.reset-logo img {
+    width: 150px;
+
+    height: auto;
+}
+
+
+/* ==========================
+   FOOTER
+========================== */
+
+.reset-footer {
+    margin-top: 22px;
+
+    font-size: 0.75rem;
+
+    color: #94a3b8;
+}
+
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media (max-width: 600px) {
+
+    .reset-page {
+        padding: 20px 14px;
+    }
+
+
+    .reset-card {
+        padding: 35px 22px;
+
+        border-radius: 16px;
+    }
+
+
+    .reset-logo {
+        margin-bottom: 22px;
+    }
+
+
+    .reset-logo img {
+        width: 130px;
+    }
+
+
+    .reset-icon {
+        width: 70px;
+        height: 70px;
+
+        font-size: 2.1rem;
+
+        margin-bottom: 18px;
+    }
+
+
+    .reset-card h1 {
+        font-size: 1.35rem;
+    }
+
+
+    .reset-card p {
+        font-size: 0.82rem;
+
+        line-height: 1.6;
+    }
+
+
+    .reset-button {
+        padding: 12px;
+
+        font-size: 0.85rem;
+    }
+
+
+    .login-link {
+        font-size: 0.8rem;
+    }
+
+}

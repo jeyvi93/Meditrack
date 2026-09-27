@@ -19,7 +19,7 @@
         <img src="../assets/images/med.png" alt="MediTrack Logo">
     </div>
     <div class="nav-auth">
-        <a href="register.html" class="register-link">Register</a>
+        <a href="register.php" class="register-link">Register</a>
         <a href="../login.php" class="btn-login">Login</a>
     </div>
 </nav>
@@ -66,12 +66,12 @@
                 </div>
             </div>
 
-            <form action="#" class="forgot-form" onsubmit="handleForgotSubmit(event)">
+            <form action="../api/auth/forgot_password.php" method="POST" class="forgot-form">
                 <div class="input-group">
                     <label>Email Address</label>
                     <div class="input-box">
                         <i class='bx bx-envelope'></i>
-                        <input type="email" placeholder="you@mcc.edu.ph" required>
+                        <input type="email" name="email" placeholder="Enter your registered email address" required>
                     </div>
                 </div>
 
@@ -79,7 +79,7 @@
                     <button type="submit" class="btn-submit">
                         Send Reset Link <i class='bx bx-paper-plane'></i>
                     </button>
-                    <a href="../index.html" class="back-link-mobile">Back to Login</a>
+                    <a href="../index.php" class="back-link-mobile">Back to Login</a>
                 </div>
             </form>
         </div>
@@ -87,7 +87,7 @@
 </main>
 
 <!-- SUCCESS MODAL -->
-<div id="successModal" class="modal-overlay hidden">
+<div id="forgotModal" class="modal-overlay hidden">
     <div class="modal-box">
         
         <i class='bx bxs-envelope-open success-icon'></i>
@@ -95,8 +95,8 @@
         <h3>Check Your Email</h3>
 
         <p>
-            A confirmation link has been sent to your email.
-            Please check your inbox to verify your account.
+            A password reset link has been sent to your email.
+            Please check your inbox to continue.
         </p>
 
         <button 
@@ -110,15 +110,20 @@
 </div>
 
 <script>
-    function handleForgotSubmit(event) {
-    event.preventDefault();
+    const urlParams = new URLSearchParams(window.location.search);
 
-    const modal = document.getElementById("forgotModal");
+    if (urlParams.get("sent") === "1") {
 
-    if (modal) {
-        modal.classList.remove("hidden");
+        const modal = document.getElementById("forgotModal");
+
+        if (modal) {
+            modal.classList.remove("hidden");
+
+            setTimeout(() => {
+                modal.classList.add("show");
+            }, 50);
+        }
     }
-}
 </script>
 
 </body>

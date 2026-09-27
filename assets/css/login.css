@@ -344,257 +344,482 @@
     text-decoration: underline;
 }
 
-
-/* ==========================
-   MOBILE
-========================== */
-
-@media (max-width: 900px) {
-
-    .login-section {
-        padding: 30px 0 50px;
-    }
-
-    .login-card {
-        grid-template-columns: 1fr;
-
-        max-width: 500px;
-
-        border-radius: 16px;
-    }
-
-    .login-info {
-        display: none;
-    }
-
-    .login-form-container {
-        padding: 35px 24px;
-    }
-
-    .login-form-container .form-header {
-        margin-bottom: 28px;
-    }
-}
-
-
-/* ==========================
-   SMALL PHONES
-========================== */
-
-@media (max-width: 480px) {
-
-    .login-section {
-        padding: 20px 0 40px;
-    }
-
-    .login-card {
-        border-radius: 14px;
-    }
-
-    .login-form-container {
-        padding: 30px 20px;
-    }
-
-    .login-form-container .form-header h1 {
-        font-size: 1.6rem;
-    }
-
-    .login-form-container .form-header p {
-        font-size: 0.85rem;
-        line-height: 1.5;
-    }
-
-    .login-form {
-        gap: 18px;
-    }
-
-    .login-form .input-box {
-        padding: 13px 14px;
-    }
-
-    .login-form .btn-submit {
-        padding: 14px;
-    }
+.login-error-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    overflow: hidden;
 }
 
 .login-error {
-    display: block;
-
-    height: 15px;
-
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     color: #dc2626;
-
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 500;
+    line-height: 1.3;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
 }
 
-.login-error-container {
-    height: 2px;
+.resend-link {
+    color: var(--primary-blue);
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.resend-link:hover {
+    text-decoration: underline;
+}
+
+ /* ==========================
+    MOBILE
+ ========================== */
+
+ @media (max-width: 900px) {
+
+     .login-section {
+         padding: 25px 16px 45px;
+         min-height: calc(100vh - 80px);
+     }
+
+     .login-card {
+         grid-template-columns: 1fr;
+         width: 100%;
+         max-width: 500px;
+         border-radius: 16px;
+     }
+
+     .login-info {
+         display: none;
+     }
+
+     .login-form-container {
+         padding: 30px 24px;
+     }
+
+     .login-form-container .form-header {
+         margin-bottom: 25px;
+     }
+
+     .login-form-container .form-header h1 {
+         font-size: 1.65rem;
+         margin-bottom: 5px;
+     }
+
+     .login-form-container .form-header p {
+         font-size: 0.84rem;
+         line-height: 1.45;
+     }
+
+     .login-form {
+         gap: 17px;
+     }
+
+     .login-form .input-group label {
+         font-size: 0.76rem;
+         margin-bottom: 6px;
+     }
+
+     .login-form .input-box {
+         padding: 11px 13px;
+         min-height: 43px;
+         border-radius: 10px;
+     }
+
+     .login-form .input-box i {
+         margin-right: 10px;
+         font-size: 0.95rem;
+     }
+
+     .login-form .input-box input {
+         font-size: 0.82rem;
+     }
+
+     /* PASSWORD HEADER */
+     .password-header {
+         margin-bottom: 6px;
+     }
+
+     .forgot-link {
+         font-size: 0.72rem;
+     }
+
+     /* PASSWORD TOGGLE */
+     .password-box input {
+         flex: 1;
+     }
+
+     .password-toggle {
+         margin-right: 0 !important;
+         margin-left: 8px !important;
+         cursor: pointer;
+     }
+
+     /* LOGIN BUTTON */
+     .login-form .btn-submit {
+         padding: 12px;
+         font-size: 0.84rem;
+         border-radius: 10px;
+         margin-top: 8px;
+     }
+
+     /* REGISTER HINT */
+     .register-hint {
+         margin-top: 20px;
+         font-size: 0.82rem;
+     }
+
+     /* LOGIN ERROR */
+     .login-error {
+         font-size: 12px;
+     }
+
+     .resend-link {
+        font-size: 12px;
+        text-decoration: none;
+     }
+ }
+
+
+ /* ==========================
+    SMALL PHONES
+ ========================== */
+
+ @media (max-width: 480px) {
+
+     .login-section {
+         padding: 18px 12px 35px;
+         min-height: calc(100vh - 70px);
+     }
+
+     .login-card {
+         border-radius: 14px;
+     }
+
+     .login-form-container {
+         padding: 24px 18px;
+     }
+
+     .login-form-container .form-header {
+         margin-bottom: 22px;
+     }
+
+     .login-form-container .form-header h1 {
+         font-size: 1.4rem;
+         margin-bottom: 4px;
+     }
+
+     .login-form-container .form-header p {
+         font-size: 0.76rem;
+         line-height: 1.4;
+     }
+
+     .login-form {
+         gap: 14px;
+     }
+
+     .login-form .input-group label {
+         font-size: 0.72rem;
+         margin-bottom: 5px;
+     }
+
+     .login-form .input-box {
+         padding: 10px 12px;
+         min-height: 40px;
+         border-radius: 9px;
+     }
+
+     .login-form .input-box i {
+         margin-right: 9px;
+         font-size: 0.9rem;
+     }
+
+     .login-form .input-box input {
+         font-size: 0.8rem;
+     }
+
+     /* PASSWORD HEADER */
+     .password-header {
+         margin-bottom: 5px;
+     }
+
+     .forgot-link {
+         font-size: 0.68rem;
+     }
+
+     /* PASSWORD TOGGLE */
+     .password-toggle {
+         margin-right: 0 !important;
+         margin-left: 8px !important;
+     }
+
+     /* LOGIN BUTTON */
+     .login-form .btn-submit {
+         padding: 11px;
+         font-size: 0.8rem;
+         border-radius: 9px;
+         margin-top: 7px;
+     }
+
+     /* REGISTER HINT */
+     .register-hint {
+         margin-top: 17px;
+         font-size: 0.76rem;
+     }
+
+     /* LOGIN ERROR */
+     .login-error {
+    font-size: 11px;
+     }
+
+     .resend-link {
+        font-size: 11px;
+        text-decoration: none;
+     }
+
+     .login-error-container {
+        gap: 4px;
+     }
+ }
+
+ .modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(5px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 9999;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.success-modal {
+    position: relative;
+
+    width: 100%;
+    max-width: 420px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 35px 30px;
+
+    text-align: center;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+
+    transform: translateY(20px) scale(0.97);
+
+    transition: transform 0.25s ease;
+}
+
+.modal-overlay.show .success-modal {
+    transform: translateY(0) scale(1);
+}
+
+.success-icon {
+    width: 70px;
+    height: 70px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #b9d6f5;
+    color: var(--primary-blue);
+
+    border-radius: 50%;
+
+    font-size: 2rem;
+}
+
+.success-modal h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+
+    color: var(--navy-dark);
+
+    font-size: 1.5rem;
+
+    margin-bottom: 10px;
+}
+
+.success-modal p {
+    color: var(--text-muted);
+
+    font-size: 0.9rem;
+
+    line-height: 1.6;
+
+    margin-bottom: 25px;
+}
+
+.btn-success {
+    width: 100%;
+
+    border: none;
+
+    background: var(--primary-blue);
+
+    color: white;
+
+    padding: 12px 20px;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.btn-success:hover {
+    background: var(--navy-dark);
+
+    transform: translateY(-1px);
 }
 
 /* ==========================
-   MOBILE
+   PASSWORD RESET SUCCESS ICON
 ========================== */
 
-@media (max-width: 900px) {
+.reset-success-icon {
+    width: 70px;
+    height: 70px;
 
-    .login-section {
-        padding: 25px 16px 45px;
-        min-height: calc(100vh - 80px);
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #d1fae5;
+    color: var(--medical-teal);
+
+    border-radius: 50%;
+
+    font-size: 2rem;
+}
+
+/* ==========================
+   MODAL MOBILE
+========================== */
+
+@media (max-width: 600px) {
+
+    .modal-overlay {
+        padding: 16px;
     }
 
-    .login-card {
-        grid-template-columns: 1fr;
-        max-width: 500px;
+    .reset-success-icon {
+        width: 64px;
+        height: 64px;
+
+        margin-bottom: 18px;
+
+        font-size: 1.8rem;
+    }
+
+    .success-modal {
+        max-width: 100%;
+
+        padding: 30px 22px;
+
         border-radius: 16px;
     }
 
-    .login-info {
-        display: none;
+    .success-icon {
+        width: 64px;
+        height: 64px;
+
+        margin-bottom: 18px;
+
+        font-size: 1.8rem;
     }
 
-    .login-form-container {
-        padding: 30px 24px;
+    .success-modal h2 {
+        font-size: 1.3rem;
+
+        margin-bottom: 8px;
     }
 
-    .login-form-container .form-header {
-        margin-bottom: 25px;
-    }
-
-    .login-form-container .form-header h1 {
-        font-size: 1.65rem;
-        margin-bottom: 5px;
-    }
-
-    .login-form-container .form-header p {
-        font-size: 0.84rem;
-        line-height: 1.45;
-    }
-
-    .login-form {
-        gap: 17px;
-    }
-
-    .login-form .input-group label {
-        font-size: 0.76rem;
-        margin-bottom: 6px;
-    }
-
-    .login-form .input-box {
-        padding: 11px 13px;
-        min-height: 43px;
-        border-radius: 10px;
-    }
-
-    .login-form .input-box i {
-        margin-right: 10px;
-        font-size: 0.95rem;
-    }
-
-    .login-form .input-box input {
+    .success-modal p {
         font-size: 0.82rem;
+
+        line-height: 1.55;
+
+        margin-bottom: 22px;
     }
 
-    .password-header {
-        margin-bottom: 6px;
-    }
+    .btn-success {
+        padding: 11px 18px;
 
-    .forgot-link {
-        font-size: 0.72rem;
-    }
+        font-size: 0.85rem;
 
-    .login-form .btn-submit {
-        padding: 12px;
-        font-size: 0.84rem;
-        border-radius: 10px;
-        margin-top: 8px;
-    }
-
-    .register-hint {
-        margin-top: 20px;
-        font-size: 0.82rem;
-    }
-
-    .login-error {
-        font-size: 12px;
+        border-radius: 9px;
     }
 }
 
 
 /* ==========================
-   SMALL PHONES
+   VERY SMALL PHONES
 ========================== */
 
-@media (max-width: 480px) {
+@media (max-width: 360px) {
 
-    .login-section {
-        padding: 18px 12px 35px;
-        min-height: calc(100vh - 70px);
+    .reset-success-icon {
+        width: 60px;
+        height: 60px;
+
+        font-size: 1.7rem;
     }
 
-    .login-card {
-        border-radius: 14px;
+    .success-modal {
+        padding: 26px 18px;
     }
 
-    .login-form-container {
-        padding: 24px 18px;
+    .success-icon {
+        width: 60px;
+        height: 60px;
+
+        font-size: 1.7rem;
     }
 
-    .login-form-container .form-header {
-        margin-bottom: 22px;
+    .success-modal h2 {
+        font-size: 1.2rem;
     }
 
-    .login-form-container .form-header h1 {
-        font-size: 1.4rem;
-        margin-bottom: 4px;
-    }
-
-    .login-form-container .form-header p {
-        font-size: 0.76rem;
-        line-height: 1.4;
-    }
-
-    .login-form {
-        gap: 14px;
-    }
-
-    .login-form .input-group label {
-        font-size: 0.68rem;
-        margin-bottom: 5px;
-    }
-
-    .login-form .input-box {
-        padding: 10px 12px;
-        min-height: 40px;
-        border-radius: 9px;
-    }
-
-    .login-form .input-box i {
-        margin-right: 9px;
-        font-size: 0.9rem;
-    }
-
-    .login-form .input-box input {
-        font-size: 0.76rem;
-    }
-
-    .forgot-link {
-        font-size: 0.68rem;
-    }
-
-    .login-form .btn-submit {
-        padding: 11px;
-        font-size: 0.76rem;
-        border-radius: 9px;
-        margin-top: 7px;
-    }
-
-    .register-hint {
-        margin-top: 17px;
-        font-size: 0.74rem;
-    }
-
-    .login-error {
-        font-size: 11px;
+    .success-modal p {
+        font-size: 0.78rem;
     }
 }

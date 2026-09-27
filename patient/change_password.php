@@ -2,6 +2,11 @@
 
 session_start();
 
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
 $successMessage = $_SESSION['success'] ?? '';
 $errorMessage = $_SESSION['error'] ?? '';
 
@@ -72,6 +77,71 @@ unset($_SESSION['error']);
 
             <form action="../actions/change_password.php" method="POST" class="password-form">
                 <div class="info-grid single-col">
+                    
+                    <div class="info-group">
+                        <label>Current Password</label>
+                        <div class="input-box">
+
+                            <i class='bx bx-key'></i>
+
+                            <input
+                                type="password"
+                                id="current_password"
+                                name="current_password"
+                                placeholder="Enter old password"
+                                required
+                            >
+
+                            <i
+                                class='bx bx-show password-toggle'
+                                onclick="togglePassword('current_password', this)"
+                            ></i>
+
+                        </div>
+                    </div>
+
+                    <div class="info-group">
+                        <label>New Password</label>
+                        <div class="input-box">
+
+                            <i class='bx bx-lock-alt'></i>
+
+                            <input
+                                type="password"
+                                id="new_password"
+                                name="new_password"
+                                placeholder="Enter new password"
+                                required
+                            >
+
+                            <i
+                                class='bx bx-show password-toggle'
+                                onclick="togglePassword('new_password', this)"
+                            ></i>
+
+                        </div>
+                    </div>
+
+                    <div class="info-group">
+                        <label>Confirm New Password</label>
+                        <div class="input-box">
+
+                            <i class='bx bx-shield-alt-2'></i>
+
+                            <input
+                                type="password"
+                                id="confirm_password"
+                                name="confirm_password"
+                                placeholder="Repeat new password"
+                                required
+                            >
+
+                            <i
+                                class='bx bx-show password-toggle'
+                                onclick="togglePassword('confirm_password', this)"
+                            ></i>
+
+        </div>
 
                     <?php if ($errorMessage): ?>
                         <div class="password-error-message">
@@ -79,38 +149,6 @@ unset($_SESSION['error']);
                             <span><?= htmlspecialchars($errorMessage) ?></span>
                         </div>
                     <?php endif; ?>
-                    
-                    <div class="info-group">
-                        <label>Current Password</label>
-                        <div class="input-box">
-                            <i class='bx bx-key'></i>
-                            <input type="password"
-                                name="current_password"
-                                placeholder="••••••••"
-                                required>
-                        </div>
-                    </div>
-
-                    <div class="info-group">
-                        <label>New Password</label>
-                        <div class="input-box">
-                            <i class='bx bx-lock-alt'></i>
-                            <input type="password"
-                                name="new_password"
-                                placeholder="Enter new password"
-                                required>
-                        </div>
-                    </div>
-
-                    <div class="info-group">
-                        <label>Confirm New Password</label>
-                        <div class="input-box">
-                            <i class='bx bx-shield-alt-2'></i>
-                            <input type="password"
-                                name="confirm_password"
-                                placeholder="Repeat new password"
-                                required>
-                        </div>
                     </div>
 
                 </div>

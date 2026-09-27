@@ -2,6 +2,7 @@
 session_start();
 
 $error = $_GET['error'] ?? '';
+$resend = $_GET['resend'] ?? '';
 $loginEmail = $_SESSION['login_email'] ?? '';
 
 unset($_SESSION['login_email']);
@@ -139,13 +140,13 @@ unset($_SESSION['login_email']);
                                     Password
                                 </label>
 
-                                <a href="patient/forgot_password.html" class="forgot-link">
+                                <a href="patient/forgot_password.php" class="forgot-link">
                                     Forgot Password?
                                 </a>
 
                             </div>
 
-                            <div class="input-box">
+                            <div class="input-box password-box">
 
                                 <i class="fas fa-lock"></i>
 
@@ -157,20 +158,28 @@ unset($_SESSION['login_email']);
                                     required
                                 >
 
+                                <i class="fas fa-eye password-toggle"
+                                onclick="togglePassword('password', this)"></i>
+
                             </div>
                         </div>
 
                         <div class="login-error-container">
                             <?php if ($error === '1'): ?>
                                 <span class="login-error">
-                                    <i class="fas fa-circle-exclamation"></i>
+                                    <i class='bx bx-error-circle'></i>
                                     Invalid email or password.
                                 </span>
-                            <?php elseif ($error === 'invalid_role'): ?>
+
+                            <?php elseif ($error === 'not_verified'): ?>
                                 <span class="login-error">
-                                    <i class="fas fa-circle-exclamation"></i>
-                                    Your account has an invalid role. Please contact the clinic administrator.
+                                    <i class='bx bx-error-circle'></i>
+                                    Please verify your email first.
                                 </span>
+
+                                <a href="#" class="resend-link" onclick="resendVerification(event)">
+                                    Resend email
+                                </a>
                             <?php endif; ?>
                         </div>
 
@@ -195,6 +204,146 @@ unset($_SESSION['login_email']);
         </section>
 
     </div>
+
+    <div id="resendModal" class="modal-overlay hidden">
+        <div class="success-modal">
+
+            <div class="success-icon">
+                <i class="bx bxs-envelope"></i>
+            </div>
+
+            <h2>Verification Email Sent</h2>
+
+            <p>
+                A new verification link has been sent to your email.
+                Please check your inbox to verify your account.
+            </p>
+
+            <button type="button" class="btn-success" onclick="closeResendModal()">
+                Okay
+            </button>
+
+        </div>
+    </div>
+
+    <!-- PASSWORD RESET SUCCESS MODAL -->
+<div id="resetSuccessModal" class="modal-overlay hidden">
+
+    <div class="success-modal">
+
+        <div class="reset-success-icon">
+            <i class="bx bx-check"></i>
+        </div>
+
+        <h2>Password Reset Successful</h2>
+
+        <p>
+            Your password has been successfully updated.
+            You can now sign in using your new password.
+        </p>
+
+        <button type="button" class="btn-success" onclick="closeResetSuccessModal()">
+            Continue to Login
+        </button>
+
+    </div>
+
+</div>
+
+    <script>
+        function togglePassword(inputId, icon) {
+        const input = document.getElementById(inputId);
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+
+
+    function resendVerification(event) {
+        event.preventDefault();
+
+        const email = document.getElementById("email").value;
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "api/auth/resend_verification.php";
+
+        const emailInput = document.createElement("input");
+        emailInput.type = "hidden";
+        emailInput.name = "email";
+        emailInput.value = email;
+
+        form.appendChild(emailInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+
+    function closeResendModal() {
+        const modal = document.getElementById("resendModal");
+
+        modal.classList.remove("show");
+
+        setTimeout(() => {
+            modal.classList.add("hidden");
+        }, 250);
+
+        // Remove ?resend=success from the URL
+        window.history.replaceState({}, document.title, "login.php");
+    }
+
+
+    // CHECK URL FOR SUCCESS MODALS
+    const urlParams = new URLSearchParams(window.location.search);
+
+
+    // VERIFICATION EMAIL RESEND
+    if (urlParams.get("resend") === "success") {
+
+        const resendModal = document.getElementById("resendModal");
+
+        resendModal.classList.remove("hidden");
+
+        setTimeout(() => {
+            resendModal.classList.add("show");
+        }, 50);
+    }
+
+
+    // PASSWORD RESET SUCCESS
+    if (urlParams.get("reset") === "success") {
+
+        const resetSuccessModal = document.getElementById("resetSuccessModal");
+
+        resetSuccessModal.classList.remove("hidden");
+
+        setTimeout(() => {
+            resetSuccessModal.classList.add("show");
+        }, 50);
+    }
+
+    function closeResetSuccessModal() {
+
+        const modal = document.getElementById("resetSuccessModal");
+
+        modal.classList.remove("show");
+
+        setTimeout(() => {
+            modal.classList.add("hidden");
+        }, 250);
+
+        // Remove ?reset=success from the URL
+        window.history.replaceState({}, document.title, "login.php");
+    }
+    </script>
 
 </body>
 </html>

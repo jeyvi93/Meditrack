@@ -25,11 +25,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user = mysqli_fetch_assoc($result);
 
         // Verify hashed password
-        if (password_verify($password, $user["password"])) {
+       if (password_verify($password, $user["password"])) {
 
-            // ==========================
-            // STORE USER SESSION
-            // ==========================
+            if ((int)$user["email_verified"] !== 1) {
+                header("Location: ../login.php?error=not_verified");
+                exit();
+            }
 
             $_SESSION["user_id"] = $user["id"];
             $_SESSION["full_name"] = $user["full_name"];
