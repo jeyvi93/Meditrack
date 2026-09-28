@@ -5,8 +5,6 @@ $userId = $_SESSION['user_id'] ?? 0;
 
 $unreadCount = 0;
 
-$lastViewedId = $_SESSION['notifications_last_viewed_id'] ?? 0;
-
 
 if ($userId) {
 
@@ -16,8 +14,7 @@ if ($userId) {
         SELECT COUNT(*) AS unread_count
         FROM notifications
         WHERE user_id = ?
-        AND is_read = 0
-        AND id > ?
+        AND is_viewed = 0
     ";
 
     $unreadStmt = mysqli_prepare($conn, $unreadSql);
@@ -26,9 +23,8 @@ if ($userId) {
 
         mysqli_stmt_bind_param(
             $unreadStmt,
-            "ii",
-            $userId,
-            $lastViewedId
+            "i",
+            $userId
         );
 
         mysqli_stmt_execute($unreadStmt);

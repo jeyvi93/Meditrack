@@ -42,5 +42,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
     togglePhilHealth();
 
+    // ======================
+    // NAME INPUT VALIDATION
+    // ======================
+    const nameFields = [
+        document.getElementById("DoctorName"),
+        document.getElementById("fullName"),
+        document.getElementById("parent_name"),
+        document.getElementById("spouse_name")
+    ];
+
+    nameFields.forEach(function (field) {
+        if (!field) return;
+
+        field.addEventListener("input", function () {
+            this.value = this.value.replace(/[^A-Za-zÀ-ÿ .'-]/g, "");
+        });
+    });
+
+    // ======================
+    // CONTACT NUMBER VALIDATION
+    // ======================
+    const contactField = document.getElementById("contact");
+
+    if (contactField) {
+        contactField.addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "").slice(0, 11);
+        });
+    }
+
 
 });

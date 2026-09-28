@@ -272,12 +272,22 @@ function pageUrl($page, $queryParams) {
                                 </td>
 
                                 <td class="text-right">
+
                                     <button
                                         class="btn-view"
                                         title="View Full Details"
                                         onclick="openModal(<?= $row['id'] ?>)">
                                         <i class="bx bx-show"></i>
                                     </button>
+
+                                    <a
+                                        href="../actions/generate_referral_pdf.php?id=<?= $row['id'] ?>"
+                                        class="btn-pdf"
+                                        title="Generate PDF"
+                                        target="_blank">
+                                        <i class="bx bxs-file-pdf"></i>
+                                    </a>
+
                                 </td>
                             </tr>
 

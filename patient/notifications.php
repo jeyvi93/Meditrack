@@ -12,6 +12,25 @@ require_once "../config/database.php";
 /* Get user's notifications */
 $userId = $_SESSION['user_id'];
 
+$markViewedSql = "
+    UPDATE notifications
+    SET is_viewed = 1
+    WHERE user_id = ?
+    AND is_viewed = 0
+";
+
+$markViewedStmt = mysqli_prepare($conn, $markViewedSql);
+
+mysqli_stmt_bind_param(
+    $markViewedStmt,
+    "i",
+    $userId
+);
+
+mysqli_stmt_execute($markViewedStmt);
+
+mysqli_stmt_close($markViewedStmt);
+
 $sql = "
     SELECT id, title, message, is_read, created_at
     FROM notifications
@@ -55,38 +74,6 @@ $unreadData = mysqli_fetch_assoc($unreadResult);
 
 $unreadCount = $unreadData['unread_count'] ?? 0;
 
-
-/* Get latest notification ID */
-
-$latestNotificationSql = "
-    SELECT id
-    FROM notifications
-    WHERE user_id = ?
-    ORDER BY id DESC
-    LIMIT 1
-";
-
-$latestStmt = mysqli_prepare($conn, $latestNotificationSql);
-
-mysqli_stmt_bind_param(
-    $latestStmt,
-    "i",
-    $userId
-);
-
-mysqli_stmt_execute($latestStmt);
-
-$latestResult = mysqli_stmt_get_result($latestStmt);
-$latestNotification = mysqli_fetch_assoc($latestResult);
-
-/*
- * Remember the latest notification that existed
- * when the user opened the notifications page.
- */
-$_SESSION['notifications_last_viewed_id'] =
-    $latestNotification['id'] ?? 0;
-
-mysqli_stmt_close($latestStmt);
 mysqli_stmt_close($unreadStmt);
 ?>
 

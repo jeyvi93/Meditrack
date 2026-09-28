@@ -1,3 +1,28 @@
+<?php
+require_once "../config/database.php";
+
+$pendingAppointmentCount = 0;
+
+$pendingSql = "
+    SELECT COUNT(*) AS pending_count
+    FROM appointments
+    WHERE status = 'Pending'
+";
+
+$pendingStmt = mysqli_prepare($conn, $pendingSql);
+
+if ($pendingStmt) {
+    mysqli_stmt_execute($pendingStmt);
+
+    $pendingResult = mysqli_stmt_get_result($pendingStmt);
+    $pendingData = mysqli_fetch_assoc($pendingResult);
+
+    $pendingAppointmentCount = $pendingData['pending_count'] ?? 0;
+
+    mysqli_stmt_close($pendingStmt);
+}
+?>
+
 <aside class="sidebar">
 
     <!-- LOGO -->
@@ -29,8 +54,15 @@
             </li>
 
             <li>
-                <a href="appointments.php">
-                    <i class='bx bxs-calendar-check'></i> Appointments
+                <a href="appointments.php" class="appointment-link">
+                    <i class='bx bxs-calendar-check'></i>
+                    <span>Appointments</span>
+
+                    <?php if ($pendingAppointmentCount > 0): ?>
+                        <span class="appointment-badge">
+                            <?php echo $pendingAppointmentCount; ?>
+                        </span>
+                    <?php endif; ?>
                 </a>
             </li>
 

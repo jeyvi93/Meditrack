@@ -95,12 +95,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (mysqli_stmt_execute($stmt)) {
 
-        echo "Referral saved successfully!";
+        $newReferralId = mysqli_insert_id($conn);
+
+        header("Location: generate_referral_pdf.php?id=" . $newReferralId);
+        exit();
 
     } else {
-
         echo "Error saving referral: " . mysqli_stmt_error($stmt);
-
     }
 
     mysqli_stmt_close($stmt);

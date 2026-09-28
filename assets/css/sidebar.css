@@ -426,3 +426,30 @@ table tbody td {
 .logout-confirm:hover{
     background:#b91c1c;
 }
+
+.appointment-link {
+    position: relative;
+}
+
+.appointment-badge {
+    position: absolute;
+    top: 2px;
+    left: 147px;
+
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+
+    border-radius: 10px;
+    background: #ef4444;
+    color: #ffffff;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: 1;
+}

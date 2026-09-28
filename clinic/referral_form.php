@@ -41,7 +41,7 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
             </header>
 
-            <form id="referralForm" method="POST" action="../actions/referral_save.php">
+            <form id="referralForm" method="POST" action="../actions/referral_save.php" target="_blank">
                 
                 <!-- SECTION 1: REFERRAL INFORMATION -->
                 <section class="form-card highlight-blue">
@@ -56,7 +56,15 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                         <div class="input-group">
                             <label>Doctor's Name</label>
-                            <input type="text" id="DoctorName" name="doctor_name" placeholder="e.g. Dr. Smith" required>
+                            <input
+                                type="text"
+                                id="DoctorName"
+                                name="doctor_name"
+                                placeholder="e.g. Dr. Juan Dela Cruz"
+                                pattern="[A-Za-zÀ-ÿ .'-]+"
+                                title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
+                                required
+                            >
                         </div>
                         <div class="input-group">
                             <label for="reason">Reason for Referral</label>
@@ -74,7 +82,15 @@ if (!isset($_SESSION['user_id'])) {
                     <div class="input-grid three-cols">
                         <div class="input-group">
                             <label>Full Name</label>
-                            <input type="text" id="fullName" name="full_name" placeholder="Last Name, First Name Middle" required>
+                            <input
+                                type="text"
+                                id="fullName"
+                                name="full_name"
+                                placeholder="Last Name, First Name, Middle Name"
+                                pattern="[A-Za-zÀ-ÿ .'-]+"
+                                title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
+                                required
+                            >
                         </div>
                         <div class="input-group">
                             <label>Date of Birth</label>
@@ -95,7 +111,16 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                         <div class="input-group">
                             <label>Contact Number</label>
-                            <input type="tel" id="contact" name="contact_number" placeholder="09XX XXX XXXX">
+                            <input
+                                type="tel"
+                                id="contact"
+                                name="contact_number"
+                                placeholder="09XXXXXXXXX"
+                                inputmode="numeric"
+                                maxlength="11"
+                                pattern="09[0-9]{9}"
+                                title="Enter an 11-digit Philippine mobile number starting with 09."
+                            >
                         </div>
                     </div>
                     <div class="input-group">
@@ -114,7 +139,14 @@ if (!isset($_SESSION['user_id'])) {
                         <div class="input-grid">
                             <div class="input-group">
                                 <label>Parent Name (Father or Mother)</label>
-                                <input type="text" id="parent_name" name="parent_name" placeholder="Full Name">
+                                <input
+                                    type="text"
+                                    id="parent_name"
+                                    name="parent_name"
+                                    placeholder="Parent's Full Name"
+                                    pattern="[A-Za-zÀ-ÿ .'-]+"
+                                    title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
+                                >
                             </div>
                             <div class="input-group">
                                 <label>Parent's Date of Birth</label>
@@ -122,7 +154,14 @@ if (!isset($_SESSION['user_id'])) {
                             </div>
                             <div class="input-group">
                                 <label>Spouse Name (if any)</label>
-                                <input type="text" id="spouse_name" name="spouse_name" placeholder="Full Name (Optional)">
+                                <input
+                                    type="text"
+                                    id="spouse_name"
+                                    name="spouse_name"
+                                    placeholder="Spouse's Full Name"
+                                    pattern="[A-Za-zÀ-ÿ .'-]+"
+                                    title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
+                                >
                             </div>
                             <div class="input-group">
                                 <label>Spouse's Date of Birth</label>
@@ -150,7 +189,12 @@ if (!isset($_SESSION['user_id'])) {
                         <!-- CONDITIONAL FIELD -->
                         <div class="input-group conditional-input" id="philhealthSpec">
                             <label>Specify PhilHealth Number / Details</label>
-                            <input type="text" id="philhealthInput" name="philhealth_number" placeholder="Enter PhilHealth ID or Category">
+                            <input
+                                type="text"
+                                id="philhealthInput"
+                                name="philhealth_number"
+                                placeholder="Enter PhilHealth Number"
+                            >
                         </div>
                     </section>
                 </div>
@@ -168,7 +212,14 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                         <div class="input-group">
                             <label>Weight (kg)</label>
-                            <input type="number" id="weight" name="weight" step="1" placeholder="0">
+                            <input
+                                type="number"
+                                id="weight"
+                                name="weight"
+                                step="0.1"
+                                min="0"
+                                placeholder="e.g. 60"
+                            >
                         </div>
                     </div>
                     <div class="input-row two-cols">
@@ -178,7 +229,7 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                         <div class="input-group">
                             <label>Temperature (°C)</label>
-                            <input type="number" id="temp" name="temperature" step="0.1" placeholder="36.5">
+                            <input type="number" id="temp" name="temperature" step="0.1" placeholder="e.g. 36.5">
                         </div>
                     </div>
                 </section>
@@ -196,6 +247,5 @@ if (!isset($_SESSION['user_id'])) {
 
     <script src="../assets/js/referral_form.js"></script>
     <script src="../includes/includes.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 </html>
