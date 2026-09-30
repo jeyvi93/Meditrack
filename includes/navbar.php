@@ -43,6 +43,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
 ?>
 
 <!-- DESKTOP TOP NAVBAR -->
+<script src="https://unpkg.com/lucide@latest"></script>
 <nav class="navbar main-wrapper">
     <div class="logo">
         <img src="../assets/images/med.png" alt="MediTrack Logo">
@@ -52,14 +53,14 @@ $full_name = $_SESSION['full_name'] ?? 'User';
 
         <a href="book_appointment.php"
            class="<?= $currentPage === 'book_appointment.php' ? 'active' : '' ?>">
-            <i class='bx bx-calendar-plus'></i>
+            <i data-lucide="calendar-plus"></i>
             <span>Book Appointment</span>
         </a>
 
         <a href="view_appointments.php"
            class="<?= $currentPage === 'view_appointments.php' ? 'active' : '' ?>">
-            <i class='bx bx-calendar-event'></i>
-            <span>My Appointments</span>
+            <i data-lucide="calendar-days"></i>
+            <span>Appointments</span>
         </a>
 
         <a href="notifications.php"
@@ -67,7 +68,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
 
             <span class="nav-notification-icon">
 
-                <i class='bx bx-bell'></i>
+                <i data-lucide="bell"></i>
 
                 <?php if ($unreadCount > 0): ?>
 
@@ -90,25 +91,25 @@ $full_name = $_SESSION['full_name'] ?? 'User';
                     class="profile-trigger"
                     onclick="toggleProfileDropdown()">
 
-                <i class='bx bx-user-circle'></i>
+                <i data-lucide="circle-user-round"></i>
 
                 <span><?= htmlspecialchars($full_name) ?></span>
 
-                <i class='bx bx-chevron-down profile-arrow'></i>
+                <i data-lucide="chevron-down" class="profile-arrow"></i>
 
             </button>
 
             <div id="profileDropdownMenu" class="profile-dropdown-menu">
 
                 <a href="view_profile.php">
-                    <i class='bx bx-user'></i>
+                    <i data-lucide="user-round"></i>
                     <span>View Profile</span>
                 </a>
 
                 <div class="dropdown-divider"></div>
 
                 <button type="button" onclick="openLogoutModal()">
-                    <i class='bx bx-log-out'></i>
+                    <i data-lucide="log-out"></i>
                     <span>Logout</span>
                 </button>
 
@@ -126,7 +127,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
     <a href="book_appointment.php"
        class="nav-item <?= $currentPage === 'book_appointment.php' ? 'active' : '' ?>">
 
-        <i class='bx bx-calendar-plus'></i>
+        <i data-lucide="calendar-plus"></i>
         <span>Book</span>
 
     </a>
@@ -135,8 +136,8 @@ $full_name = $_SESSION['full_name'] ?? 'User';
     <a href="view_appointments.php"
        class="nav-item <?= $currentPage === 'view_appointments.php' ? 'active' : '' ?>">
 
-        <i class='bx bx-calendar-event'></i>
-        <span>My Appointments</span>
+        <i data-lucide="calendar-days"></i>
+        <span>Appointments</span>
 
     </a>
 
@@ -146,7 +147,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
 
         <span class="nav-notification-icon">
 
-            <i class='bx bx-bell'></i>
+            <i data-lucide="bell"></i>
 
             <?php if ($unreadCount > 0): ?>
 
@@ -166,7 +167,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
     <a href="view_profile.php"
        class="nav-item <?= $currentPage === 'view_profile.php' ? 'active' : '' ?>">
 
-        <i class='bx bx-user-circle'></i>
+        <i data-lucide="circle-user-round"></i>
         <span>Profile</span>
 
     </a>
@@ -254,4 +255,7 @@ function confirmLogout() {
 
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    lucide.createIcons();
+});
 </script>
