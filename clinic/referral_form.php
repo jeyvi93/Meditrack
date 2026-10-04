@@ -5,6 +5,12 @@ require_once "../config/database.php";
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
     exit();
+
+}
+
+if ($_SESSION['role'] === 'Clinic Staff') {
+    header("Location: dashboard.php");
+    exit();
 }
 ?>
 

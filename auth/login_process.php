@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // CLINIC SIDE
             if (
-                $user["role"] == "Admin" ||
+                $user["role"] == "School Nurse" ||
                 $user["role"] == "Clinic Staff"
             ) {
 

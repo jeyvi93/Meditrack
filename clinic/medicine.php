@@ -7,6 +7,8 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$role = $_SESSION['role'] ?? '';
+
 $today = date("Y-m-d");
 
 $sql = "SELECT *
@@ -134,7 +136,11 @@ $disposed_medicines = mysqli_query($conn, "
                     <p>Track clinical supplies, check expirations, and manage disposals.</p>
                 </div>
                     <div class="inventory-summary">
-                    <button class="btn-primary" onclick="window.location.href='add_medicine.php'"><i class="fas fa-plus"></i> Add Medicine</button>
+                        <?php if ($role !== 'Clinic Staff'): ?>
+                            <button class="btn-primary" onclick="window.location.href='add_medicine.php'">
+                                <i class="fas fa-plus"></i> Add Medicine
+                            </button>
+                        <?php endif; ?>
                     </div>
             </header>
 
@@ -192,7 +198,9 @@ $disposed_medicines = mysqli_query($conn, "
                                     <th>Expiration Date</th>
                                     <th>Supplier</th>
                                     <th>Status</th>
-                                    <th class="text-right">Actions</th>
+                                    <?php if ($role !== 'Clinic Staff'): ?>
+                                        <th class="text-right">Actions</th>
+                                    <?php endif; ?>
                                 </tr>
                             </thead>
                             <tbody>
@@ -252,44 +260,47 @@ $disposed_medicines = mysqli_query($conn, "
 
                                     <td class="action-cell">
 
-                                        <button 
-                                            class="btn-action primary"
-                                            onclick="openEditModal(<?= $row['id']; ?>)">
-                                            <i class="bx bx-edit" title="Edit Medicine"></i>
-                                        </button>
+                                        <?php if ($role !== 'Clinic Staff'): ?>
+                                            <button 
+                                                class="btn-action primary"
+                                                onclick="openEditModal(<?= $row['id']; ?>)">
+                                                <i class="bx bx-edit" title="Edit Medicine"></i>
+                                            </button>
 
-                                        <?php if($status == "Expired"): ?>
+                                            <?php if($status == "Expired"): ?>
 
-                                        <button
-                                            class="btn-dispose"
-                                            onclick="openExpiredDispose(<?= $row['id']; ?>)">
-                                            <i class="bx bx-trash" title="Dispose Medicine"></i>
-                                        </button>
+                                            <button
+                                                class="btn-dispose"
+                                                onclick="openExpiredDispose(<?= $row['id']; ?>)">
+                                                <i class="bx bx-trash" title="Dispose Medicine"></i>
+                                            </button>
 
-                                        <?php elseif($status == "Low Stock"): ?>
+                                            <?php elseif($status == "Low Stock"): ?>
 
-                                        <button
-                                            class="btn-action info"
-                                            onclick="openRestock(<?= $row['id']; ?>, '<?= htmlspecialchars($row['medicine_name'], ENT_QUOTES); ?>')"
-                                            title="Restock Medicine">
-                                            <i class="bx bx-package"></i>
-                                        </button>
+                                            <button
+                                                class="btn-action info"
+                                                onclick="openRestock(<?= $row['id']; ?>, '<?= htmlspecialchars($row['medicine_name'], ENT_QUOTES); ?>')"
+                                                title="Restock Medicine">
+                                                <i class="bx bx-package"></i>
+                                            </button>
 
-                                        <?php elseif($status == "Near Expiry"): ?>
+                                            <?php elseif($status == "Near Expiry"): ?>
 
-                                        <button
-                                            class="btn-dispose"
-                                            onclick="openNearExpiryDispose(<?= $row['id']; ?>)">
-                                            <i class="bx bx-trash" title="Dispose Medicine"></i>
-                                        </button>
+                                            <button
+                                                class="btn-dispose"
+                                                onclick="openNearExpiryDispose(<?= $row['id']; ?>)">
+                                                <i class="bx bx-trash" title="Dispose Medicine"></i>
+                                            </button>
 
-                                        <?php else: ?>
+                                            <?php else: ?>
 
-                                        <button
-                                            class="btn-action warning"
-                                            onclick="openQuarantineModal(<?= $row['id']; ?>)">
-                                            <i class="bx bx-shield-quarter" title="Quarantine Medicine"></i>
-                                        </button>
+                                            <button
+                                                class="btn-action warning"
+                                                onclick="openQuarantineModal(<?= $row['id']; ?>)">
+                                                <i class="bx bx-shield-quarter" title="Quarantine Medicine"></i>
+                                            </button>
+
+                                            <?php endif; ?>
 
                                         <?php endif; ?>
 
@@ -328,7 +339,9 @@ $disposed_medicines = mysqli_query($conn, "
                                     <th>Quantity</th>
                                     <th>Expired Date</th>
                                     <th>Status</th>
-                                    <th class="text-right">Action</th>
+                                    <?php if ($role !== 'Clinic Staff'): ?>
+                                        <th class="text-right">Action</th>
+                                    <?php endif; ?>
                                 </tr>
                             </thead>
                             <tbody>
@@ -361,19 +374,19 @@ $disposed_medicines = mysqli_query($conn, "
                                             Expired
                                         </span>
                                     </td>
+                                    <?php if ($role !== 'Clinic Staff'): ?>
+                                        <td class="text-right">
 
-                                    <td class="text-right">
+                                            <button
+                                                class="btn-dispose"
+                                                onclick="openExpiredDispose(<?= $row['id']; ?>)">
 
-                                        <button
-                                            class="btn-dispose"
-                                            onclick="openExpiredDispose(<?= $row['id']; ?>)">
+                                                <i class="bx bx-trash" title="Dispose Medicine"></i>
 
-                                            <i class="bx bx-trash" title="Dispose Medicine"></i>
+                                            </button>
 
-                                        </button>
-
-                                    </td>
-
+                                        </td>
+                                    <?php endif; ?>
                                 </tr>
 
                                     <?php endwhile; ?>
@@ -410,7 +423,9 @@ $disposed_medicines = mysqli_query($conn, "
                                     <th>Quantity</th>
                                     <th>Date Acquired</th>
                                     <th>Status</th>
-                                    <th class="text-right">Action</th>
+                                    <?php if ($role !== 'Clinic Staff'): ?>
+                                        <th class="text-right">Action</th>
+                                    <?php endif; ?>
                                 </tr>
                             </thead>
                             <tbody>
@@ -447,22 +462,23 @@ $disposed_medicines = mysqli_query($conn, "
                                     </span>
                                 </td>
 
-                                <td class="text-right">
+                                <?php if ($role !== 'Clinic Staff'): ?>
+                                    <td class="text-right">
+                                    
+                                        <button 
+                                            class="btn-action primary"
+                                            onclick="returnToStock(<?= $row['id']; ?>)">
+                                            <i class="bx bx-transfer-alt" title="Return to Stock"></i>
+                                        </button>
 
-                                    <button 
-                                        class="btn-action primary"
-                                        onclick="returnToStock(<?= $row['id']; ?>)">
-                                        <i class="bx bx-transfer-alt" title="Return to Stock"></i>
-                                    </button>
+                                        <button 
+                                            class="btn-action danger"
+                                            onclick="openQuarantineDispose(<?= $row['id']; ?>)">
+                                            <i class="bx bx-trash" title="Dispose"></i>
+                                        </button>
 
-                                    <button 
-                                        class="btn-action danger"
-                                        onclick="openQuarantineDispose(<?= $row['id']; ?>)">
-                                        <i class="bx bx-trash" title="Dispose"></i>
-                                    </button>
-
-                                </td>
-
+                                    </td>
+                                <?php endif; ?>
                             </tr>
 
                             <?php endwhile; ?>

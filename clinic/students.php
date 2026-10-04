@@ -8,6 +8,8 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once "../config/database.php";
 
+$role = $_SESSION['role'] ?? '';
+
 // ==========================
 // SEARCH + FILTER + PAGINATION
 // ==========================
@@ -191,9 +193,11 @@ function pageUrl($page, $queryParams) {
                 <p>Manage and monitor student medical records.</p>
             </div>
 
-            <button class="btn-primary" onclick="window.location.href='add_student.php'">
-                <i class='bx bx-user-plus'></i> Add New Student
-            </button>
+            <?php if ($role !== 'Clinic Staff'): ?>
+                <button class="btn-primary" onclick="window.location.href='add_student.php'">
+                    <i class='bx bx-user-plus'></i> Add New Student
+                </button>
+            <?php endif; ?>
         </header>
 
         <!-- FILTER + SEARCH -->
@@ -361,6 +365,7 @@ onclick='openStudentModal({
     <i class="bx bx-show"></i>
 </button>
 
+<?php if ($role !== 'Clinic Staff'): ?>
 <button
 class="icon-btn edit"
 title="Edit"
@@ -395,17 +400,22 @@ onclick='openEditStudentModal({
     <i class="bx bx-edit"></i>
 </button>
 
-            <button
-                class="icon-btn delete"
-                title="Delete"
-                onclick="openDeleteStudentModal({
-                    id:'<?php echo $student['student_id_number']; ?>',
-                    name:'<?php echo addslashes($student['full_name']); ?>'
-                })">
+<?php endif; ?>
 
-                <i class="bx bx-trash"></i>
+            <?php if ($role !== 'Clinic Staff'): ?>
+                <button
+                    class="icon-btn delete"
+                    title="Delete"
+                    onclick="openDeleteStudentModal({
+                        id:'<?php echo $student['student_id_number']; ?>',
+                        name:'<?php echo addslashes($student['full_name']); ?>'
+                    })">
 
-            </button>
+                    <i class="bx bx-trash"></i>
+
+                </button>
+
+            <?php endif; ?>
 
         </div>
 

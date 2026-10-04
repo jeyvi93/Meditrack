@@ -2,9 +2,14 @@
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
+    header("Location: ../index.php");
     exit();
 }
+
+$successMessage = $_SESSION['success'] ?? '';
+$errorMessage = $_SESSION['error'] ?? '';
+
+unset($_SESSION['success'], $_SESSION['error']);
 
 require_once "../config/database.php";
 
@@ -419,48 +424,231 @@ foreach ($appointments as $appointment) {
     </section>
 </main>
 
+<form
+    id="cancelAppointmentForm"
+    method="POST"
+    action="../actions/student_cancel_appointment.php"
+    style="display: none;"
+>
+    <input
+        type="hidden"
+        name="appointment_id"
+        id="cancelAppointmentId"
+    >
 
-<!-- CANCEL MODAL (Hidden by default) -->
+    <input
+        type="hidden"
+        name="reason"
+        id="cancelAppointmentReason"
+    >
+</form>
+
+<!-- CANCEL MODAL -->
 <div id="cancelModal" class="modal-overlay hidden">
     <div class="modal-box">
+
         <i class='bx bx-error-circle'></i>
+
         <h3>Cancel Appointment?</h3>
-        <p>This action cannot be undone. Do you want to proceed?</p>
-        <div class="modal-btns">
-            <button class="btn-no" onclick="closeModal()">No, Keep it</button>
-            <button class="btn-yes" onclick="confirmCancel()">Yes, Cancel</button>
+
+        <p>
+            This action cannot be undone. Please provide a reason for cancellation.
+        </p>
+
+        <div class="cancel-reason">
+            <label for="cancelReason">Reason for cancellation</label>
+
+            <select id="cancelReason">
+                <option value="">Select a reason</option>
+                <option value="Schedule conflict">Schedule conflict</option>
+                <option value="No longer needed">No longer needed</option>
+                <option value="Feeling better">Feeling better</option>
+                <option value="Booked by mistake">Booked by mistake</option>
+                <option value="Other">Other</option>
+            </select>
         </div>
+
+        <div class="cancel-other hidden" id="cancelOtherWrapper">
+            <label for="otherReason">Please specify</label>
+
+            <textarea
+                id="otherReason"
+                rows="3"
+                placeholder="Enter your reason..."
+            ></textarea>
+        </div>
+
+        <div class="modal-btns">
+            <button class="btn-no" onclick="closeModal()">
+                No, Keep it
+            </button>
+
+            <button class="btn-logout-confirm" onclick="confirmCancel()">
+                Yes, Cancel
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div id="successModal" class="modal-overlay hidden">
+    <div class="modal-box success-modal">
+
+        <i class='bx bx-check-circle' style="color: #10b981;"></i>
+
+        <h3>Appointment Cancelled!</h3>
+
+        <p>
+            Your appointment has been cancelled successfully.
+        </p>
+
+        <div class="modal-btns single-btn">
+            <button class="btn-success" onclick="closeSuccessModal()">
+                Done
+            </button>
+        </div>
+
     </div>
 </div>
 
 <script>
     function switchTab(evt, tabName) {
         var i, tabcontent, tablinks;
+
         tabcontent = document.getElementsByClassName("tab-content");
-        for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; }
+
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
         tablinks = document.getElementsByClassName("tab-btn");
-        for (i = 0; i < tablinks.length; i++) { tablinks[i].className = tablinks[i].className.replace(" active", ""); }
+
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className =
+                tablinks[i].className.replace(" active", "");
+        }
+
         document.getElementById(tabName).style.display = "block";
         evt.currentTarget.className += " active";
     }
 
-    function openModal() { document.getElementById('cancelModal').classList.remove('hidden'); }
-    function closeModal() { document.getElementById('cancelModal').classList.add('hidden'); }
-    
+
+    let selectedAppointmentId = null;
+
+
+    function openModal(appointmentId) {
+
+        selectedAppointmentId = appointmentId;
+
+        // Reset reason fields every time the modal opens
+        document.getElementById('cancelReason').value = '';
+        document.getElementById('otherReason').value = '';
+        document.getElementById('cancelOtherWrapper')
+            .classList.add('hidden');
+
+        document.getElementById('cancelModal')
+            .classList.remove('hidden');
+    }
+
+
+    function closeModal() {
+
+        selectedAppointmentId = null;
+
+        document.getElementById('cancelModal')
+            .classList.add('hidden');
+    }
+
+
+    // Show "Other" text box
+    document.getElementById('cancelReason')
+        .addEventListener('change', function () {
+
+            const otherWrapper =
+                document.getElementById('cancelOtherWrapper');
+
+            if (this.value === 'Other') {
+                otherWrapper.classList.remove('hidden');
+            } else {
+                otherWrapper.classList.add('hidden');
+            }
+        });
+
+
+    function confirmCancel() {
+
+        if (!selectedAppointmentId) {
+            return;
+        }
+
+        const selectedReason =
+            document.getElementById('cancelReason').value;
+
+        if (!selectedReason) {
+            alert('Please select a reason for cancellation.');
+            return;
+        }
+
+        let reason = selectedReason;
+
+        if (selectedReason === 'Other') {
+
+            reason =
+                document.getElementById('otherReason')
+                .value
+                .trim();
+
+            if (!reason) {
+                alert('Please specify your reason for cancellation.');
+                return;
+            }
+        }
+
+        // Put the appointment ID into the hidden form
+        document.getElementById('cancelAppointmentId').value =
+            selectedAppointmentId;
+
+        // Put the cancellation reason into the hidden form
+        document.getElementById('cancelAppointmentReason').value =
+            reason;
+
+        // Submit to student_cancel_appointment.php
+        document.getElementById('cancelAppointmentForm').submit();
+    }
+
+
     function openLogoutModal() {
         document.getElementById('logoutModal')
             .classList.remove('hidden');
     }
+
 
     function closeLogoutModal() {
         document.getElementById('logoutModal')
             .classList.add('hidden');
     }
 
+
     function confirmLogout() {
         window.location.href = "../auth/logout.php";
     }
-</script>
 
+    function openSuccessModal() {
+        document.getElementById('successModal')
+            .classList.remove('hidden');
+    }
+
+    function closeSuccessModal() {
+        document.getElementById('successModal')
+            .classList.add('hidden');
+    }
+
+    <?php if ($successMessage): ?>
+        document.addEventListener("DOMContentLoaded", function () {
+            openSuccessModal();
+        });
+    <?php endif; ?>
+</script>
 </body>
 </html>

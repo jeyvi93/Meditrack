@@ -19,6 +19,15 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+if ($_SESSION['role'] === 'Clinic Staff') {
+
+    echo json_encode([
+        "success" => false,
+        "message" => "You are not authorized to dispose medicine."
+    ]);
+
+    exit();
+}
 
 // ==========================
 // REQUEST METHOD

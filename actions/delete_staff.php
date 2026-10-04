@@ -6,6 +6,11 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+if ($_SESSION['role'] === 'Clinic Staff') {
+    header("Location: ../clinic/staffs.php");
+    exit();
+}
+
 require_once "../config/database.php";
 
 if (isset($_GET['id'])) {

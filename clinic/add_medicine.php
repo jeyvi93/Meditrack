@@ -7,6 +7,12 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
     exit();
 }
+
+if ($_SESSION['role'] === 'Clinic Staff') {
+    header("Location: medicine.php");
+    exit();
+}
+
 $mode = $_GET['mode'] ?? 'add';
 $medicine_id = $_GET['id'] ?? null;
 $medicine_name = $_GET['medicine'] ?? '';

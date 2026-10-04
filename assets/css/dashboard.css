@@ -288,9 +288,8 @@
 .activity-details h4{
     font-size:.9rem;
     color:var(--navy-dark);
-    margin-bottom:4px;
+    margin:0;
 }
-
 
 .activity-details p{
     font-size:.82rem;

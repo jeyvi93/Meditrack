@@ -12,6 +12,15 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+if ($_SESSION['role'] === 'Clinic Staff') {
+    http_response_code(403);
+    echo json_encode([
+        "success" => false,
+        "message" => "You are not authorized to access referral information."
+    ]);
+    exit();
+}
+
 if (!isset($_GET['id'])) {
     echo json_encode([
         "success" => false,

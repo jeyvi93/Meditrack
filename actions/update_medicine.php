@@ -11,6 +11,15 @@ if (!isset($_SESSION['user_id'])) {
         "message" => "Unauthorized"
     ]);
     exit();
+    
+}
+
+if ($_SESSION['role'] === 'Clinic Staff') {
+    echo json_encode([
+        "success" => false,
+        "message" => "You are not authorized to update medicine."
+    ]);
+    exit();
 }
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {

@@ -6,6 +6,11 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+if ($_SESSION['role'] === 'Clinic Staff') {
+    header("Location: students.php");
+    exit();
+}
+
 $errorMessage = $_SESSION['error'] ?? '';
 unset($_SESSION['error']);
 ?>

@@ -9,6 +9,11 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+if ($_SESSION['role'] === 'Clinic Staff') {
+    header("Location: ../clinic/dashboard.php");
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Get logged-in user
@@ -95,13 +100,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (mysqli_stmt_execute($stmt)) {
 
-        $newReferralId = mysqli_insert_id($conn);
-
-        header("Location: generate_referral_pdf.php?id=" . $newReferralId);
-        exit();
+        echo "Referral saved successfully!";
 
     } else {
+
         echo "Error saving referral: " . mysqli_stmt_error($stmt);
+
     }
 
     mysqli_stmt_close($stmt);

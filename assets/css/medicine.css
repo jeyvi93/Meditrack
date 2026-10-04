@@ -174,46 +174,57 @@ body { background-color: var(--bg-light); color: var(--text-main); min-height: 1
     color: inherit;
 }
 
+/* ==========================
+   MEDICINE TABLE COLUMNS
+========================== */
+
 /* Medicine Name */
 .inventory-table th:nth-child(1),
-.inventory-table td:nth-child(1){
+.inventory-table td:nth-child(1) {
     width: 20%;
 }
 
 /* Batch No. */
 .inventory-table th:nth-child(2),
-.inventory-table td:nth-child(2){
-    width: 11%;
+.inventory-table td:nth-child(2) {
+    width: 13%;
 }
 
 /* Quantity */
 .inventory-table th:nth-child(3),
-.inventory-table td:nth-child(3){
-    width: 8%;
+.inventory-table td:nth-child(3) {
+    width: 9%;
+    text-align: center;
 }
 
 /* Date Acquired */
 .inventory-table th:nth-child(4),
-.inventory-table td:nth-child(4){
-    width: 10%;
+.inventory-table td:nth-child(4) {
+    width: 14%;
 }
 
 /* Expiration Date */
 .inventory-table th:nth-child(5),
-.inventory-table td:nth-child(5){
-    width: 11%;
+.inventory-table td:nth-child(5) {
+    width: 14%;
 }
 
 /* Supplier */
 .inventory-table th:nth-child(6),
-.inventory-table td:nth-child(6){
-    width: 13%;
+.inventory-table td:nth-child(6) {
+    width: 14%;
 }
 
-/* Status  */
+/* Status */
 .inventory-table th:nth-child(7),
-.inventory-table td:nth-child(7){
-    width: 15%;
+.inventory-table td:nth-child(7) {
+    width: 14%;
+}
+
+/* Actions */
+.inventory-table th:nth-child(8),
+.inventory-table td:nth-child(8) {
+    width: 12%;
 }
 /* TABLE ELEMENTS */
 .batch { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.85rem; }

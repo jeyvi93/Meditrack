@@ -392,7 +392,7 @@ while ($row = mysqli_fetch_assoc($allActivityResult)) {
                     </h4>
 
                     <p>
-                        <?= htmlspecialchars($activity['description']) ?>
+                        <?= nl2br(htmlspecialchars(trim($activity['description']))) ?>
                     </p>
 
                     <span>

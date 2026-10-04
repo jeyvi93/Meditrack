@@ -20,6 +20,19 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// ==========================
+// ROLE AUTHORIZATION
+// ==========================
+
+if ($_SESSION['role'] === 'Clinic Staff') {
+
+    echo json_encode([
+        "success" => false,
+        "message" => "You are not authorized to add medicine."
+    ]);
+
+    exit();
+}
 
 // ==========================
 // REQUEST METHOD

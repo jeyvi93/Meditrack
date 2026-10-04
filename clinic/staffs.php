@@ -8,6 +8,8 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once "../config/database.php";
 
+$role = $_SESSION['role'] ?? '';
+
 // ==========================
 // SEARCH + FILTER + PAGINATION
 // ==========================
@@ -235,9 +237,11 @@ function pageUrl($page, $queryParams) {
             <p>Manage and monitor staff information and records.</p>
         </div>
 
-        <button class="btn-primary" onclick="window.location.href='add_staff.php'" >
-            <i class='bx bx-user-plus'></i> Add New Staff
-        </button>
+        <?php if ($role !== 'Clinic Staff'): ?>
+            <button class="btn-primary" onclick="window.location.href='add_staff.php'" >
+                <i class='bx bx-user-plus'></i> Add New Staff
+            </button>
+        <?php endif; ?>
     </header>
 
     <!-- FILTER + SEARCH -->
@@ -466,6 +470,7 @@ function pageUrl($page, $queryParams) {
             </button>
 
             <!-- Edit Button -->
+            <?php if ($role !== 'Clinic Staff'): ?>
             <button
                 class="icon-btn edit"
                 title="Edit"
@@ -505,8 +510,11 @@ function pageUrl($page, $queryParams) {
                 <i class="bx bx-edit"></i>
 
             </button>
+            <?php endif; ?>
+
 
             <!-- Delete Button -->
+            <?php if ($role !== 'Clinic Staff'): ?>
             <button
                 class="icon-btn delete"
                 title="Delete"
@@ -520,6 +528,8 @@ function pageUrl($page, $queryParams) {
                 <i class="bx bx-trash"></i>
 
             </button>
+
+            <?php endif; ?>
 
         </div>
 

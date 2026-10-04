@@ -9,6 +9,11 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+if ($_SESSION['role'] === 'Clinic Staff') {
+    header("Location: dashboard.php");
+    exit();
+}
+
 // ==========================
 // SEARCH + PAGINATION
 // ==========================

@@ -1,6 +1,8 @@
 <?php
 require_once "../config/database.php";
 
+$role = $_SESSION['role'] ?? '';
+
 $pendingAppointmentCount = 0;
 
 $pendingSql = "
@@ -84,11 +86,13 @@ if ($pendingStmt) {
                 </a>
             </li>
 
-            <li>
-                <a href="referral_form.php">
-                    <i class='bx bxs-share-alt'></i> Referrals
-                </a>
-            </li>
+            <?php if ($role !== 'Clinic Staff'): ?>
+                <li>
+                    <a href="referral_form.php">
+                        <i class='bx bxs-share-alt'></i> Referrals
+                    </a>
+                </li>
+            <?php endif; ?>
         </ul>
     </nav>
 

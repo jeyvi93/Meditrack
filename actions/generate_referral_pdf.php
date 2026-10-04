@@ -13,6 +13,11 @@ if (!isset($_SESSION['user_id'])) {
     exit("Unauthorized");
 }
 
+if ($_SESSION['role'] === 'Clinic Staff') {
+    http_response_code(403);
+    exit("You are not authorized to generate referral PDFs.");
+}
+
 if (!isset($_GET['id'])) {
     exit("Referral ID is missing.");
 }
