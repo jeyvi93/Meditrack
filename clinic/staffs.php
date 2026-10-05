@@ -1121,24 +1121,40 @@ function pageUrl($page, $queryParams) {
 
     <div class="modal-content message-modal">
 
-        <div class="message-icon <?= isset($_SESSION['success']) ? 'success' : 'error' ?>">
-            <i class="<?= isset($_SESSION['success']) ? 'bx bx-check-circle' : 'bx bx-error-circle' ?>"></i>
+        <div class="message-icon <?= isset($_SESSION['success']) ? 'success' : 'error'; ?>">
+
+            <?php if (isset($_SESSION['success'])): ?>
+
+                <i class='bx bx-check-circle'></i>
+
+            <?php else: ?>
+
+                <i class='bx bx-x-circle'></i>
+
+            <?php endif; ?>
+
         </div>
 
         <h2>
-            <?= isset($_SESSION['success']) ? "Success" : "Error"; ?>
+            <?= isset($_SESSION['success'])
+                ? $_SESSION['success']
+                : "Action Failed!"; ?>
         </h2>
 
         <p>
-            <?= isset($_SESSION['success'])
-                ? $_SESSION['success']
-                : $_SESSION['error']; ?>
+            <?= isset($_SESSION['success_message'])
+                ? $_SESSION['success_message']
+                : (isset($_SESSION['success'])
+                    ? "The action was completed successfully."
+                    : $_SESSION['error']); ?>
         </p>
 
         <div class="modal-actions">
+
             <button class="btn-primary" onclick="closeMessageModal()">
                 OK
             </button>
+
         </div>
 
     </div>
@@ -1147,6 +1163,7 @@ function pageUrl($page, $queryParams) {
 
 <?php
 unset($_SESSION['success']);
+unset($_SESSION['success_message']);
 unset($_SESSION['error']);
 ?>
 

@@ -157,7 +157,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     if (mysqli_stmt_execute($stmt)) {
-    $_SESSION['success'] = "Student added successfully.";
+    $_SESSION['success'] = "Student Added!";
+    $_SESSION['success_message'] = "The student record has been added successfully.";
 
     mysqli_stmt_close($stmt);
     mysqli_close($conn);

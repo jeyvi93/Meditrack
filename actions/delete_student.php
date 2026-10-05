@@ -24,7 +24,8 @@ if (isset($_GET['id'])) {
     mysqli_stmt_bind_param($stmt, "s", $student_id);
 
     if (mysqli_stmt_execute($stmt)) {
-        $_SESSION['success'] = "Student profile deleted successfully.";
+        $_SESSION['success'] = "Student Profile Deleted!";
+        $_SESSION['success_message'] = "The student record has been deleted successfully.";
     } else {
         $_SESSION['error'] = "Failed to delete student profile.";
     }

@@ -134,7 +134,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (mysqli_stmt_execute($stmt)) {
 
-    $_SESSION['success'] = "Staff profile added successfully.";
+    $_SESSION['success'] = "Staff Added!";
+    $_SESSION['success_message'] = "The staff record has been added successfully.";
 
     mysqli_stmt_close($stmt);
     mysqli_close($conn);

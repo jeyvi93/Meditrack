@@ -999,28 +999,49 @@ onclick='openEditStudentModal({
 
     <div class="modal-content message-modal">
 
-    <div class="message-icon success">
-        <i class='bx bx-check-circle'></i>
-    </div>
+        <div class="message-icon <?= isset($_SESSION['success']) ? 'success' : 'error'; ?>">
 
-    <h2>
-        <?= isset($_SESSION['success']) ? "Success" : "Error"; ?>
-    </h2>
+            <?php if (isset($_SESSION['success'])): ?>
 
-    <p>
-        <?= isset($_SESSION['success']) ? $_SESSION['success'] : $_SESSION['error']; ?>
-    </p>
+                <i class='bx bx-check-circle'></i>
 
-    <div class="modal-actions">
-        <button class="btn-primary" onclick="closeMessageModal()">
-            OK
-        </button>
+            <?php else: ?>
+
+                <i class='bx bx-x-circle'></i>
+
+            <?php endif; ?>
+
+        </div>
+
+        <h2>
+            <?= isset($_SESSION['success'])
+                ? $_SESSION['success']
+                : "Action Failed!"; ?>
+        </h2>
+
+        <p>
+            <?= isset($_SESSION['success_message'])
+                ? $_SESSION['success_message']
+                : (isset($_SESSION['success'])
+                    ? "The action was completed successfully."
+                    : $_SESSION['error']); ?>
+        </p>
+
+        <div class="modal-actions">
+
+            <button class="btn-primary" onclick="closeMessageModal()">
+                OK
+            </button>
+
+        </div>
+
     </div>
 
 </div>
 
 <?php
 unset($_SESSION['success']);
+unset($_SESSION['success_message']);
 unset($_SESSION['error']);
 ?>
 

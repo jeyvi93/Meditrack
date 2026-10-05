@@ -73,7 +73,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mysqli_stmt_close($notificationStmt);
         }
 
-        $_SESSION['success'] = "Appointment marked as completed.";
+        $_SESSION['success'] = "Appointment Completed!";
+        $_SESSION['success_message'] = "The appointment has been completed.";
 
     } else {
         $_SESSION['error'] = "Failed to update appointment.";

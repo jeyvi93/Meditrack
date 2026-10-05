@@ -26,7 +26,8 @@ if (isset($_GET['id'])) {
 
     if (mysqli_stmt_execute($stmt)) {
 
-        $_SESSION['success'] = "Staff profile deleted successfully.";
+        $_SESSION['success'] = "Staff Profile Deleted!";
+        $_SESSION['success_message'] = "The staff record has been deleted successfully.";
 
     } else {
 

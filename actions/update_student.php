@@ -109,7 +109,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (mysqli_stmt_execute($stmt)) {
 
-        $_SESSION['success'] = "Student profile updated successfully.";
+        $_SESSION['success'] = "Student Profile Updated!";
+        $_SESSION['success_message'] = "The student record has been updated successfully.";
 
     } else {
 

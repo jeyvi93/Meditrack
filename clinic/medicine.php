@@ -258,9 +258,10 @@ $disposed_medicines = mysqli_query($conn, "
 
                                     </td>
 
-                                    <td class="action-cell">
+                                    <?php if ($role !== 'Clinic Staff'): ?>
 
-                                        <?php if ($role !== 'Clinic Staff'): ?>
+                                        <td class="action-cell">
+
                                             <button 
                                                 class="btn-action primary"
                                                 onclick="openEditModal(<?= $row['id']; ?>)">
@@ -302,9 +303,9 @@ $disposed_medicines = mysqli_query($conn, "
 
                                             <?php endif; ?>
 
-                                        <?php endif; ?>
+                                        </td>
 
-                                    </td>
+                                    <?php endif; ?>
 
                                 </tr>
 
@@ -723,6 +724,43 @@ $disposed_medicines = mysqli_query($conn, "
                 onclick="closeSuccessModal()">
                 Done
             </button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- DISPOSE SUCCESS MODAL -->
+<div class="modal" id="disposeSuccessModal">
+
+    <div class="modal-overlay"></div>
+
+    <div class="modal-content success-modal-content">
+
+        <div class="success-icon">
+            <i class="bx bx-check-circle"></i>
+        </div>
+
+        <div class="success-message">
+
+            <h2>Medicine Disposed!</h2>
+
+            <p>
+                The medicine has been successfully moved
+                to the disposed records.
+            </p>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn-primary"
+                onclick="closeDisposeSuccessModal()">
+                Done
+            </button>
+
         </div>
 
     </div>

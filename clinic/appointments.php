@@ -1153,14 +1153,17 @@ $rejected = $rejectedStmt->get_result();
 
 
         <h2>
-            <?= isset($_SESSION['success']) ? "Success" : "Error"; ?>
-        </h2>
-
-
-        <p>
             <?= isset($_SESSION['success'])
                 ? $_SESSION['success']
-                : $_SESSION['error']; ?>
+                : "Error"; ?>
+        </h2>
+
+        <p>
+            <?= isset($_SESSION['success_message'])
+                ? $_SESSION['success_message']
+                : (isset($_SESSION['success'])
+                    ? $_SESSION['success']
+                    : $_SESSION['error']); ?>
         </p>
 
 

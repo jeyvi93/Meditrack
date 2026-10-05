@@ -86,7 +86,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             mysqli_stmt_close($notificationStmt);
         }
 
-        $_SESSION['success'] = "Appointment rescheduled successfully.";
+        $_SESSION['success'] = "Appointment Rescheduled!";
+        $_SESSION['success_message'] = "The patient has been notified.";
 
     }else{
 

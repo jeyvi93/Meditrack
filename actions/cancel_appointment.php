@@ -110,7 +110,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_execute($activityStmt);
         mysqli_stmt_close($activityStmt);
 
-        $_SESSION['success'] = "Appointment cancelled successfully.";
+        $_SESSION['success'] = "Appointment Cancelled!";
+        $_SESSION['success_message'] = "The patient has been notified.";
 
     } else {
         $_SESSION['error'] = "Failed to cancel appointment.";

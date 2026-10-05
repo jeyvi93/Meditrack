@@ -90,7 +90,8 @@ if (mysqli_stmt_execute($stmt)) {
     mysqli_stmt_execute($activityStmt);
     mysqli_stmt_close($activityStmt);
 
-    $_SESSION['success'] = "Appointment approved.";
+    $_SESSION['success'] = "Appointment Approved!";
+    $_SESSION['success_message'] = "The patient has been notified.";
 
 } else {
     $_SESSION['error'] = "Failed to approve appointment.";

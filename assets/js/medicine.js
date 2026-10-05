@@ -363,7 +363,9 @@ document
 
                 closeDisposeModal();
 
-                location.reload();
+                document.getElementById(
+                    "disposeSuccessModal"
+                ).style.display = "flex";
 
             } else {
 
@@ -553,6 +555,20 @@ function openSuccessModal() {
 
 function closeSuccessModal() {
     document.getElementById("successModal").style.display = "none";
+    location.reload();
+}
+
+
+// ==========================
+// DISPOSE SUCCESS MODAL
+// ==========================
+
+function closeDisposeSuccessModal() {
+
+    document.getElementById(
+        "disposeSuccessModal"
+    ).style.display = "none";
+
     location.reload();
 }
 
