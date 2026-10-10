@@ -139,7 +139,7 @@ unset($_SESSION['error_field']);
                                 <label>Password</label>
                                 <div class="input-box password-box">
                                     <i class="fas fa-lock"></i>
-                                    <input type="password" name="password" id="password" placeholder="••••••••" required>
+                                    <input type="password" name="password" id="password" placeholder="Enter Password" required>
                                     <i class="fas fa-eye password-toggle" onclick="togglePassword('password', this)"></i>
                                 </div>
                                 <?php if ($errorField === 'password'): ?>
@@ -151,7 +151,7 @@ unset($_SESSION['error_field']);
                                 <label>Confirm Password</label>
                                 <div class="input-box password-box">
                                     <i class="fas fa-shield-halved"></i>
-                                    <input type="password" name="confirm_password" id="confirm_password" placeholder="••••••••" required>
+                                    <input type="password" name="confirm_password" id="confirm_password" placeholder="Re-enter Password" required>
                                     <i class="fas fa-eye password-toggle" onclick="togglePassword('confirm_password', this)"></i>
                                 </div>
                                 <?php if ($errorField === 'confirm_password'): ?>

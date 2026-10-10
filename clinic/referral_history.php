@@ -224,7 +224,7 @@ function pageUrl($page, $queryParams) {
                             name="search"
                             id="searchInput"
                             value="<?= htmlspecialchars($search) ?>"
-                            placeholder="Search by name, department, or details..."
+                            placeholder="Search by details..."
                         >
 
                     </form>
