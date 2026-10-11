@@ -357,24 +357,25 @@ document
             body: formData
         })
         .then(response => response.json())
-        .then(data => {
+        .then(data => {   
+                     
+        if (data.success) {
 
-            if (data.success) {
+            closeDisposeModal();
 
-                closeDisposeModal();
+            openSuccessModal(
+                "Medicine Disposed!",
+                data.message || "Medicine disposed successfully."
+            );
 
-                document.getElementById(
-                    "disposeSuccessModal"
-                ).style.display = "flex";
+        } else {
 
-            } else {
+            alert(
+                data.message ||
+                "Unable to dispose medicine."
+            );
 
-                alert(
-                    data.message ||
-                    "Unable to dispose medicine."
-                );
-
-            }
+        }
 
         })
         .catch(error => {
@@ -532,7 +533,10 @@ document.getElementById("editMedicineForm").addEventListener("submit", function 
 
         closeEditModal();
 
-        openSuccessModal();
+        openSuccessModal(
+            "Medicine Updated!",
+            data.message || "Medicine updated successfully."
+        );
 
     })
     .catch(error => {
@@ -544,33 +548,6 @@ document.getElementById("editMedicineForm").addEventListener("submit", function 
     });
 
 });
-
-// ==========================
-// SUCCESS MODAL
-// ==========================
-
-function openSuccessModal() {
-    document.getElementById("successModal").style.display = "flex";
-}
-
-function closeSuccessModal() {
-    document.getElementById("successModal").style.display = "none";
-    location.reload();
-}
-
-
-// ==========================
-// DISPOSE SUCCESS MODAL
-// ==========================
-
-function closeDisposeSuccessModal() {
-
-    document.getElementById(
-        "disposeSuccessModal"
-    ).style.display = "none";
-
-    location.reload();
-}
 
 function quarantineMedicine(id) {
 
@@ -589,7 +566,12 @@ function quarantineMedicine(id) {
     .then(data => {
 
         if (data.success) {
-            location.reload();
+
+    openSuccessModal(
+        "Medicine Quarantined!",
+        data.message || "Medicine moved to quarantine successfully."
+            );
+
         } else {
             alert(data.message || "Unable to quarantine medicine.");
         }
@@ -669,7 +651,10 @@ function confirmQuarantine() {
 
             closeQuarantineModal();
 
-            location.reload();
+            openSuccessModal(
+                "Medicine Quarantined!",
+                data.message || "Medicine moved to quarantine successfully."
+            );
 
         } else {
 
@@ -777,20 +762,14 @@ function confirmReturnToStock() {
     .then(data => {
 
         if (data.success) {
-
             closeReturnStockModal();
 
-            document.getElementById(
-                "returnStockSuccessModal"
-            ).style.display = "flex";
-
-        } else {
-
-            alert(
-                data.message ||
-                "Unable to return medicine to stock."
+            openSuccessModal(
+                "Medicine Returned!",
+                data.message || "Medicine returned to stock successfully."
             );
-
+        } else {
+            alert(data.message || "Unable to return medicine to stock.");
         }
 
     })
@@ -805,17 +784,18 @@ function confirmReturnToStock() {
     });
 }
 
-
 // ==========================
-// CLOSE SUCCESS MODAL
+// REUSABLE SUCCESS MODAL
 // ==========================
 
-function closeReturnStockSuccessModal() {
+function openSuccessModal(title, message) {
+    document.getElementById("successModalTitle").textContent = title;
+    document.getElementById("successModalMessage").textContent = message;
+    document.getElementById("successModal").style.display = "flex";
+}
 
-    document.getElementById(
-        "returnStockSuccessModal"
-    ).style.display = "none";
-
+function closeSuccessModal() {
+    document.getElementById("successModal").style.display = "none";
     location.reload();
 }
 

@@ -220,7 +220,7 @@ unset($_SESSION['login_email']);
             </p>
 
             <button type="button" class="btn-success" onclick="closeResendModal()">
-                Okay
+                OK
             </button>
 
         </div>

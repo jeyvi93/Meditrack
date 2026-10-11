@@ -29,6 +29,9 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#800000">
+    <link rel="apple-touch-icon" href="assets/images/icon-192.png">
     <title>MediTrack | Clinic Management System</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
@@ -72,7 +75,7 @@ if (isset($_SESSION['user_id'])) {
                 </div>
 
                 <div class="cta-group">
-                    <button class="btn-lg" onclick="installApp()">
+                    <button class="btn-lg" onclick="openInstallModal()">
                          Get MediTrack App <i class='bx bx-download'></i>
                     </button>
                     <div class="status-badge">
@@ -94,6 +97,62 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </section>
     </main>
+
+    <!-- Install App Modal -->
+<div id="installModal" class="install-modal">
+    <div class="install-modal-content">
+
+        <button type="button"
+                class="install-modal-close"
+                onclick="closeInstallModal()"
+                aria-label="Close modal">
+            &times;
+        </button>
+
+        <h2>Install MediTrack</h2>
+        <p class="install-modal-subtitle">
+            Add MediTrack to your home screen for easier access.
+        </p>
+
+        <!-- Android Instructions -->
+        <div id="androidInstructions" class="install-instructions">
+            <h3><i class='bx bxl-android'></i> Android</h3>
+
+            <ol>
+                <li>Tap the Install MediTrack button below.</li>
+                <li>Confirm the installation in your browser.</li>
+                <li>MediTrack will be added to your home screen.</li>
+            </ol>
+
+            <button type="button"
+                    id="installConfirmButton"
+                    class="btn-lg install-confirm-btn"
+                    onclick="installApp()">
+                Install MediTrack
+                <i class='bx bx-download'></i>
+            </button>
+
+            <p id="androidInstallMessage" class="install-message"></p>
+        </div>
+
+        <!-- iOS Instructions -->
+        <div id="iosInstructions" class="install-instructions">
+            <h3><i class='bx bxl-apple'></i> iPhone / iPad</h3>
+            <ol>
+                <li>Open MediTrack in Safari.</li>
+                <li>Tap the Share icon.</li>
+                <li>Scroll down and tap <strong>View More</strong> if needed.</li>
+                <li>Select <strong>Add to Home Screen</strong>.</li>
+                <li>Tap <strong>Add</strong> to finish.</li>
+            </ol>
+
+            <p class="install-message">
+                iOS installation must be completed through the Safari menu.
+            </p>
+        </div>
+
+    </div>
+</div>
 
 <script src="assets/js/index.js"></script>
 

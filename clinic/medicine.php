@@ -699,74 +699,6 @@ $disposed_medicines = mysqli_query($conn, "
     </div>
 </div>
 
-<!-- SUCCESS MODAL -->
-<div class="modal" id="successModal">
-
-    <div class="modal-overlay" onclick="closeSuccessModal()"></div>
-
-    <div class="modal-content success-modal-content">
-
-        <div class="success-icon">
-            <i class="bx bx-check-circle"></i>
-        </div>
-
-        <div class="success-message">
-            <h2>Medicine Updated!</h2>
-            <p>
-                The medicine information has been successfully updated.
-            </p>
-        </div>
-
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn-primary"
-                onclick="closeSuccessModal()">
-                Done
-            </button>
-        </div>
-
-    </div>
-
-</div>
-
-<!-- DISPOSE SUCCESS MODAL -->
-<div class="modal" id="disposeSuccessModal">
-
-    <div class="modal-overlay"></div>
-
-    <div class="modal-content success-modal-content">
-
-        <div class="success-icon">
-            <i class="bx bx-check-circle"></i>
-        </div>
-
-        <div class="success-message">
-
-            <h2>Medicine Disposed!</h2>
-
-            <p>
-                The medicine has been successfully moved
-                to the disposed records.
-            </p>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                type="button"
-                class="btn-primary"
-                onclick="closeDisposeSuccessModal()">
-                Done
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
 <!--DISPOSE MODAL-->
 <div class="modal" id="disposeModal">
 
@@ -1122,44 +1054,6 @@ $disposed_medicines = mysqli_query($conn, "
 
 </div>
 
-
-<!-- RETURN TO STOCK SUCCESS MODAL -->
-<div class="modal" id="returnStockSuccessModal">
-
-    <div class="modal-overlay"></div>
-
-    <div class="modal-content success-modal-content">
-
-        <div class="success-icon">
-            <i class="bx bx-check-circle"></i>
-        </div>
-
-        <div class="success-message">
-
-            <h2>Medicine Returned!</h2>
-
-            <p>
-                The medicine has been successfully returned
-                to active inventory.
-            </p>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                type="button"
-                class="btn-primary"
-                onclick="closeReturnStockSuccessModal()">
-                Done
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
 <!--INVENTORY REPORT MODAL-->
 <div class="modal" id="reportModal">
 
@@ -1224,6 +1118,37 @@ $disposed_medicines = mysqli_query($conn, "
     </div>
 
 </div>
+
+<!-- ==========================
+     REUSABLE SUCCESS MODAL
+========================== -->
+
+<div id="successModal" class="modal">
+    <div class="modal-content success-modal-content">
+
+        <div class="success-icon">
+            <i class='bx bx-check-circle'></i>
+        </div>
+
+        <div class="success-message">
+            <h2 id="successModalTitle">Success!</h2>
+            <p id="successModalMessage">Operation completed successfully.</p>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn-primary"
+                onclick="closeSuccessModal()"
+            >
+                OK
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
 
     <script src="../includes/includes.js"></script>
     <script src="../assets/js/medicine.js"></script>

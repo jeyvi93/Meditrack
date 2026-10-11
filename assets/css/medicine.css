@@ -1087,10 +1087,3 @@ body { background-color: var(--bg-light); color: var(--text-main); min-height: 1
 .btn-confirm-return:hover {
     background: #1d4ed8;
 }
-
-
-/* SUCCESS MODAL */
-
-#returnStockSuccessModal .success-icon {
-    color: #10b981;
-}

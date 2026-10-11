@@ -794,21 +794,90 @@ h1 {
 
 .reminder-list li i { color: var(--medical-teal); }
 
-.appointment-link {
-    position: relative;
+
+/* Install App Modal */
+.install-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-y: auto;
 }
 
-.appointment-badge {
-    margin-left: auto;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    border-radius: 10px;
-    background: #ef4444;
-    color: #ffffff;
-    font-size: 11px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
+.install-modal-content {
+    position: relative;
+    background: #fff;
+    color: #333;
+    width: 100%;
+    max-width: 460px;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    margin: auto;
+}
+
+.install-modal-content h2 {
+    margin: 0 30px 10px 0;
+    font-size: 24px;
+}
+
+.install-modal-subtitle {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.install-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    border: none;
+    background: transparent;
+    font-size: 30px;
+    cursor: pointer;
+    color: #555;
+}
+
+.install-instructions {
+    padding: 18px;
+    margin-top: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.install-instructions h3 {
+    margin-top: 0;
+    margin-bottom: 14px;
+}
+
+.install-instructions ol {
+    padding-left: 22px;
+    line-height: 1.8;
+    color: #555;
+}
+
+.install-confirm-btn {
+    width: 100%;
     justify-content: center;
+    margin-top: 12px;
+}
+
+.install-message {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #666;
+}
+
+@media (max-width: 480px) {
+    .install-modal-content {
+        padding: 24px 18px;
+    }
+
+    .install-instructions {
+        padding: 14px;
+    }
 }
