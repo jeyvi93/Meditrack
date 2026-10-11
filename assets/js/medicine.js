@@ -357,8 +357,8 @@ document
             body: formData
         })
         .then(response => response.json())
-        .then(data => {   
-                     
+        .then(data => {
+
         if (data.success) {
 
             closeDisposeModal();
