@@ -153,7 +153,6 @@ if (isset($_SESSION['user_id'])) {
 
     </div>
 </div>
-
 <script src="assets/js/index.js"></script>
 
 </body>

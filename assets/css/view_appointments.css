@@ -532,3 +532,53 @@ html, body {
     background: var(--navy-dark);
     transform: translateY(-1px);
 }
+
+
+/* NOTIFICATION PERMISSION MODAL */
+.notification-modal {
+    max-width: 420px;
+}
+
+.notification-modal .notification-modal-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eff6ff;
+}
+
+.notification-modal .notification-modal-icon i {
+    font-size: 34px;
+    color: var(--primary-blue);
+    margin: 0;
+}
+
+.notification-modal h3 {
+    color: var(--navy-dark);
+}
+
+.notification-modal p {
+    color: var(--text-muted);
+}
+
+.btn-notification-enable {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-notification-enable:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-notification-enable:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}

@@ -76,10 +76,11 @@ body { background-color: var(--bg-light); color: var(--text-main); }
 
 .input-group input:focus, .input-group textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 
+
 /* DYNAMIC MEDICINE ROWS */
 .medicine-row {
     display: grid;
-    grid-template-columns: 1fr 150px 50px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.2fr) 110px 50px;
     gap: 15px;
     align-items: flex-end;
     margin-bottom: 12px;
@@ -87,6 +88,40 @@ body { background-color: var(--bg-light); color: var(--text-main); }
     background: #f8fafc;
     border-radius: 8px;
 }
+
+.medicine-row .input-group {
+    min-width: 0;
+}
+
+.medicine-row .input-group select,
+.medicine-row .input-group input {
+    width: 100%;
+    min-width: 0;
+}
+
+
+@media (max-width: 900px) {
+    .medicine-row {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .medicine-row .row-action {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .medicine-row .btn-remove {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    .medicine-row {
+        grid-template-columns: 1fr;
+    }
+}
+
 
 .btn-add-row {
     background: var(--medical-teal);

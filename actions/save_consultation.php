@@ -172,20 +172,33 @@ try {
             : 0;
 
 
-        // Skip empty medicine rows
-        if ($medicine_id <= 0 || $quantity <= 0) {
+        
+        // Skip rows where no batch was selected
+        if ($medicine_id <= 0) {
             continue;
         }
 
+        // A selected batch must have a valid quantity
+        if ($quantity <= 0) {
+            throw new Exception(
+                "Please enter a valid quantity for each selected medicine batch."
+            );
+        }
 
+
+
+        
         // ==========================
-        // CHECK INVENTORY
+        // CHECK INVENTORY ELIGIBILITY
         // ==========================
 
         $inventorySql = "
-            SELECT quantity
+            SELECT id, quantity
             FROM medicines
             WHERE id = ?
+              AND status = 'Active'
+              AND expiry_date >= CURDATE()
+              AND is_quarantined = 0
             FOR UPDATE
         ";
 
@@ -202,26 +215,30 @@ try {
             $medicine_id
         );
 
-        $inventoryStmt->execute();
-
-        $inventoryResult = $inventoryStmt->get_result();
-
-
-        if ($inventoryResult->num_rows === 0) {
-
+        if (!$inventoryStmt->execute()) {
             $inventoryStmt->close();
 
             throw new Exception(
-                "Selected medicine does not exist."
+                "Failed to verify the selected medicine batch."
             );
         }
 
+        $inventoryResult = $inventoryStmt->get_result();
+
+        if ($inventoryResult->num_rows === 0) {
+            $inventoryStmt->close();
+
+            throw new Exception(
+                "The selected medicine batch is unavailable, expired, inactive, or quarantined. Please select another batch."
+            );
+        }
 
         $inventory = $inventoryResult->fetch_assoc();
 
         $currentQuantity = (int) $inventory['quantity'];
 
         $inventoryStmt->close();
+
 
 
         // ==========================

@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once "../config/database.php";
+require_once __DIR__ . '/../config/firebase_messaging.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -83,6 +84,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             mysqli_stmt_execute($notificationStmt);
             mysqli_stmt_close($notificationStmt);
+        }
+
+        /* Send Firebase push notification */
+        if ($patientId !== null) {
+            sendFirebasePushToUser(
+                $conn,
+                (int) $patientId,
+                $title,
+                $message
+            );
         }
 
         /* Activity Log */

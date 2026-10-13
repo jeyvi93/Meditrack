@@ -3,6 +3,7 @@
 session_start();
 
 require_once "../config/database.php";
+require_once __DIR__ . '/../config/firebase_messaging.php';
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
@@ -10,11 +11,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $date = $_POST['appointment_date'];
     $time = $_POST['appointment_time'];
 
-    /* Get patient ID */
+    
+    
+    /* Get patient name and user ID */
     $patientSql = "
-        SELECT user_id
-        FROM appointments
-        WHERE id = ?
+        SELECT a.user_id, u.full_name
+        FROM appointments a
+        JOIN users u ON a.user_id = u.id
+        WHERE a.id = ?
     ";
 
     $patientStmt = mysqli_prepare($conn, $patientSql);
@@ -31,6 +35,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $appointment = mysqli_fetch_assoc($patientResult);
 
     $patientId = $appointment['user_id'] ?? null;
+    $patientName = $appointment['full_name'] ?? 'Unknown patient';
 
     mysqli_stmt_close($patientStmt);
 
@@ -85,6 +90,45 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             mysqli_stmt_execute($notificationStmt);
             mysqli_stmt_close($notificationStmt);
         }
+
+        /* Send Firebase push notification */
+        if ($patientId !== null) {
+            sendFirebasePushToUser(
+                $conn,
+                (int) $patientId,
+                $title,
+                $message
+            );
+        }
+
+        
+        /* Activity Log */
+        $activitySql = "
+            INSERT INTO activity_logs
+            (user_id, activity_type, action, description)
+            VALUES (?, 'Appointment', 'Rescheduled', ?)
+        ";
+
+        $description = $patientName . "'s appointment was rescheduled to "
+             . date("F j, Y", strtotime($date))
+             . " at "
+             . date("g:i A", strtotime($time))
+             . ".";
+
+        $activityStmt = mysqli_prepare($conn, $activitySql);
+
+        if ($activityStmt) {
+            mysqli_stmt_bind_param(
+                $activityStmt,
+                "is",
+                $_SESSION['user_id'],
+                $description
+            );
+
+            mysqli_stmt_execute($activityStmt);
+            mysqli_stmt_close($activityStmt);
+        }
+
 
         $_SESSION['success'] = "Appointment Rescheduled!";
         $_SESSION['success_message'] = "The patient has been notified.";

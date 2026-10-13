@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
     exit();
@@ -66,7 +71,9 @@ foreach ($appointments as $appointment) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="csrf-token" content="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+
     <title>My Appointments | MediTrack</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/navbar.css">
@@ -86,6 +93,21 @@ foreach ($appointments as $appointment) {
         <div class="page-header">
             <h1>My <span class="text-accent">Appointments</span></h1>
             <p>View and manage your clinic visits and medical requests.</p>
+            <?php
+            $notificationRoles = [
+                'Student',
+                'Teaching Staff',
+                'Non-Teaching Staff'
+            ];
+            ?>
+
+            <?php if (in_array($_SESSION['role'] ?? '', $notificationRoles, true)): ?>
+                <p
+                    id="notificationStatus"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+            <?php endif; ?>
         </div>
 
         <div class="booking-grid">
@@ -443,6 +465,53 @@ foreach ($appointments as $appointment) {
     >
 </form>
 
+<?php if (in_array($_SESSION['role'] ?? '', $notificationRoles, true)): ?>
+<!-- NOTIFICATION PERMISSION MODAL -->
+<div
+    id="notificationPermissionModal"
+    class="modal-overlay hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="notificationModalTitle"
+    aria-describedby="notificationModalDescription"
+>
+    <div class="modal-box notification-modal">
+
+        <div class="notification-modal-icon">
+            <i class='bx bx-bell'></i>
+        </div>
+
+        <h3 id="notificationModalTitle">
+            Stay Updated with MediTrack
+        </h3>
+
+        <p id="notificationModalDescription">
+            Get notified when your clinic appointment is approved,
+            rescheduled, rejected, or cancelled.
+        </p>
+
+        <div class="modal-btns">
+            <button
+                type="button"
+                id="maybeLaterNotificationsButton"
+                class="btn-no"
+            >
+                Maybe Later
+            </button>
+
+            <button
+                type="button"
+                id="enableNotificationModalButton"
+                class="btn-notification-enable"
+            >
+                Enable Notifications
+            </button>
+        </div>
+
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- CANCEL MODAL -->
 <div id="cancelModal" class="modal-overlay hidden">
     <div class="modal-box">
@@ -650,5 +719,15 @@ foreach ($appointments as $appointment) {
         });
     <?php endif; ?>
 </script>
+
+<?php
+$patientRoles = ['Student', 'Teaching Staff', 'Non-Teaching Staff'];
+
+if (in_array($_SESSION['role'] ?? '', $patientRoles, true)):
+?>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
+    <script src="../assets/js/firebase_messaging.js"></script>
+<?php endif; ?>
 </body>
 </html>

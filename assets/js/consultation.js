@@ -17,8 +17,6 @@
 function addMedicineRow() {
 
     const container = document.getElementById('medicineRows');
-
-    // Get the medicine options from the first dropdown
     const firstSelect = document.querySelector('.med-select');
 
     const newRow = document.createElement('div');
@@ -32,9 +30,27 @@ function addMedicineRow() {
 
             <select
                 class="med-select"
-                name="medicines[]"
+                name="medicine_names[]"
+                required
             >
                 ${firstSelect.innerHTML}
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>
+                Batch Number
+            </label>
+
+            <select
+                class="batch-select"
+                name="medicines[]"
+                required
+                disabled
+            >
+                <option value="">
+                    Select a medicine first
+                </option>
             </select>
         </div>
 
@@ -48,6 +64,7 @@ function addMedicineRow() {
                 name="medicine_quantities[]"
                 min="1"
                 value="1"
+                required
             >
         </div>
 
@@ -64,6 +81,53 @@ function addMedicineRow() {
 
     container.appendChild(newRow);
 }
+
+document.getElementById('medicineRows').addEventListener('change', function (event) {
+
+    if (!event.target.classList.contains('med-select')) {
+        return;
+    }
+
+    const row = event.target.closest('.medicine-row');
+    const batchSelect = row.querySelector('.batch-select');
+    const selectedMedicine = event.target.value;
+
+    // Reset the batch dropdown
+    batchSelect.innerHTML = '';
+
+    if (!selectedMedicine) {
+        batchSelect.disabled = true;
+        batchSelect.add(new Option('Select a medicine first', ''));
+        return;
+    }
+
+    // Get batches supplied by consultation.php
+    const batches = (window.availableMedicineBatches || [])
+        .filter(batch => batch.medicine_name === selectedMedicine)
+        .sort((a, b) => {
+            return a.expiry_date.localeCompare(b.expiry_date);
+        });
+
+    if (batches.length === 0) {
+        batchSelect.disabled = true;
+        batchSelect.add(new Option('No available batches', ''));
+        return;
+    }
+
+    batchSelect.add(new Option('Select a batch', ''));
+
+    batches.forEach(batch => {
+        const batchNumber = batch.batch_number || 'No batch number';
+
+        const optionText =
+            `${batchNumber} — Expires: ${batch.expiry_date} — Stock: ${batch.quantity}`;
+
+        batchSelect.add(new Option(optionText, batch.id));
+    });
+
+    batchSelect.disabled = false;
+});
+
 
 // ==========================
 // SAVE CONSULTATION

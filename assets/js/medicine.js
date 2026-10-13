@@ -399,8 +399,8 @@ function closeReportModal() {
     document.getElementById("reportModal").style.display = "none";
 }
 
-function generateInventoryReport() {
 
+function generateInventoryReport() {
     const rows = document.querySelectorAll("#all tbody tr");
 
     let total = 0;
@@ -408,13 +408,16 @@ function generateInventoryReport() {
     let low = 0;
     let near = 0;
 
+    const medicineStocks = new Map();
     const list = document.getElementById("reportList");
+
     list.innerHTML = "";
 
     rows.forEach(row => {
-
-        const name = row.querySelector("td strong")?.innerText;
+        const name = row.querySelector("td strong")?.innerText.trim();
         const status = row.dataset.status;
+
+        if (!name) return;
 
         total++;
 
@@ -422,8 +425,25 @@ function generateInventoryReport() {
         if (status === "Low Stock") low++;
         if (status === "Near Expiry") near++;
 
+        // Find the quantity column in the inventory row.
+        const cells = row.querySelectorAll("td");
+        const quantity = parseInt(cells[2]?.innerText.trim(), 10) || 0;
+
+        // Add the quantity to the medicine's existing total.
+        if (!medicineStocks.has(name)) {
+            medicineStocks.set(name, 0);
+        }
+
+        medicineStocks.set(
+            name,
+            medicineStocks.get(name) + quantity
+        );
+    });
+
+    // Display one entry per medicine with its total stock.
+    medicineStocks.forEach((stock, name) => {
         const li = document.createElement("li");
-        li.innerText = `${name} — ${status}`;
+        li.innerText = `${name} — ${stock} units`;
         list.appendChild(li);
     });
 
@@ -432,6 +452,7 @@ function generateInventoryReport() {
     document.getElementById("repLow").innerText = low;
     document.getElementById("repNear").innerText = near;
 }
+
 
 // ==========================
 // EDIT MEDICINE

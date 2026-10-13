@@ -9,15 +9,37 @@
     }
 
     $medicineQuery = mysqli_query($conn, "
-        SELECT id, medicine_name, batch_number, quantity
+        SELECT DISTINCT medicine_name
         FROM medicines
         WHERE status = 'Active'
         AND expiry_date >= CURDATE()
         AND is_quarantined = 0
         AND quantity > 0
+        AND medicine_name IS NOT NULL
+        AND medicine_name != ''
         ORDER BY medicine_name ASC
     ");
 
+    
+    $batchQuery = mysqli_query($conn, "
+        SELECT id, medicine_name, batch_number, quantity, expiry_date
+        FROM medicines
+        WHERE status = 'Active'
+        AND expiry_date >= CURDATE()
+        AND is_quarantined = 0
+        AND quantity > 0
+        AND medicine_name IS NOT NULL
+        AND medicine_name != ''
+        ORDER BY medicine_name ASC, expiry_date ASC
+    ");
+
+    $availableBatches = [];
+
+    if ($batchQuery) {
+        while ($batch = mysqli_fetch_assoc($batchQuery)) {
+            $availableBatches[] = $batch;
+        }
+    }
     ?>
 
     <!DOCTYPE html>
@@ -200,9 +222,9 @@
 
                             <select id="department" name="department" required>
                                 <option value="">Select Department</option>
-                                <option value="School of Education">Education</option>
-                                <option value="School of Technology">Technology</option>
-                                <option value="School of Business">Business</option>
+                                <option value="Education">Education</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Business">Business</option>
                             </select>
                     </div>
 
@@ -410,7 +432,7 @@
 
                     <div id="medicineRows">
                         <!-- DEFAULT MEDICINE ROW -->
-                        <div class="medicine-row">
+                        <div class="medicine-row">      
                             <div class="input-group">
                                 <label>
                                     Medicine Name
@@ -418,22 +440,38 @@
 
                                 <select
                                     class="med-select"
-                                    name="medicines[]"
+                                    name="medicine_names[]"
+                                    required
                                 >
                                     <option value="">
                                         Select Medicine from Inventory
                                     </option>
 
                                     <?php while ($medicine = mysqli_fetch_assoc($medicineQuery)): ?>
-
-                                    <option value="<?= $medicine['id']; ?>">
-                                        <?= htmlspecialchars($medicine['medicine_name']); ?>
-                                        - <?= htmlspecialchars($medicine['batch_number']); ?>
-                                    </option>
-
+                                        <option value="<?= htmlspecialchars($medicine['medicine_name']); ?>">
+                                            <?= htmlspecialchars($medicine['medicine_name']); ?>
+                                        </option>
                                     <?php endwhile; ?>
                                 </select>
                             </div>
+
+                            <div class="input-group">
+                                <label>
+                                    Batch Number
+                                </label>
+
+                                <select
+                                    class="batch-select"
+                                    name="medicines[]"
+                                    required
+                                    disabled
+                                >
+                                    <option value="">
+                                        Select a medicine first
+                                    </option>
+                                </select>
+                            </div>
+
 
                             <div class="input-group qty-input">
                                 <label>
@@ -445,6 +483,7 @@
                                     name="medicine_quantities[]"
                                     min="1"
                                     value="1"
+                                    required
                                 >
                             </div>
 
@@ -503,7 +542,12 @@
 
     
 
-        
+    <script>
+        window.availableMedicineBatches = <?= json_encode(
+            $availableBatches,
+            JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+        ); ?>;
+    </script>
     <script src="../assets/js/consultation.js"></script>
     <script src="../includes/includes.js"></script>
 
