@@ -602,6 +602,42 @@ foreach ($appointments as $appointment) {
         evt.currentTarget.className += " active";
     }
 
+    // Open the requested appointment tab from a notification URL.
+    document.addEventListener("DOMContentLoaded", function () {
+        const allowedTabs = [
+            "pending",
+            "approved",
+            "completed",
+            "cancelled"
+        ];
+
+        const requestedTab =
+            new URLSearchParams(window.location.search).get("tab");
+
+        if (!allowedTabs.includes(requestedTab)) {
+            return;
+        }
+
+        const tabNames = [
+            "pending",
+            "approved",
+            "completed",
+            "cancelled"
+        ];
+
+        const tabButtons = document.querySelectorAll(
+            ".appointment-tabs .tab-btn"
+        );
+
+        const index = tabNames.indexOf(requestedTab);
+
+        if (index !== -1 && tabButtons[index]) {
+            switchTab(
+                { currentTarget: tabButtons[index] },
+                requestedTab
+            );
+        }
+    });
 
     let selectedAppointmentId = null;
 

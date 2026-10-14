@@ -82,12 +82,24 @@ function sendFirebasePushToUser(
             '/'
         );
 
+        $tabByTitle = [
+            'Appointment Approved' => 'approved',
+            'Appointment Rejected' => 'cancelled',
+            'Appointment Cancelled' => 'cancelled',
+            'Appointment Completed' => 'completed',
+            'Appointment Rescheduled' => 'approved',
+        ];
+
+        $targetTab = $tabByTitle[$title] ?? 'pending';
+
         $appointmentsUrl = $scheme . '://' . $host .
-            $basePath . '/patient/view_appointments.php';
+            $basePath . '/patient/view_appointments.php?tab=' .
+            rawurlencode($targetTab);
 
         $accessToken = getFirebaseAccessToken();
         $client = new \GuzzleHttp\Client();
 
+        
         foreach ($tokens as $token) {
             try {
                 $client->post(
@@ -111,6 +123,67 @@ function sendFirebasePushToUser(
                         'timeout' => 15,
                     ]
                 );
+            } catch (\GuzzleHttp\Exception\RequestException $e) {
+                $response = $e->getResponse();
+                $errorBody = $response
+                    ? (string) $response->getBody()
+                    : '';
+
+                $errorData = json_decode($errorBody, true);
+                $firebaseError = $errorData['error'] ?? [];
+
+                $errorMessage = $firebaseError['message'] ?? '';
+                $isUnregistered =
+                    $errorMessage === 'NotRegistered';
+
+                foreach ($firebaseError['details'] ?? [] as $detail) {
+                    if (($detail['errorCode'] ?? '') === 'UNREGISTERED') {
+                        $isUnregistered = true;
+                        break;
+                    }
+                }
+
+                if ($isUnregistered) {
+                    // Delete only this invalid token for this user.
+                    $deleteStmt = $conn->prepare(
+                        "DELETE FROM fcm_tokens
+                         WHERE user_id = ? AND token = ?"
+                    );
+
+                    if ($deleteStmt) {
+                        $deleteStmt->bind_param(
+                            "is",
+                            $userId,
+                            $token
+                        );
+
+                        if ($deleteStmt->execute()) {
+                            error_log(
+                                'MediTrack: removed an unregistered ' .
+                                'FCM token for user ' . $userId
+                            );
+                        } else {
+                            error_log(
+                                'MediTrack: unable to remove an ' .
+                                'unregistered FCM token.'
+                            );
+                        }
+
+                        $deleteStmt->close();
+                    } else {
+                        error_log(
+                            'MediTrack: unable to prepare invalid ' .
+                            'FCM token cleanup.'
+                        );
+                    }
+                } else {
+                    // Keep tokens when the error does not prove
+                    // that the registration is invalid.
+                    error_log(
+                        'MediTrack FCM delivery failed: ' .
+                        $e->getMessage()
+                    );
+                }
             } catch (\Throwable $e) {
                 error_log(
                     'MediTrack FCM delivery failed: ' .
@@ -118,6 +191,7 @@ function sendFirebasePushToUser(
                 );
             }
         }
+
     } catch (\Throwable $e) {
         // Push failures must not undo an approved appointment.
         error_log(

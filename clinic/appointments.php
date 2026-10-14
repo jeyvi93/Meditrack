@@ -1070,11 +1070,9 @@ $rejected = $rejectedStmt->get_result();
                     <label>New Time</label>
                     <select id="resTime" name="appointment_time" required>
                         <option value="">Select Time</option>
-                        <option>08:00 AM</option>
-                        <option>09:00 AM</option>
+                        <option>08:30 AM</option>
                         <option>10:00 AM</option>
-                        <option>01:00 PM</option>
-                        <option>02:00 PM</option>
+                        <option>01:30 PM</option>
                         <option>03:00 PM</option>
                     </select>
                 </div>

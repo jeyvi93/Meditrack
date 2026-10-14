@@ -9,6 +9,19 @@ window.addEventListener("beforeinstallprompt", (e) => {
 
 document.addEventListener("DOMContentLoaded", () => {
     installModal = document.getElementById("installModal");
+    updateInstallButtonVisibility();
+
+    // Detect when display mode changes.
+    const standaloneMode = window.matchMedia(
+        "(display-mode: standalone)"
+    );
+
+    if (standaloneMode.addEventListener) {
+        standaloneMode.addEventListener(
+            "change",
+            updateInstallButtonVisibility
+        );
+    }
 });
 
 function openInstallModal() {
@@ -63,6 +76,7 @@ async function installApp() {
 window.addEventListener("appinstalled", () => {
     deferredPrompt = null;
     closeInstallModal();
+    updateInstallButtonVisibility();
 });
 
 window.addEventListener("click", (event) => {
@@ -86,4 +100,26 @@ if ("serviceWorker" in navigator) {
                 );
             });
     });
+}
+
+
+function updateInstallButtonVisibility() {
+    const installButton = document.getElementById("installAppButton");
+    const statusBadge = document.getElementById("installStatusBadge");
+
+    const isStandalone =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        navigator.standalone === true;
+
+    if (installButton) {
+        installButton.style.display = isStandalone ? "none" : "";
+    }
+
+    if (statusBadge) {
+        statusBadge.style.display = isStandalone ? "none" : "";
+    }
+
+    if (isStandalone) {
+        closeInstallModal();
+    }
 }

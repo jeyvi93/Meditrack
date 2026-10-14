@@ -213,14 +213,33 @@ mysqli_stmt_close($unreadStmt);
                         $iconClass = "bx-calendar-edit";
                         $iconColor = "icon-blue";
                     }
+                    
+                    $targetTab = 'pending';
 
+                    switch ($notification['title']) {
+                        case 'Appointment Approved':
+                            $targetTab = 'approved';
+                            break;
+
+                        case 'Appointment Rejected':
+                        case 'Appointment Cancelled':
+                            $targetTab = 'cancelled';
+                            break;
+
+                        case 'Appointment Completed':
+                            $targetTab = 'completed';
+                            break;
+
+                        case 'Appointment Rescheduled':
+                            $targetTab = 'approved';
+                            break;
+                    }
 
                     $cardClass = $notification['is_read'] == 0
                         ? "noti-card unread"
                         : "noti-card";
 
                     ?>
-
 
                     <div
                         class="<?= $cardClass ?>"
@@ -345,7 +364,7 @@ mysqli_stmt_close($unreadStmt);
 
                                 <button
                                     class="btn-noti-primary"
-                                    onclick="window.location.href='view_appointments.php'"
+                                    onclick="viewAppointment(this, '<?= $targetTab ?>')"
                                 >
                                     View Appointment
                                 </button>

@@ -75,10 +75,10 @@ if (isset($_SESSION['user_id'])) {
                 </div>
 
                 <div class="cta-group">
-                    <button class="btn-lg" onclick="openInstallModal()">
+                    <button id="installAppButton" class="btn-lg" onclick="openInstallModal()">
                          Get MediTrack App <i class='bx bx-download'></i>
                     </button>
-                    <div class="status-badge">
+                    <div id="installStatusBadge" class="status-badge">
                         <span class="dot"></span> Available on Mobile
                     </div>
                 </div>

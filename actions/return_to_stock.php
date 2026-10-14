@@ -1,168 +1,168 @@
-<?php
+    <?php
 
-session_start();
-require_once "../config/database.php";
+    session_start();
+    require_once "../config/database.php";
 
-header("Content-Type: application/json");
+    header("Content-Type: application/json");
 
-
-// ==========================
-// AUTHENTICATION
-// ==========================
-
-if (!isset($_SESSION['user_id'])) {
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Unauthorized access."
-    ]);
-
-    exit();
-}
-
-
-// ==========================
-// ROLE AUTHORIZATION
-// ==========================
-
-if ($_SESSION['role'] === 'Clinic Staff') {
-
-    echo json_encode([
-        "success" => false,
-        "message" => "You are not authorized to return medicine to stock."
-    ]);
-
-    exit();
-}
-
-
-// ==========================
-// VALIDATE MEDICINE ID
-// ==========================
-
-if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Invalid medicine ID."
-    ]);
-
-    exit();
-}
-
-$id = (int) $_POST['id'];
-
-
-// ==========================
-// CHECK MEDICINE
-// ==========================
-
-$stmt = mysqli_prepare(
-    $conn,
-    "SELECT id, medicine_name, is_quarantined, status
-    FROM medicines
-    WHERE id = ?"
-);
-
-mysqli_stmt_bind_param($stmt, "i", $id);
-mysqli_stmt_execute($stmt);
-
-$result = mysqli_stmt_get_result($stmt);
-$medicine = mysqli_fetch_assoc($result);
-
-mysqli_stmt_close($stmt);
-
-
-if (!$medicine) {
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Medicine not found."
-    ]);
-
-    exit();
-}
-
-
-// ==========================
-// CHECK QUARANTINE STATUS
-// ==========================
-
-if ((int)$medicine['is_quarantined'] !== 1) {
-
-    echo json_encode([
-        "success" => false,
-        "message" => "This medicine is not currently in quarantine."
-    ]);
-
-    exit();
-}
-
-
-// ==========================
-// RETURN TO STOCK
-// ==========================
-
-$stmt = mysqli_prepare(
-    $conn,
-    "UPDATE medicines
-     SET is_quarantined = 0,
-         status = 'Active'
-     WHERE id = ?"
-);
-
-mysqli_stmt_bind_param($stmt, "i", $id);
-
-
-if (mysqli_stmt_execute($stmt)) {
 
     // ==========================
-    // LOG ACTIVITY
+    // AUTHENTICATION
     // ==========================
 
-    $log_description = $medicine['medicine_name'] . " was returned to stock.";
+    if (!isset($_SESSION['user_id'])) {
 
-    $log_stmt = mysqli_prepare(
+        echo json_encode([
+            "success" => false,
+            "message" => "Unauthorized access."
+        ]);
+
+        exit();
+    }
+
+
+    // ==========================
+    // ROLE AUTHORIZATION
+    // ==========================
+
+    if ($_SESSION['role'] === 'Clinic Staff') {
+
+        echo json_encode([
+            "success" => false,
+            "message" => "You are not authorized to return medicine to stock."
+        ]);
+
+        exit();
+    }
+
+
+    // ==========================
+    // VALIDATE MEDICINE ID
+    // ==========================
+
+    if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
+
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid medicine ID."
+        ]);
+
+        exit();
+    }
+
+    $id = (int) $_POST['id'];
+
+
+    // ==========================
+    // CHECK MEDICINE
+    // ==========================
+
+    $stmt = mysqli_prepare(
         $conn,
-        "INSERT INTO activity_logs
-        (
-            user_id,
-            activity_type,
-            action,
-            description
-        )
-        VALUES (?, ?, ?, ?)"
+        "SELECT id, medicine_name, is_quarantined, status
+        FROM medicines
+        WHERE id = ?"
     );
 
-    $activity_type = "Medicine";
-    $action = "Returned to Stock";
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
 
-    mysqli_stmt_bind_param(
-        $log_stmt,
-        "isss",
-        $_SESSION['user_id'],
-        $activity_type,
-        $action,
-        $log_description
+    $result = mysqli_stmt_get_result($stmt);
+    $medicine = mysqli_fetch_assoc($result);
+
+    mysqli_stmt_close($stmt);
+
+
+    if (!$medicine) {
+
+        echo json_encode([
+            "success" => false,
+            "message" => "Medicine not found."
+        ]);
+
+        exit();
+    }
+
+
+    // ==========================
+    // CHECK QUARANTINE STATUS
+    // ==========================
+
+    if ((int)$medicine['is_quarantined'] !== 1) {
+
+        echo json_encode([
+            "success" => false,
+            "message" => "This medicine is not currently in quarantine."
+        ]);
+
+        exit();
+    }
+
+
+    // ==========================
+    // RETURN TO STOCK
+    // ==========================
+
+    $stmt = mysqli_prepare(
+        $conn,
+        "UPDATE medicines
+        SET is_quarantined = 0,
+            status = 'Active'
+        WHERE id = ?"
     );
 
-    mysqli_stmt_execute($log_stmt);
-    mysqli_stmt_close($log_stmt);
+    mysqli_stmt_bind_param($stmt, "i", $id);
 
 
-    echo json_encode([
-        "success" => true,
-        "message" => "Medicine returned to stock successfully."
-    ]);
+    if (mysqli_stmt_execute($stmt)) {
 
-} else {
+        // ==========================
+        // LOG ACTIVITY
+        // ==========================
 
-    echo json_encode([
-        "success" => false,
-        "message" => "Failed to return medicine to stock."
-    ]);
-}
+        $log_description = $medicine['medicine_name'] . " was returned to stock.";
+
+        $log_stmt = mysqli_prepare(
+            $conn,
+            "INSERT INTO activity_logs
+            (
+                user_id,
+                activity_type,
+                action,
+                description
+            )
+            VALUES (?, ?, ?, ?)"
+        );
+
+        $activity_type = "Medicine";
+        $action = "Returned to Stock";
+
+        mysqli_stmt_bind_param(
+            $log_stmt,
+            "isss",
+            $_SESSION['user_id'],
+            $activity_type,
+            $action,
+            $log_description
+        );
+
+        mysqli_stmt_execute($log_stmt);
+        mysqli_stmt_close($log_stmt);
 
 
-mysqli_stmt_close($stmt);
-mysqli_close($conn);
+        echo json_encode([
+            "success" => true,
+            "message" => "Medicine returned to stock successfully."
+        ]);
+
+    } else {
+
+        echo json_encode([
+            "success" => false,
+            "message" => "Failed to return medicine to stock."
+        ]);
+    }
+
+
+    mysqli_stmt_close($stmt);
+    mysqli_close($conn);

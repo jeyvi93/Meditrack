@@ -48,7 +48,8 @@ async function enablePushNotifications() {
         }
 
         if (status) {
-            status.textContent = "Setting up notifications...";
+            status.textContent = "";
+            status.classList.add("hidden");
         }
 
         if (button) {
@@ -110,8 +111,8 @@ async function enablePushNotifications() {
         }
 
         if (status) {
-            status.textContent =
-                "Notifications enabled successfully!";
+            status.textContent = "";
+            status.classList.add("hidden");
         }
 
         if (button) {
@@ -126,8 +127,8 @@ async function enablePushNotifications() {
         console.error("Notification setup failed:", error);
 
         if (status) {
-            status.textContent = error.message ||
-                "Unable to enable notifications. Please try again.";
+            status.textContent = "";
+            status.classList.add("hidden");
         }
 
         return null;
