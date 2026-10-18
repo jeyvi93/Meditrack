@@ -191,7 +191,7 @@
 
             <div class="modal-btns single-btn">
                 <button class="btn-error" onclick="closeErrorModal()">
-                    Okay
+                    Ok
                 </button>
             </div>
         </div>

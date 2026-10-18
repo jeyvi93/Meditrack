@@ -123,7 +123,7 @@ usort($cancelledAppointments, function ($a, $b) {
     <section class="booking-section">
         
         <div class="page-header">
-            <h1>My <span class="text-accent">Appointments</span></h1>
+            <h1><span class="text-accent">Appointments</span></h1>
             <p>View and manage your clinic visits and medical requests.</p>
             <?php
             $notificationRoles = [

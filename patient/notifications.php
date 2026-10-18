@@ -102,7 +102,7 @@ mysqli_stmt_close($unreadStmt);
 <main class="main-wrapper">
 
     <header class="page-header">
-        <h1>Your <span class="text-accent">Notifications</span></h1>
+        <h1><span class="text-accent">Notifications</span></h1>
         <p>Updates regarding your clinic visits and account.</p>
     </header>
 
