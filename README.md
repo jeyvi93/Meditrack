@@ -1,151 +1,187 @@
-# MediTrack
+# MediTrack Clinic Management System
 
-## Clinic Management System
+A web-based clinic management system developed as a capstone project for **Mandaue City College**. MediTrack streamlines school clinic operations by centralizing patient records, appointment management, medicine inventory, consultations, reports, and referrals while providing students and school staff with convenient access to clinic services.
 
-MediTrack is a clinic management system developed as a capstone project for **Mandaue City College**. The system is designed to help streamline school clinic operations while providing students and school staff with convenient access to basic clinic services.
+## Overview
 
-The system is divided into two main sides:
+MediTrack provides two primary interfaces:
 
-* **Clinic Side** – used by clinic personnel to manage patient information, appointments, medicines, consultations, reports, and referrals.
-* **Patient Side** – used by students and school staff to book appointments, view appointment status, receive notifications, and access their profile.
+- **Clinic Side** — Enables authorized clinic personnel to manage clinic operations, patient records, appointments, medicine inventory, consultations, reports, and referrals.
+- **Patient Side** — Allows students and school staff to book appointments, track appointment status, receive notifications, and manage their profiles.
+
+The system includes account authentication, email verification, password recovery, role-based access, and Progressive Web App (PWA) support for convenient access across compatible devices.
 
 ## System Modules
 
-### 🏥 Clinic Side
-
-The clinic side provides the main tools for managing school clinic operations.
+### Clinic Side
 
 #### Dashboard
-
-Provides an overview of clinic activities through summarized information, key statistics, and visual data.
+- Displays summarized clinic activities and key statistics.
+- Presents visual information to help clinic personnel monitor operations.
 
 #### Student Profiles
-
-Allows clinic personnel to manage and view student information and patient records.
+- View and manage student information and patient records.
+- Access relevant profile details for clinic services.
 
 #### School Staff Profiles
+- Manage teaching and non-teaching staff information.
+- Maintain staff records used by the clinic.
 
-Allows clinic personnel to manage information for teaching and non-teaching staff.
-
-#### Appointments
-
-Allows clinic personnel to review, approve, reject, reschedule, and cancel patient appointment requests.
+#### Appointment Management
+- Review incoming appointment requests.
+- Approve or reject requests.
+- Reschedule or cancel appointments.
+- Update appointment statuses and manage appointment records.
 
 #### Medicine Inventory
-
-Allows clinic personnel to manage medicines available in the clinic, including inventory information, stock status, and medicine-related details.
+- Manage medicine records and inventory information.
+- Monitor stock levels and medicine availability.
+- Maintain medicine-related details.
 
 #### Consultations
-
-Allows clinic personnel to record and manage patient consultation information, including complaints, vital signs, and other relevant medical details.
+- Record and manage patient consultations.
+- Document complaints, vital signs, and other relevant clinical information.
 
 #### Monthly Reports
-
-Provides summarized clinic records and statistics for a specific month.
+- Generate summarized clinic records and statistics for a selected month.
+- Support the review of clinic activities and appointment records.
 
 #### Referrals
+- Create and manage patient referral records.
+- Review referral information and maintain referral history.
+- Support referral document viewing and printing where available.
 
-Allows clinic personnel to manage patient referral records.
+### Patient Side
 
-> 🚧 Consultation records, Monthly Reports, Referrals, and PDF report generation are still under development.
+#### Appointment Booking
+- Submit appointment requests by specifying the purpose of the visit, preferred date, and time.
+- Receive updates as appointment requests are processed.
 
----
-
-### 👤 Patient Side
-
-The patient side provides students and school staff with access to basic clinic services.
-
-#### Book Appointment
-
-Allows patients to submit appointment requests by specifying their purpose of visit, preferred date, and preferred time.
-
-#### View Appointments
-
-Allows patients to view their appointment records and track their current appointment status, including Pending, Approved, Completed, Rejected, and Cancelled appointments.
+#### Appointment Tracking
+- View appointment records and their current status.
+- Track Pending, Approved, Completed, Rejected, and Cancelled appointments.
 
 #### Notifications
+- Receive clinic-related updates, including appointment notifications.
+- Support push notifications on compatible devices and browsers.
 
-Provides patients with notifications regarding appointment updates and other clinic-related information.
+#### Patient Profile
+- Access personal account and profile information.
+- Manage supported profile details.
 
-> 🚧 In-app notification backend integration is still under development.
+## Authentication and Security
 
-#### Profile
+MediTrack includes an authentication system designed for students, teaching staff, non-teaching staff, and authorized clinic personnel.
 
-Allows patients to view and manage their personal information.
+- **Registration:** Supports account creation using school identification information and registered email addresses.
+- **Login:** Authenticates users using their email addresses and passwords.
+- **Email Verification:** Uses verification links sent through email to verify registered accounts.
+- **Forgot Password:** Provides password recovery through a time-limited email reset link.
+- **Password Security:** Stores passwords using PHP's password-hashing functionality.
+- **Role-Based Access Control:** Restricts access to system functions according to assigned user roles.
+- **Database Security:** Uses prepared statements for supported database operations.
 
-> 🚧 Profile backend integration is still under development.
+## Progressive Web App (PWA)
 
----
+MediTrack supports installation as a Progressive Web App on compatible devices and browsers.
 
-## Authentication
+- Add MediTrack to a device's home screen.
+- Access the system through an app-like interface.
+- Use a web app manifest and service worker.
+- Support push notifications on compatible platforms and browsers.
 
-MediTrack includes an account registration and login system for students and school staff.
-
-### Registration
-
-Users can register using their school identification information and create an account using their email address and password.
-
-### Login
-
-Users can log in using their registered email address and password.
-
-### Forgot Password
-
-A password recovery feature is planned to allow users to securely reset their password through a dedicated link sent to their registered email address.
-
-> 🚧 Forgot Password / Email Password Reset is still under development.
-
----
+Installation availability depends on the device, operating system, browser, and PWA compatibility.
 
 ## Technologies Used
 
-* HTML
-* CSS
-* JavaScript
-* PHP
-* MySQL
-* XAMPP
-* Git
-* GitHub
+| Technology | Purpose |
+|---|---|
+| HTML5 | Page structure |
+| CSS3 | Styling and responsive layouts |
+| JavaScript | Client-side interactions and functionality |
+| PHP | Server-side processing and application logic |
+| MySQL | Database management |
+| XAMPP | Local development environment |
+| PHPMailer | Email delivery |
+| Firebase Cloud Messaging | Push notification delivery |
+| Git | Version control |
+| GitHub | Source code hosting |
 
-## Project Status
+## System Requirements
 
-🚧 **MediTrack is currently under development.**
+- A modern web browser.
+- PHP-compatible server environment.
+- MySQL or MariaDB database server.
+- XAMPP or an equivalent PHP development environment.
+- Internet access for email delivery, Firebase services, and other externally hosted resources.
 
-The core clinic management modules and appointment workflow are currently functional. The patient-side appointment booking and appointment tracking features have also been integrated with the database.
+PWA installation and push notification functionality require a supported environment and appropriate HTTPS configuration, except for browser-recognized development origins such as localhost.
 
-Current development priorities include:
+## Installation and Setup
 
-* In-app notifications
-* Patient profile integration
-* Forgot password and email-based password reset
-* Further consultation, reporting, and referral functionality
-* PDF report generation
-* Final testing and system-wide UI improvements
-* Role-based access control and authorization
+1. Install and start Apache and MySQL using XAMPP.
+2. Clone or copy the MediTrack project into the server's web directory, such as `htdocs`.
+3. Create the required MySQL database.
+4. Import the project's database schema and initial data.
+5. Configure the database connection in `config/database.php`.
+6. Configure SMTP settings in `config/mail.php`.
+7. Install PHP dependencies using Composer if they are not already installed.
+8. Configure the required Firebase project settings for push notifications.
+9. Start the application and open it through the configured local development URL.
+10. Test registration, email verification, login, appointment workflows, password recovery, and role-based access.
+
+**Important:** Keep database passwords, SMTP credentials, Firebase service-account private keys, and other secrets out of public repositories. Use dummy records for demonstrations and testing.
 
 ## Project Structure
 
 ```text
-MediTrack
-│
-├── Clinic Side
-│   ├── Dashboard
-│   ├── Student Profiles
-│   ├── School Staff Profiles
-│   ├── Appointments
-│   ├── Medicine Inventory
-│   ├── Consultations
-│   ├── Monthly Reports
-│   └── Referrals
-│
-└── Patient Side
-    ├── Book Appointment
-    ├── View Appointments
-    ├── Notifications
-    └── Profile
+MediTrack/
+├── actions/
+├── api/
+│   └── auth/
+├── assets/
+│   ├── css/
+│   ├── images/
+│   └── js/
+├── clinic/
+├── config/
+├── patient/
+├── templates/
+├── vendor/
+├── manifest.json
+├── service-worker.js
+├── login.php
+└── index.php
 ```
 
-## Development Progress
+*The structure above highlights the main application directories; the actual repository may contain additional files and subdirectories.*
 
-MediTrack is currently approximately **75% complete**. The core system structure, clinic-side management features, authentication, and appointment workflow are already established, while several supporting features and final integrations remain in development.
+## Project Objectives
+
+MediTrack aims to:
+
+- Digitize and centralize school clinic records.
+- Improve appointment handling and status tracking.
+- Simplify medicine inventory management.
+- Support organized consultation and referral documentation.
+- Improve communication between clinic personnel and patients.
+- Provide secure, role-appropriate access to clinic services.
+- Make clinic services more accessible through a responsive web application and PWA support.
+
+## Project Status
+
+MediTrack is the completed implementation of a school clinic management system, with its modules and integrations subject to final verification and acceptance testing.
+
+Final validation should cover appointment workflows, medicine inventory operations, authentication, email verification, password recovery, notification delivery, role permissions, reporting, referrals, and PWA installation on supported devices.
+
+## Project Information
+
+**Project:** MediTrack: Clinic Management System  
+**Institution:** Mandaue City College  
+**Project Type:** Capstone Project  
+**Platform:** Web Application / Progressive Web App  
+**Database:** MySQL
+
+---
+
+*Developed to support more organized, accessible, and efficient school clinic services.*

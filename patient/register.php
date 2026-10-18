@@ -185,7 +185,7 @@ unset($_SESSION['error_field']);
                 </p>
 
                 <button class="btn-success" onclick="goToLogin()">
-                    Okay
+                    OK
                 </button>
 
             </div>

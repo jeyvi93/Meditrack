@@ -96,15 +96,32 @@ if (!mysqli_stmt_execute($stmt)) {
     exit();
 }
 
-
 /*
 |--------------------------------------------------------------------------
 | Reset Link
 |--------------------------------------------------------------------------
 */
 
-$reset_link =
-    "http://localhost/MediTrack%20Clinic/patient/reset_password.php?token=" .
+// Detect HTTPS, including supported proxy/tunnel setups.
+$isHttps = (
+    (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ||
+    (!empty($_SERVER["HTTP_X_FORWARDED_PROTO"]) &&
+     strtolower(trim(explode(",", $_SERVER["HTTP_X_FORWARDED_PROTO"])[0])) === "https")
+);
+
+$scheme = $isHttps ? "https" : "http";
+$host = $_SERVER["HTTP_HOST"] ?? "localhost";
+
+// Derive the project root from this handler's location.
+$projectPath = str_replace(
+    "\\",
+    "/",
+    rtrim(dirname(dirname(dirname($_SERVER["SCRIPT_NAME"]))), "/\\")
+);
+
+$reset_link = $scheme . "://" . $host .
+    $projectPath .
+    "/patient/reset_password.php?token=" .
     urlencode($reset_token);
 
 

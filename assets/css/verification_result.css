@@ -13,7 +13,13 @@
 
     position: relative;
     z-index: 1;
+
+    /* Keep the page in light mode */
+    background: #f8fafc;
+    color: #0f172a;
+    color-scheme: light;
 }
+
 
 
 /* ==========================

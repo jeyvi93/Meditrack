@@ -54,7 +54,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
         <a href="book_appointment.php"
            class="<?= $currentPage === 'book_appointment.php' ? 'active' : '' ?>">
             <i data-lucide="calendar-plus"></i>
-            <span>Book Appointment</span>
+            <span>Book</span>
         </a>
 
         <a href="view_appointments.php"

@@ -32,7 +32,9 @@ function openInstallModal() {
         return;
     }
 
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isIOS =
+    /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
     installModal.style.display = "flex";
 
@@ -54,7 +56,7 @@ async function installApp() {
 
     if (!deferredPrompt) {
         message.textContent =
-            "Installation is not currently available. Try Chrome's menu and look for Install app or Add to Home screen.";
+             "Please open MediTrack directly in a supported browser, such as Google Chrome, then try installing again.";
         return;
     }
 

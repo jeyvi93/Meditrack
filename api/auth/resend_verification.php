@@ -96,17 +96,33 @@ if (!mysqli_stmt_execute($stmt)) {
     exit();
 }
 
-
 /*
 |--------------------------------------------------------------------------
 | Verification Link
 |--------------------------------------------------------------------------
 */
 
-$verification_link =
-    "http://localhost/MediTrack%20Clinic/api/auth/verify_email.php?token=" .
-    urlencode($verification_token);
+// Detect HTTPS, including supported proxy/tunnel setups.
+$isHttps = (
+    (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off") ||
+    (!empty($_SERVER["HTTP_X_FORWARDED_PROTO"]) &&
+     strtolower(trim(explode(",", $_SERVER["HTTP_X_FORWARDED_PROTO"])[0])) === "https")
+);
 
+$scheme = $isHttps ? "https" : "http";
+$host = $_SERVER["HTTP_HOST"] ?? "localhost";
+
+// Derive the project path from this script's location.
+$projectPath = str_replace(
+    "\\",
+    "/",
+    rtrim(dirname(dirname(dirname($_SERVER["SCRIPT_NAME"]))), "/\\")
+);
+
+$verification_link = $scheme . "://" . $host .
+    $projectPath .
+    "/api/auth/verify_email.php?token=" .
+    urlencode($verification_token);
 
 /*
 |--------------------------------------------------------------------------

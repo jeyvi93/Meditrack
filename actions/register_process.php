@@ -304,10 +304,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Execute registration
     if (mysqli_stmt_execute($stmt)) {
 
-        // Create verification link
-        $verification_link =
-            "http://localhost/MediTrack%20Clinic/api/auth/verify_email.php?token=" .
+        
+        // Create verification link dynamically
+        $isHttps = (
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+            (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+             $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+        );
+
+        $scheme = $isHttps ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
+        // Derive the project base path from this script's location.
+        $projectPath = str_replace(
+            '\\',
+            '/',
+            rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'])), '/\\')
+        );
+
+        $verification_link = $scheme . '://' . $host .
+            $projectPath .
+            '/api/auth/verify_email.php?token=' .
             urlencode($verification_token);
+
 
         // Send verification email
         $mailConfig = require "../config/mail.php";

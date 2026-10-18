@@ -204,7 +204,7 @@
                                 type="tel"
                                 id="contactNumber"
                                 name="contact_number"
-                                placeholder="09XX XXX XXXX"
+                                placeholder="09XXXXXXXXX"
                             >
                         </div>
                     </div>
