@@ -465,6 +465,9 @@ body { background-color: var(--bg-light); color: var(--text-main); }
 
 }
 
+.complete-confirmation-text {
+    font-size: 15px;
+}
 
 /* ICON */
 

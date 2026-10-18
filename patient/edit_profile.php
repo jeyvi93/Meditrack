@@ -196,7 +196,7 @@ unset($_SESSION['error']);
         </p>
 
         <button type="button" class="btn-success" onclick="window.location.href='view_profile.php'">
-            <i class='bx bx-check'></i> Done
+            Done
         </button>
 
     </div>

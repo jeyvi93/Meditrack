@@ -6,9 +6,8 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Google\Auth\Credentials\ServiceAccountCredentials;
-use GuzzleHttp\Client;
 
+use Google\Auth\Credentials\ServiceAccountCredentials;
 const FIREBASE_PROJECT_ID = 'meditrack-clinic-2f6a0';
 
 function getFirebaseAccessToken(): string
@@ -45,7 +44,7 @@ function sendFirebasePushToUser(
 ): void {
     try {
         $stmt = $conn->prepare(
-            "SELECT token FROM fcm_tokens WHERE user_id = ?"
+            "SELECT token, base_url FROM fcm_tokens WHERE user_id = ?"
         );
 
         if (!$stmt) {
@@ -61,7 +60,10 @@ function sendFirebasePushToUser(
         $tokens = [];
 
         while ($row = $result->fetch_assoc()) {
-            $tokens[] = $row['token'];
+            $tokens[] = [
+                'token' => $row['token'],
+                'base_url' => $row['base_url']
+            ];
         }
 
         $stmt->close();
@@ -70,17 +72,7 @@ function sendFirebasePushToUser(
             return;
         }
 
-        $scheme = (
-            !empty($_SERVER['HTTPS']) &&
-            $_SERVER['HTTPS'] !== 'off'
-        ) ? 'https' : 'http';
-
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-
-        $basePath = rtrim(
-            dirname(dirname($_SERVER['SCRIPT_NAME'] ?? '/')),
-            '/'
-        );
+        
 
         $tabByTitle = [
             'Appointment Approved' => 'approved',
@@ -92,15 +84,25 @@ function sendFirebasePushToUser(
 
         $targetTab = $tabByTitle[$title] ?? 'pending';
 
-        $appointmentsUrl = $scheme . '://' . $host .
-            $basePath . '/patient/view_appointments.php?tab=' .
-            rawurlencode($targetTab);
-
         $accessToken = getFirebaseAccessToken();
         $client = new \GuzzleHttp\Client();
 
-        
-        foreach ($tokens as $token) {
+        foreach ($tokens as $tokenData) {
+            $token = $tokenData['token'];
+            $baseUrl = $tokenData['base_url'];
+
+            if (empty($baseUrl)) {
+                error_log(
+                    'MediTrack: missing saved app URL for user ' . $userId .
+                    '. Register the device through its current app URL.'
+                );
+                continue;
+            }
+
+            $appointmentsUrl = rtrim($baseUrl, '/') .
+                '/patient/view_appointments.php?tab=' .
+                rawurlencode($targetTab);
+
             try {
                 $client->post(
                     'https://fcm.googleapis.com/v1/projects/' .
@@ -123,8 +125,11 @@ function sendFirebasePushToUser(
                         'timeout' => 15,
                     ]
                 );
+            
             } catch (\GuzzleHttp\Exception\RequestException $e) {
-                $response = $e->getResponse();
+                $response = $e instanceof \GuzzleHttp\Exception\ResponseException
+                ? $e->getResponse()
+                : null;
                 $errorBody = $response
                     ? (string) $response->getBody()
                     : '';

@@ -99,7 +99,10 @@ async function enablePushNotifications() {
                 "Content-Type": "application/json",
                 "X-CSRF-Token": csrfToken
             },
-            body: JSON.stringify({ token })
+            body: JSON.stringify({
+                token,
+                base_url: registration.scope
+            })
         });
 
         const result = await response.json();

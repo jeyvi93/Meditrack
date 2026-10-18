@@ -422,6 +422,25 @@ function openCancelModal(name,id){
 }
 
 
+ // ===============================
+// COMPLETE APPOINTMENT MODAL
+// ===============================
+function openCompleteModal(name, id) {
+
+    document.getElementById("completeModal").style.display = "flex";
+
+    document.getElementById("completePatientName").value = name;
+
+    document.getElementById("completeAppointmentId").value = id;
+
+}
+
+function closeCompleteModal() {
+
+    document.getElementById("completeModal").style.display = "none";
+
+}
+
 
 function closeCancelModal(){
 
@@ -437,10 +456,11 @@ function closeCancelModal(){
 window.addEventListener("click",function(e){
 
 
-    const modals=[
+    const modals = [
         "rejectModal",
         "rescheduleModal",
-        "cancelModal"
+        "cancelModal",
+        "completeModal"
     ];
 
 

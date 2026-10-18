@@ -186,8 +186,19 @@
 .mobile-login-hint {
     display: none;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 25px;
     font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.mobile-login-hint a {
+    color: var(--primary-blue);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.mobile-login-hint a:hover {
+    text-decoration: underline;
 }
 
 /* ==========================

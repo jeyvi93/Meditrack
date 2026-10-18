@@ -65,6 +65,38 @@ foreach ($appointments as $appointment) {
         $cancelledAppointments[] = $appointment;
     }
 }
+
+// Pending: newest scheduled appointment first
+usort($pendingAppointments, function ($a, $b) {
+    return strcmp(
+        $b['appointment_date'] . ' ' . $b['appointment_time'],
+        $a['appointment_date'] . ' ' . $a['appointment_time']
+    );
+});
+
+// Approved: nearest upcoming appointment first
+usort($approvedAppointments, function ($a, $b) {
+    return strcmp(
+        $a['appointment_date'] . ' ' . $a['appointment_time'],
+        $b['appointment_date'] . ' ' . $b['appointment_time']
+    );
+});
+
+// Completed: most recent appointment first
+usort($completedAppointments, function ($a, $b) {
+    return strcmp(
+        $b['appointment_date'] . ' ' . $b['appointment_time'],
+        $a['appointment_date'] . ' ' . $a['appointment_time']
+    );
+});
+
+// Rejected / Cancelled: most recent appointment first
+usort($cancelledAppointments, function ($a, $b) {
+    return strcmp(
+        $b['appointment_date'] . ' ' . $b['appointment_time'],
+        $a['appointment_date'] . ' ' . $a['appointment_time']
+    );
+});
 ?>
 
 <!DOCTYPE html>

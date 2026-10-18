@@ -57,6 +57,27 @@ if (!in_array($_SESSION['role'] ?? '', $allowedRoles, true)) {
 
 $data = json_decode(file_get_contents('php://input'), true);
 $token = trim($data['token'] ?? '');
+$baseUrl = trim($data['base_url'] ?? '');
+
+if (
+    $baseUrl === '' ||
+    !filter_var($baseUrl, FILTER_VALIDATE_URL) ||
+    !in_array(
+        strtolower((string) parse_url($baseUrl, PHP_URL_SCHEME)),
+        ['http', 'https'],
+        true
+    )
+) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid app URL.'
+    ]);
+    exit();
+}
+
+// Keep only the app origin and base path; discard query strings/fragments.
+$baseUrl = rtrim($baseUrl, '/') . '/';
 
 if ($token === '' || strlen($token) > 4096) {
     http_response_code(400);
@@ -72,9 +93,10 @@ require_once '../config/database.php';
 $userId = (int) $_SESSION['user_id'];
 
 $stmt = $conn->prepare("
-    INSERT INTO fcm_tokens (user_id, token)
-    VALUES (?, ?)
+    INSERT INTO fcm_tokens (user_id, token, base_url)
+    VALUES (?, ?, ?)
     ON DUPLICATE KEY UPDATE
+        base_url = VALUES(base_url),
         updated_at = CURRENT_TIMESTAMP
 ");
 
@@ -87,7 +109,7 @@ if (!$stmt) {
     exit();
 }
 
-$stmt->bind_param('is', $userId, $token);
+$stmt->bind_param('iss', $userId, $token, $baseUrl);
 
 if ($stmt->execute()) {
     echo json_encode([

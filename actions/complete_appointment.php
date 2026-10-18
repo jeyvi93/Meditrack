@@ -7,16 +7,18 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once "../config/database.php";
+require_once __DIR__ . '/../config/firebase_messaging.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $appointment_id = $_POST['appointment_id'];
 
-    /* Get patient ID */
+    /* Get patient ID, name, and current status */
     $patientSql = "
-        SELECT user_id
-        FROM appointments
-        WHERE id = ?
+        SELECT a.user_id, u.full_name, a.status
+        FROM appointments a
+        JOIN users u ON a.user_id = u.id
+        WHERE a.id = ?
     ";
 
     $patientStmt = mysqli_prepare($conn, $patientSql);
@@ -32,9 +34,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $patientResult = mysqli_stmt_get_result($patientStmt);
     $appointment = mysqli_fetch_assoc($patientResult);
 
-    $patientId = $appointment['user_id'] ?? null;
-
     mysqli_stmt_close($patientStmt);
+
+    if (!$appointment) {
+        $_SESSION['error'] = "Appointment not found.";
+        mysqli_close($conn);
+        header("Location: ../clinic/appointments.php");
+        exit();
+    }
+
+    $patientId = $appointment['user_id'];
+    $patientName = $appointment['full_name'];
+    $currentStatus = $appointment['status'];
+
+    if ($currentStatus === 'Completed') {
+        $_SESSION['success'] = "Appointment Already Completed";
+        $_SESSION['success_message'] = "This appointment has already been completed.";
+        mysqli_close($conn);
+        header("Location: ../clinic/appointments.php#completed");
+        exit();
+    }
 
     $sql = "UPDATE appointments
             SET status = 'Completed'
@@ -71,6 +90,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             mysqli_stmt_execute($notificationStmt);
             mysqli_stmt_close($notificationStmt);
+        }
+
+        /* Send Firebase push notification */
+        if ($patientId !== null) {
+            sendFirebasePushToUser(
+                $conn,
+                (int) $patientId,
+                "Appointment Completed",
+                "Your appointment has been marked as completed."
+            );
+        }
+
+        /* Activity Log */
+        $activitySql = "
+            INSERT INTO activity_logs
+            (user_id, activity_type, action, description)
+            VALUES (?, 'Appointment', 'Completed', ?)
+        ";
+
+        $description = $patientName . "'s appointment was marked as completed.";
+
+        $activityStmt = mysqli_prepare($conn, $activitySql);
+
+        if ($activityStmt) {
+            mysqli_stmt_bind_param(
+                $activityStmt,
+                "is",
+                $_SESSION['user_id'],
+                $description
+            );
+
+            mysqli_stmt_execute($activityStmt);
+            mysqli_stmt_close($activityStmt);
         }
 
         $_SESSION['success'] = "Appointment Completed!";
