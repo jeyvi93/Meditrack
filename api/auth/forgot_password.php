@@ -156,7 +156,7 @@ try {
 
     $mail->setFrom(
         $mailConfig["username"],
-        "MediTrack Clinic"
+        "MediTrack"
     );
 
 
@@ -183,7 +183,7 @@ try {
     $mail->Subject = "MediTrack Password Reset";
 
     $mail->Body = "
-        <h2>MediTrack Clinic</h2>
+        <h2>MediTrack</h2>
 
         <p>
             Hello <strong>" .
@@ -193,7 +193,7 @@ try {
 
         <p>
             We received a request to reset the password
-            for your MediTrack Clinic account.
+            for your MediTrack account.
         </p>
 
         <p>
@@ -226,7 +226,7 @@ try {
 
         <p style='margin-top: 30px;'>
             Regards,<br>
-            <strong>MediTrack Clinic</strong>
+            <strong>MediTrack</strong>
         </p>
     ";
 

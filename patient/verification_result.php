@@ -7,6 +7,11 @@ if ($status === "success") {
     $title = "Email Verified Successfully";
     $message = "Your email address has been verified. You can now log in to your MediTrack account.";
 
+} elseif ($status === "email_changed") {
+
+    $title = "Email Address Updated Successfully";
+    $message = "Your new email address has been verified and updated. You can now use it to log in to your MediTrack account.";
+
 } elseif ($status === "expired") {
 
     $title = "Verification Link Expired";
@@ -87,7 +92,7 @@ if ($status === "success") {
 
             <!-- STATUS ICON -->
 
-            <?php if ($status === "success"): ?>
+            <?php if ($status === "success" || $status === "email_changed"): ?>
 
                 <div class="verification-icon success">
 
@@ -150,7 +155,7 @@ if ($status === "success") {
 
             <div class="verification-footer">
 
-                © 2026 MediTrack Clinic
+                © 2026 MediTrack
 
             </div>
 

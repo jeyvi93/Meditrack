@@ -1,7 +1,7 @@
 
 {
     "id": "./",
-    "name": "MediTrack Clinic",
+    "name": "MediTrack",
     "short_name": "MediTrack",
     "description": "Mandaue City College Clinic Management System",
     "start_url": "./index.php",

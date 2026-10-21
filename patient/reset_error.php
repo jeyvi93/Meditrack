@@ -139,7 +139,7 @@ if ($error === "expired") {
 
             <div class="reset-footer">
 
-                © 2026 MediTrack Clinic
+                © 2026 MediTrack
 
             </div>
 

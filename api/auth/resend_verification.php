@@ -147,7 +147,7 @@ try {
 
     $mail->setFrom(
         $mailConfig["username"],
-        "MediTrack Clinic"
+        "MediTrack"
     );
 
     $mail->addAddress(
@@ -160,7 +160,7 @@ try {
     $mail->Subject = "New MediTrack Verification Link";
 
     $mail->Body = "
-        <h2>MediTrack Clinic</h2>
+        <h2>MediTrack</h2>
 
         <p>
             Hello <strong>" . htmlspecialchars($user["full_name"]) . "</strong>,
@@ -168,7 +168,7 @@ try {
 
         <p>
             A new email verification link has been requested for
-            your MediTrack Clinic account.
+            your MediTrack account.
         </p>
 
         <p>
@@ -201,7 +201,7 @@ try {
 
         <p style='margin-top: 30px;'>
             Regards,<br>
-            <strong>MediTrack Clinic</strong>
+            <strong>MediTrack</strong>
         </p>
     ";
 

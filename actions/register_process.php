@@ -345,7 +345,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $mail->setFrom(
                 $mailConfig['username'],
-                "MediTrack Clinic"
+                "MediTrack"
             );
 
             $mail->addAddress($email, $full_name);
@@ -354,12 +354,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->Subject = "Verify Your MediTrack Account";
 
             $mail->Body = "
-                <h2>MediTrack Clinic</h2>
+                <h2>MediTrack</h2>
 
                 <p>Hello <strong>" . htmlspecialchars($full_name) . "</strong>,</p>
 
                 <p>
-                    Your MediTrack Clinic account has been successfully registered.
+                    Your MediTrack account has been successfully registered.
                 </p>
 
                 <p>
@@ -386,13 +386,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </p>
 
                 <p>
-                    If you did not create a MediTrack Clinic account, please disregard
+                    If you did not create a MediTrack account, please disregard
                     this message.
                 </p>
 
                 <p style='margin-top: 30px;'>
                     Regards,<br>
-                    <strong>MediTrack Clinic</strong>
+                    <strong>MediTrack</strong>
                 </p>
             ";
 

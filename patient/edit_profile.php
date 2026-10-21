@@ -40,7 +40,7 @@ if ($userId) {
 }
 
 if (!$user) {
-    header("Location: ../auth/login.php");
+    header("Location: ../login.php");
     exit();
 }
 

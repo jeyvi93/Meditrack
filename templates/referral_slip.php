@@ -160,7 +160,9 @@ $collegeLogo = base64_encode(
                         <div class="vitals">
                             <p>WT: <span class="field-line" id="tWeight" style="width: 80px;">
                                     <span class="field-value">
-                                        <?= !empty($referral['weight']) ? rtrim(rtrim(number_format((float)$referral['weight'], 2, '.', ''), '0'), '.') . ' kg' : '' ?>
+                                        <?= ($referral['weight'] ?? '') !== '' && $referral['weight'] !== null && (float)$referral['weight'] != 0
+                                        ? rtrim(rtrim(number_format((float)$referral['weight'], 2, '.', ''), '0'), '.') . ' kg'
+                                        : '' ?>
                                     </span>
                                 </span>
                             </p>
@@ -173,7 +175,9 @@ $collegeLogo = base64_encode(
                             <p>TEMP: 
                                 <span class="field-line" id="tTemp" style="width: 80px;">
                                     <span class="field-value">
-                                        <?= !empty($referral['temperature']) ? htmlspecialchars($referral['temperature']) . ' °C' : '' ?>
+                                        <?= ($referral['temperature'] ?? '') !== '' && $referral['temperature'] !== null && (float)$referral['temperature'] != 0
+                                        ? htmlspecialchars($referral['temperature']) . ' °C'
+                                        : '' ?>
                                     </span>
                                 </span>
                             </p>

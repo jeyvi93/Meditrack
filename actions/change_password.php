@@ -7,7 +7,7 @@ require_once "../config/database.php";
 $userId = $_SESSION['user_id'] ?? 0;
 
 if (!$userId) {
-    header("Location: ../auth/login.php");
+    header("Location: ../login.php");
     exit();
 }
 

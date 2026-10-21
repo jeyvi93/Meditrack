@@ -145,7 +145,7 @@ $is_restock = ($mode === 'restock');
 
         <div class="success-message">
 
-            <h2>Medicine Added!</h2>
+            <h2>Medicine Saved Successfully!</h2>
 
             <p>
                 The medicine batch has been successfully added
