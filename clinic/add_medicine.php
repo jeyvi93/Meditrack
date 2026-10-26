@@ -73,11 +73,11 @@ $is_restock = ($mode === 'restock');
                         <div class="input-grid three-cols">
                             <div class="input-group">
                                 <label for="medName">Medicine Name</label>
-                                <input type="text" id="medName" placeholder="e.g. Paracetamol 500mg" value="<?= htmlspecialchars($medicine_name) ?>"<?= $is_restock ? 'readonly' : '' ?> required>
+                                <input type="text" id="medName" placeholder="e.g. Paracetamol" value="<?= htmlspecialchars($medicine_name) ?>"<?= $is_restock ? 'readonly' : '' ?> required>
                             </div>
                             <div class="input-group">
                                 <label for="batchNo">Batch Number</label>
-                                <input type="text" id="batchNo" placeholder="e.g. B-2024-001" required>
+                                <input type="text" id="batchNo" placeholder="e.g. PCM260401" required>
                             </div>
                             <div class="input-group">
                                 <label for="supplier">Supplier</label>

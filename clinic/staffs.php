@@ -396,6 +396,8 @@ function pageUrl($page, $queryParams) {
 
                 <tbody>
 
+                    <?php if (mysqli_num_rows($result) > 0): ?>
+
                     <?php while ($staff = mysqli_fetch_assoc($result)) : ?>
 
 <tr>
@@ -537,7 +539,22 @@ function pageUrl($page, $queryParams) {
 
 </tr>
 
+
+</tr>
+
 <?php endwhile; ?>
+
+<?php else: ?>
+
+<tr>
+    <td colspan="7" style="text-align: center; padding: 30px;">
+        <?= ($search !== '' || ($department !== '' && $department !== 'all') || ($position !== '' && $position !== 'all'))
+            ? 'No staff records found. Try adjusting your search or filters.'
+            : 'No staff records yet.' ?>
+    </td>
+</tr>
+
+<?php endif; ?>
 
                 </tbody>
             </table>

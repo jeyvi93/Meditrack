@@ -329,7 +329,7 @@ while ($row = mysqli_fetch_assoc($allActivityResult)) {
     </div>
 
 
-    <div class="activity-list">
+    <div class="activity-list" id="recentActivityList">
         <?php foreach ($recentActivities as $activity): ?>
 
             <?php
@@ -522,7 +522,7 @@ while ($row = mysqli_fetch_assoc($allActivityResult)) {
             </button>
         </div>
 
-        <div class="activity-modal-list">
+        <div class="activity-modal-list" id="allActivityList">
 
             <?php foreach ($allActivities as $activity): ?>
 
@@ -610,6 +610,39 @@ while ($row = mysqli_fetch_assoc($allActivityResult)) {
 
     const appointmentDeptLabels = <?= json_encode($appointmentDeptLabels) ?>;
     const appointmentDeptCounts = <?= json_encode($appointmentDeptCounts) ?>;
+function refreshActivityLogs() {
+    fetch('fetch_activities.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch activity logs');
+            }
+
+            return response.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                return;
+            }
+
+            const recentList = document.getElementById('recentActivityList');
+            const allList = document.getElementById('allActivityList');
+
+            if (recentList) {
+                recentList.innerHTML = data.recent_html;
+            }
+
+            if (allList) {
+                allList.innerHTML = data.all_html;
+            }
+        })
+        .catch(error => {
+            console.error('Activity log refresh failed:', error);
+        });
+}
+
+// Refresh every 5 seconds
+refreshActivityLogs();
+setInterval(refreshActivityLogs, 5000);
 </script>
 
 <script src="../includes/includes.js"></script>

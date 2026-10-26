@@ -30,23 +30,36 @@ function openTab(evt, tabName) {
 const statusFilter = document.getElementById("statusFilter");
 const medicineSearch = document.getElementById("medicineSearch");
 
-function filterMedicines() {
 
+function filterMedicines() {
     const searchText = medicineSearch.value.toLowerCase().trim();
     const selectedStatus = statusFilter.value.toLowerCase();
 
     // Find the currently active tab
     const activePane = document.querySelector(".tab-pane.active");
+    if (!activePane || activePane.id === "disposed") return;
 
-    if (!activePane) return;
+    const tbody = activePane.querySelector("tbody");
+    if (!tbody) return;
 
-    // Get rows from the active tab only
-    const rows = activePane.querySelectorAll("tbody tr");
+    const rows = Array.from(tbody.querySelectorAll("tr")).filter(row =>
+        !row.classList.contains("js-search-empty") &&
+        row.querySelector("td")
+    );
+
+    let visibleCount = 0;
 
     rows.forEach(row => {
+        // Keep the original PHP empty-state row separate from medicine rows
+        const isOriginalEmptyRow =
+            row.innerText.toLowerCase().includes("no medicines found") ||
+            row.innerText.toLowerCase().includes("no expired medicines found") ||
+            row.innerText.toLowerCase().includes("no quarantined medicines found");
 
-        // Ignore the "No medicines found" row
-        if (!row.querySelector("td")) return;
+        if (isOriginalEmptyRow) {
+            row.style.display = "none";
+            return;
+        }
 
         const rowText = row.innerText.toLowerCase();
 
@@ -56,17 +69,52 @@ function filterMedicines() {
             ""
         ).toLowerCase().trim();
 
-        const matchesSearch =
-            !searchText || rowText.includes(searchText);
-
+        const matchesSearch = !searchText || rowText.includes(searchText);
         const matchesStatus =
-            !selectedStatus || status === selectedStatus;
+            activePane.id !== "all" ||
+            !selectedStatus ||
+            status === selectedStatus;
 
-        row.style.display =
-            matchesSearch && matchesStatus
-                ? ""
-                : "none";
+        row.style.display = matchesSearch && matchesStatus ? "" : "none";
+
+        if (matchesSearch && matchesStatus) {
+            visibleCount++;
+        }
     });
+
+    // Remove a previous JavaScript-generated empty row
+    tbody.querySelector(".js-search-empty")?.remove();
+
+    // Show the original empty state if there are no medicine records
+    if (rows.length === 1 && (
+        rows[0].innerText.toLowerCase().includes("no medicines found") ||
+        rows[0].innerText.toLowerCase().includes("no expired medicines found") ||
+        rows[0].innerText.toLowerCase().includes("no quarantined medicines found")
+    )) {
+        rows[0].style.display = "";
+        return;
+    }
+
+    // Show a message when search/filter returns no matches
+    if (visibleCount === 0) {
+        const emptyRow = document.createElement("tr");
+        emptyRow.className = "js-search-empty";
+
+        const emptyCell = document.createElement("td");
+        emptyCell.colSpan = activePane.querySelectorAll("thead th").length || 1;
+        emptyCell.style.textAlign = "center";
+
+        if (activePane.id === "expired") {
+            emptyCell.textContent = "No matching expired medicines found.";
+        } else if (activePane.id === "quarantine") {
+            emptyCell.textContent = "No matching quarantined medicines found.";
+        } else {
+            emptyCell.textContent = "No matching medicines found.";
+        }
+
+        emptyRow.appendChild(emptyCell);
+        tbody.appendChild(emptyRow);
+    }
 }
 
 // ==========================

@@ -255,7 +255,51 @@ function confirmLogout() {
 
 }
 
+
 document.addEventListener("DOMContentLoaded", function () {
     lucide.createIcons();
+
+    // Automatically update notification badges
+    async function updateNotificationBadge() {
+        try {
+            const response = await fetch("../patient/check_notifications.php", {
+                cache: "no-store"
+            });
+
+            if (!response.ok) {
+                return;
+            }
+
+            const data = await response.json();
+
+            if (!data.success) {
+                return;
+            }
+
+            document.querySelectorAll(".nav-notification-icon").forEach(icon => {
+                let badge = icon.querySelector(".notification-badge");
+
+                if (data.badge_count > 0) {
+                    if (!badge) {
+                        badge = document.createElement("span");
+                        badge.className = "notification-badge";
+                        icon.appendChild(badge);
+                    }
+
+                    badge.textContent = data.badge_count > 99
+                        ? "99+"
+                        : data.badge_count;
+                } else if (badge) {
+                    badge.remove();
+                }
+            });
+        } catch (error) {
+            console.error("Notification badge update failed:", error);
+        }
+    }
+
+    updateNotificationBadge();
+    setInterval(updateNotificationBadge, 5000);
 });
+
 </script>

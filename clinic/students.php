@@ -280,6 +280,8 @@ function pageUrl($page, $queryParams) {
 
 <tbody>
 
+<?php if (mysqli_num_rows($result) > 0): ?>
+
 <?php while ($student = mysqli_fetch_assoc($result)) : ?>
 
 <tr>
@@ -421,9 +423,22 @@ onclick='openEditStudentModal({
 
     </td>
 
+
 </tr>
 
 <?php endwhile; ?>
+
+<?php else: ?>
+
+<tr>
+    <td colspan="7" style="text-align: center; padding: 30px;">
+        <?= ($search !== '' || $department !== '')
+            ? 'No student records found. Try adjusting your search or filter.'
+            : 'No student records yet.' ?>
+    </td>
+</tr>
+
+<?php endif; ?>
 
 </tbody>
 

@@ -62,7 +62,7 @@ if ($pendingStmt) {
 
                     <?php if ($pendingAppointmentCount > 0): ?>
                         <span class="appointment-badge">
-                            <?php echo $pendingAppointmentCount; ?>
+                            <?= $pendingAppointmentCount > 99 ? '99+' : $pendingAppointmentCount ?>
                         </span>
                     <?php endif; ?>
                 </a>
@@ -158,3 +158,45 @@ if ($pendingStmt) {
     </div>
 
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    async function updateAppointmentBadge() {
+        try {
+            const response = await fetch("check_appointments.php", {
+                cache: "no-store"
+            });
+
+            if (!response.ok) return;
+
+            const data = await response.json();
+
+            if (!data.success) return;
+
+            const appointmentLink = document.querySelector(".appointment-link");
+            if (!appointmentLink) return;
+
+            let badge = appointmentLink.querySelector(".appointment-badge");
+
+            if (data.pending_count > 0) {
+                if (!badge) {
+                    badge = document.createElement("span");
+                    badge.className = "appointment-badge";
+                    appointmentLink.appendChild(badge);
+                }
+
+                badge.textContent = data.pending_count > 99
+                    ? "99+"
+                    : data.pending_count;
+            } else if (badge) {
+                badge.remove();
+            }
+        } catch (error) {
+            console.error("Appointment badge update failed:", error);
+        }
+    }
+
+    updateAppointmentBadge();
+    setInterval(updateAppointmentBadge, 5000);
+});
+</script>

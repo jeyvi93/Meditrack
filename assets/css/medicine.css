@@ -186,13 +186,13 @@ body { background-color: var(--bg-light); color: var(--text-main); min-height: 1
 /* Medicine Name */
 #all .inventory-table th:nth-child(1),
 #all .inventory-table td:nth-child(1) {
-    width: 18%;
+    width: 14%;
 }
 
 /* Batch No. */
 #all .inventory-table th:nth-child(2),
 #all .inventory-table td:nth-child(2) {
-    width: 11%;
+    width: 15%;
 }
 
 /* Quantity */

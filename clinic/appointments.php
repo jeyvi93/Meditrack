@@ -396,7 +396,7 @@ $rejected = $rejectedStmt->get_result();
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="pendingAppointmentsBody">
 
                                 <?php if(mysqli_num_rows($pending) > 0): ?>
 
@@ -1247,7 +1247,49 @@ unset($_SESSION['success']);
 unset($_SESSION['error']);
 endif;
 ?>
-        <script src="../assets/js/appointments.js"></script>
-        <script src="../includes/includes.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const pendingBody = document.getElementById("pendingAppointmentsBody");
+    const pendingCount = document.querySelector(".count-pending");
+
+    if (!pendingBody) return;
+
+    let isFetching = false;
+
+    async function updatePendingAppointments() {
+        if (isFetching) return;
+
+        isFetching = true;
+
+        try {
+            const response = await fetch("fetch_pending_appointments.php", {
+                cache: "no-store"
+            });
+
+            if (!response.ok) return;
+
+            const data = await response.json();
+
+            if (!data.success) return;
+
+            pendingBody.innerHTML = data.html;
+
+            if (pendingCount) {
+                pendingCount.textContent = data.count;
+            }
+        } catch (error) {
+            console.error("Pending appointments update failed:", error);
+        } finally {
+            isFetching = false;
+        }
+    }
+
+    updatePendingAppointments();
+    setInterval(updatePendingAppointments, 5000);
+});
+</script>
+<script src="../assets/js/appointments.js"></script>
+<script src="../includes/includes.js"></script>
     </body>
     </html>

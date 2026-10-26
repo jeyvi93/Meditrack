@@ -169,8 +169,8 @@ $disposed_medicines = mysqli_query($conn, "
                             <input
                             type="text"
                             id="medicineSearch"
-                            value="<?= htmlspecialchars($disposedSearch); ?>"
                             placeholder="Search medicine, batch, or supplier..."
+
                         >
                     </div>
                 <div class="toolbar-right" id="toolbarRight">
