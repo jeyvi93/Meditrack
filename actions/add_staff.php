@@ -28,19 +28,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contact_number = $_POST['contact_number'];
     $address = $_POST['address'];
 
+    
     // Medical Information
-    $blood_type = $_POST['blood_type'];
-    $height = $_POST['height'];
-    $weight = $_POST['weight'];
-    $allergies = trim($_POST['allergies'] ?? '') ?: 'N/A';
-    $medical_history = trim($_POST['medical_history'] ?? '') ?: 'N/A';
-    $current_medications = trim($_POST['current_medications'] ?? '') ?: 'N/A';
-    $vaccines = trim($_POST['vaccines'] ?? '') ?: 'N/A';
+    $blood_type = trim($_POST['blood_type'] ?? '') ?: 'Unknown';
+
+    $height = trim($_POST['height'] ?? '') !== ''
+        ? trim($_POST['height'])
+        : null;
+
+    $weight = trim($_POST['weight'] ?? '') !== ''
+        ? trim($_POST['weight'])
+        : null;
+
+    $allergies = trim($_POST['allergies'] ?? '') !== ''
+        ? trim($_POST['allergies'])
+        : null;
+
+    $medical_history = trim($_POST['medical_history'] ?? '') !== ''
+        ? trim($_POST['medical_history'])
+        : null;
+
+    $current_medications = trim($_POST['current_medications'] ?? '') !== ''
+        ? trim($_POST['current_medications'])
+        : null;
+
+    $vaccines = trim($_POST['vaccines'] ?? '') !== ''
+        ? trim($_POST['vaccines'])
+        : null;
 
     // Insurance Information
-    $philhealth_number = trim($_POST['philhealth_number'] ?? '') ?: 'N/A';
-    $insurance_number = trim($_POST['insurance_number'] ?? '') ?: 'N/A';
-    $insurance_company = trim($_POST['insurance_company'] ?? '') ?: 'N/A';
+    $philhealth_number = trim($_POST['philhealth_number'] ?? '') !== ''
+        ? trim($_POST['philhealth_number'])
+        : null;
+
+    $insurance_number = trim($_POST['insurance_number'] ?? '') !== ''
+        ? trim($_POST['insurance_number'])
+        : null;
+
+    $insurance_company = trim($_POST['insurance_company'] ?? '') !== ''
+        ? trim($_POST['insurance_company'])
+        : null;
+
 
     // Emergency Contact
     $emergency_name = $_POST['emergency_name'];

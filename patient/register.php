@@ -4,12 +4,16 @@ session_start();
 $successMessage = $_SESSION['success'] ?? '';
 $errorMessage = $_SESSION['error'] ?? '';
 $errorField = $_SESSION['error_field'] ?? '';
-$oldFullName = $_SESSION['old_full_name'] ?? '';
+$oldLastName = $_SESSION['old_last_name'] ?? '';
+$oldFirstName = $_SESSION['old_first_name'] ?? '';
+$oldMiddleName = $_SESSION['old_middle_name'] ?? '';
 $oldEmail = $_SESSION['old_email'] ?? '';
 $oldRole = $_SESSION['old_role'] ?? '';
 $oldIdNumber = $_SESSION['old_id_number'] ?? '';
 
-unset($_SESSION['old_full_name']);
+unset($_SESSION['old_last_name']);
+unset($_SESSION['old_first_name']);
+unset($_SESSION['old_middle_name']);
 unset($_SESSION['old_email']);
 unset($_SESSION['old_role']);
 unset($_SESSION['old_id_number']);
@@ -74,17 +78,58 @@ unset($_SESSION['error_field']);
 
                     <form action="../actions/register_process.php" method="POST" class="registration-form">
                         <div class="form-grid">
-                            <div class="input-group full-width">
-                                <label>Full Name</label>
+                            <div class="input-group">
+                                <label for="last_name">Last Name</label>
                                 <div class="input-box">
                                     <i class="fas fa-user"></i>
-                                    <input type="text" name="full_name" placeholder="Enter full name"
-                                    value="<?php echo htmlspecialchars($oldFullName); ?>"
-                                    pattern="[A-Za-zÀ-ÿ .'-]+"
-                                    title="Name must contain letters only"
-                                    required>
+                                    <input
+                                        type="text"
+                                        id="last_name"
+                                        name="last_name"
+                                        placeholder="Enter last name"
+                                        value="<?php echo htmlspecialchars($oldLastName); ?>"
+                                        pattern="[A-Za-zÀ-ÿ .'-]+"
+                                        title="Name must contain letters only"
+                                        required>
                                 </div>
-                                <?php if ($errorField === 'full_name'): ?>
+                                <?php if ($errorField === 'last_name'): ?>
+                                    <span class="field-error"><?php echo htmlspecialchars($errorMessage); ?></span>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="first_name">First Name</label>
+                                <div class="input-box">
+                                    <i class="fas fa-user"></i>
+                                    <input
+                                        type="text"
+                                        id="first_name"
+                                        name="first_name"
+                                        placeholder="Enter first name"
+                                        value="<?php echo htmlspecialchars($oldFirstName); ?>"
+                                        pattern="[A-Za-zÀ-ÿ .'-]+"
+                                        title="Name must contain letters only"
+                                        required>
+                                </div>
+                                <?php if ($errorField === 'first_name'): ?>
+                                    <span class="field-error"><?php echo htmlspecialchars($errorMessage); ?></span>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="input-group full-width" >
+                                <label for="middle_name">Middle Name <span class="middle-name-note">(Leave blank if none)</span></label>
+                                <div class="input-box">
+                                    <i class="fas fa-user"></i>
+                                    <input
+                                        type="text"
+                                        id="middle_name"
+                                        name="middle_name"
+                                        placeholder="Enter middle name"
+                                        value="<?php echo htmlspecialchars($oldMiddleName); ?>"
+                                        pattern="[A-Za-zÀ-ÿ .'-]*"
+                                        title="Name must contain letters only">
+                                </div>
+                                <?php if ($errorField === 'middle_name'): ?>
                                     <span class="field-error"><?php echo htmlspecialchars($errorMessage); ?></span>
                                 <?php endif; ?>
                             </div>

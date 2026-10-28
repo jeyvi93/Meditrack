@@ -183,10 +183,12 @@ function openStudentModal(data) {
 
     document.getElementById("m_studentId").textContent = data.id;
         const fullName = [
-        data.first_name,
-        data.middle_name,
-        data.last_name
-    ].filter(name => name && name.trim() !== "").join(" ");
+            data.last_name,
+            [
+                data.first_name,
+                data.middle_name
+            ].filter(name => name && name.trim() !== "").join(" ")
+        ].filter(name => name && name.trim() !== "").join(", ");
 
     document.getElementById("m_fullName").textContent = fullName;
     document.getElementById("m_dob").textContent = data.dob;
@@ -198,17 +200,17 @@ function openStudentModal(data) {
     document.getElementById("m_contact").textContent = data.contact;
     document.getElementById("m_address").textContent = data.address;
 
-    document.getElementById("m_blood").textContent = data.blood;
-    document.getElementById("m_height").textContent = data.height;
-    document.getElementById("m_weight").textContent = data.weight;
-    document.getElementById("m_allergies").textContent = data.allergies;
-    document.getElementById("m_history").textContent = data.history;
-    document.getElementById("m_medications").textContent = data.medications;
-    document.getElementById("m_vaccines").textContent = data.vaccines;
+    document.getElementById("m_blood").textContent = data.blood || "Unknown";
+    document.getElementById("m_height").textContent = data.height ?? "N/A";
+    document.getElementById("m_weight").textContent = data.weight ?? "N/A";
+    document.getElementById("m_allergies").textContent = data.allergies || "N/A";
+    document.getElementById("m_history").textContent = data.history || "N/A";
+    document.getElementById("m_medications").textContent = data.medications || "N/A";
+    document.getElementById("m_vaccines").textContent = data.vaccines || "N/A";
 
-    document.getElementById("m_philhealth").textContent = data.philhealth;
-    document.getElementById("m_insuranceNumber").textContent = data.insuranceNumber;
-    document.getElementById("m_insuranceCompany").textContent = data.insuranceCompany;
+    document.getElementById("m_philhealth").textContent = data.philhealth || "N/A";
+    document.getElementById("m_insuranceNumber").textContent = data.insuranceNumber || "N/A";
+    document.getElementById("m_insuranceCompany").textContent = data.insuranceCompany || "N/A";
 
     document.getElementById("m_emergencyName").textContent = data.emergencyName;
     document.getElementById("m_relationship").textContent = data.relationship;
@@ -235,9 +237,9 @@ function openEditStudentModal(data) {
     document.getElementById("e_studentId").value = data.id;
     document.getElementById("e_studentIdDisplay").value = data.id;
 
-    document.getElementById("e_firstName").value = data.first_name;
-    document.getElementById("e_middleName").value = data.middle_name || "";
     document.getElementById("e_lastName").value = data.last_name;
+    document.getElementById("e_firstName").value = data.first_name;
+    document.getElementById("e_middleName").value = data.middle_name ?? "";
     document.getElementById("e_dob").value = data.dob;
     document.getElementById("e_age").value = data.age;
     document.getElementById("e_sex").value = data.sex;
@@ -250,16 +252,16 @@ function openEditStudentModal(data) {
     document.getElementById("e_address").value = data.address;
 
     document.getElementById("e_blood").value = data.blood;
-    document.getElementById("e_height").value = data.height;
-    document.getElementById("e_weight").value = data.weight;
-    document.getElementById("e_allergies").value = data.allergies;
-    document.getElementById("e_history").value = data.history;
-    document.getElementById("e_medications").value = data.medications;
-    document.getElementById("e_vaccines").value = data.vaccines;
+    document.getElementById("e_height").value = data.height ?? "";
+    document.getElementById("e_weight").value = data.weight ?? "";
+    document.getElementById("e_allergies").value = data.allergies ?? "";
+    document.getElementById("e_history").value = data.history ?? "";
+    document.getElementById("e_medications").value = data.medications ?? "";
+    document.getElementById("e_vaccines").value = data.vaccines ?? "";
 
-    document.getElementById("e_philhealth").value = data.philhealth;
-    document.getElementById("e_insuranceNumber").value = data.insuranceNumber;
-    document.getElementById("e_insuranceCompany").value = data.insuranceCompany;
+    document.getElementById("e_philhealth").value = data.philhealth ?? "";
+    document.getElementById("e_insuranceNumber").value = data.insuranceNumber ?? "";
+    document.getElementById("e_insuranceCompany").value = data.insuranceCompany ?? "";
 
     document.getElementById("e_emergencyName").value = data.emergencyName;
     document.getElementById("e_relationship").value = data.relationship;
@@ -286,10 +288,12 @@ function openDeleteStudentModal(student) {
         : "";
 
     const fullName = [
-        student.first_name,
-        middleName,
-        student.last_name
-    ].filter(Boolean).join(" ");
+        student.last_name,
+        [
+            student.first_name,
+            student.middle_name
+        ].filter(name => name && name.trim() !== "").join(" ")
+    ].filter(name => name && name.trim() !== "").join(", ");
 
     document.getElementById("d_studentId").value = student.id;
     document.getElementById("d_studentName").textContent = fullName;

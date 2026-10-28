@@ -147,16 +147,34 @@
 
                         <!-- FULL NAME -->
                         <div class="input-group">
-
-                            <label for="fullName">
-                                Full Name
-                            </label>
+                            <label for="lastName">Last Name</label>
                             <input
                                 type="text"
-                                id="fullName"
-                                name="full_name"
-                                placeholder="Enter Full Name"
+                                id="lastName"
+                                name="last_name"
+                                placeholder="Enter Last Name"
                                 required
+                            >
+                        </div>
+
+                        <div class="input-group">
+                            <label for="firstName">First Name</label>
+                            <input
+                                type="text"
+                                id="firstName"
+                                name="first_name"
+                                placeholder="Enter First Name"
+                                required
+                            >
+                        </div>
+
+                        <div class="input-group">
+                            <label for="middle_name">Middle Name <span class="middle-name-note">(Leave blank if none)</span></label>
+                            <input
+                                type="text"
+                                id="middleName"
+                                name="middle_name"
+                                placeholder="Enter Middle Name"
                             >
                         </div>
                     </div>

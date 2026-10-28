@@ -19,9 +19,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $student_id = $_POST['student_id_number'];
 
     // Name Information
+
+    $last_name = trim($_POST['last_name'] ?? '');
     $first_name = trim($_POST['first_name'] ?? '');
     $middle_name = trim($_POST['middle_name'] ?? '');
-    $last_name = trim($_POST['last_name'] ?? '');
 
     // Personal Information
     $date_of_birth = $_POST['date_of_birth'];
@@ -33,18 +34,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = $_POST['address'];
 
     // Health Information
-    $blood_type = $_POST['blood_type'];
-    $height = $_POST['height'];
-    $weight = $_POST['weight'];
-    $allergies = $_POST['allergies'];
-    $medical_history = $_POST['medical_history'];
-    $current_medications = $_POST['current_medications'];
-    $vaccines = $_POST['vaccines'];
+    $blood_type = trim($_POST['blood_type'] ?? '') ?: 'Unknown';
+
+    $height = trim($_POST['height'] ?? '') !== ''
+        ? trim($_POST['height'])
+        : null;
+
+    $weight = trim($_POST['weight'] ?? '') !== ''
+        ? trim($_POST['weight'])
+        : null;
+
+    $allergies = trim($_POST['allergies'] ?? '') !== ''
+        ? trim($_POST['allergies'])
+        : null;
+
+    $medical_history = trim($_POST['medical_history'] ?? '') !== ''
+        ? trim($_POST['medical_history'])
+        : null;
+
+    $current_medications = trim($_POST['current_medications'] ?? '') !== ''
+        ? trim($_POST['current_medications'])
+        : null;
+
+    $vaccines = trim($_POST['vaccines'] ?? '') !== ''
+        ? trim($_POST['vaccines'])
+        : null;
 
     // Insurance Information
-    $philhealth_number = $_POST['philhealth_number'];
-    $insurance_number = $_POST['insurance_number'];
-    $insurance_company = $_POST['insurance_company'];
+    $philhealth_number = trim($_POST['philhealth_number'] ?? '') !== ''
+        ? trim($_POST['philhealth_number'])
+        : null;
+
+    $insurance_number = trim($_POST['insurance_number'] ?? '') !== ''
+        ? trim($_POST['insurance_number'])
+        : null;
+
+    $insurance_company = trim($_POST['insurance_company'] ?? '') !== ''
+        ? trim($_POST['insurance_company'])
+        : null;
 
     // Emergency Contact
     $emergency_name = $_POST['emergency_name'];
@@ -53,9 +80,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     $sql = "UPDATE students SET
+
+        last_name = ?,
         first_name = ?,
         middle_name = ?,
-        last_name = ?,
         date_of_birth = ?,
         sex = ?,
         course = ?,
@@ -89,9 +117,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_bind_param(
         $stmt,
         "ssssssissssddsssssssssss",
+        $last_name,
         $first_name,
         $middle_name,
-        $last_name,
         $date_of_birth,
         $sex,
         $course,

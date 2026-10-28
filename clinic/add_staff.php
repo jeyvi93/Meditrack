@@ -215,20 +215,24 @@ unset($_SESSION['error']);
                                 <div class="input-group">
                                     <label>Blood Type</label>
                                     <select name="blood_type">
-                                        <option>A+</option><option>A-</option>
-                                        <option>B+</option><option>B-</option>
-                                        <option>O+</option><option>O-</option>
-                                        <option>AB+</option><option>AB-</option>
-                                        <option>Unknown</option>
+                                        <option value="Unknown">Unknown</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
                                     </select>
                                 </div>
                                 <div class="input-group">
                                     <label>Height (cm)</label>
-                                    <input type="number" name="height" placeholder="170" min="1" step="1">
+                                    <input type="number" name="height" placeholder="170" min="1" step="0.01">
                                 </div>
                                 <div class="input-group">
                                     <label>Weight (kg)</label>
-                                    <input type="number" name="weight" placeholder="60" min="1" step="1">
+                                    <input type="number" name="weight" placeholder="60" min="1" step="0.01">
                                 </div>
                             </div>
                             <div class="input-group">

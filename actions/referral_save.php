@@ -24,7 +24,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $doctor_name = $_POST['doctor_name'];
     $reason_for_referral = $_POST['reason_for_referral'];
 
-    $full_name = $_POST['full_name'];
+    $last_name = trim($_POST['last_name'] ?? '');
+    $first_name = trim($_POST['first_name'] ?? '');
+    $middle_name = trim($_POST['middle_name'] ?? '');
+
+    $full_name = $last_name . ', ' . $first_name;
+
+    if ($middle_name !== '') {
+        $full_name .= ' ' . $middle_name;
+    }
+
     $date_of_birth = $_POST['date_of_birth'];
     $sex = $_POST['sex'];
     $contact_number = $_POST['contact_number'];

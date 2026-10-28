@@ -128,12 +128,12 @@ unset($_SESSION['error']);
                 <div class="info-grid">
                     <div class="info-group">
                         <label>Full Name</label>
-                        <div class="input-box">
+                        <div class="input-box disabled">
                             <i class='bx bx-user'></i>
                             <input type="text"
                                 name="full_name"
                                 value="<?= htmlspecialchars($fullName) ?>"
-                                required>
+                                disabled>
                         </div>
                     </div>
 

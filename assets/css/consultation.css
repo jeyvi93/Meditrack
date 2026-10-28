@@ -233,3 +233,10 @@ body { background-color: var(--bg-light); color: var(--text-main); }
     }
 
 }
+
+.middle-name-note {
+    font-size: 13px;
+    font-weight: 400;
+    color: #6c757d;
+    margin-left: 4px;
+}

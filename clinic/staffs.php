@@ -60,9 +60,9 @@ if ($search !== '') {
 
     $where[] = "(
         staff_id_number LIKE ?
+        OR last_name LIKE ?
         OR first_name LIKE ?
         OR middle_name LIKE ?
-        OR last_name LIKE ?
         OR sex LIKE ?
         OR position LIKE ?
         OR designation LIKE ?
@@ -445,9 +445,9 @@ function pageUrl($page, $queryParams) {
                 onclick='openStaffModal({
 
                     id: <?= json_encode($staff["staff_id_number"]) ?>,
+                    last_name: <?= json_encode($staff["last_name"]) ?>,
                     first_name: <?= json_encode($staff["first_name"]) ?>,
                     middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
-                    last_name: <?= json_encode($staff["last_name"]) ?>,
                     dob: <?= json_encode($staff["date_of_birth"]) ?>,
                     age: <?= json_encode(date_diff(date_create($staff["date_of_birth"]), date_create("today"))->y) ?>,
 
@@ -836,6 +836,18 @@ function pageUrl($page, $queryParams) {
             <div class="summary-info">
 
                 <div class="name-fields">
+
+                    <input
+                        type="text"
+                        id="e_lastName"
+                        name="last_name"
+                        placeholder="Last Name"
+                        pattern="[A-Za-zÀ-ÿ\s.,'-]+"
+                        title="Last name should contain letters, spaces, and common name punctuation only."
+                        oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                        required
+                    >
+
                     <input
                         type="text"
                         id="e_firstName"
@@ -856,19 +868,9 @@ function pageUrl($page, $queryParams) {
                         title="Middle name should contain letters, spaces, and common name punctuation only."
                         oninput="this.value = this.value.replace(/[0-9]/g, '')"
                     >
-
-                    <input
-                        type="text"
-                        id="e_lastName"
-                        name="last_name"
-                        placeholder="Last Name"
-                        pattern="[A-Za-zÀ-ÿ\s.,'-]+"
-                        title="Last name should contain letters, spaces, and common name punctuation only."
-                        oninput="this.value = this.value.replace(/[0-9]/g, '')"
-                        required
-                    >
-
                 </div>
+
+                    <!-- Staff ID display -->
                     <input type="hidden" id="e_staffId" name="staff_id_number">
                     <input type="text" id="e_staffIdDisplay" readonly>
                 
@@ -977,6 +979,7 @@ function pageUrl($page, $queryParams) {
                 <div class="data-group">
                     <label>Blood Type</label>
                     <select id="e_blood" name="blood_type">
+                        <option value="Unknown">Unknown</option>
                         <option value="A+">A+</option>
                         <option value="A-">A-</option>
                         <option value="B+">B+</option>
@@ -985,7 +988,6 @@ function pageUrl($page, $queryParams) {
                         <option value="O-">O-</option>
                         <option value="AB+">AB+</option>
                         <option value="AB-">AB-</option>
-                        <option value="Unknown">Unknown</option>
                     </select>
                 </div>
 
@@ -995,9 +997,8 @@ function pageUrl($page, $queryParams) {
                         type="number"
                         id="e_height"
                         name="height"
-                        placeholder="170"
                         min="1"
-                        step="1"
+                        step="0.01"
                     >
                 </div>
 
@@ -1007,9 +1008,8 @@ function pageUrl($page, $queryParams) {
                         type="number"
                         id="e_weight"
                         name="weight"
-                        placeholder="60"
                         min="1"
-                        step="1"
+                        step="0.01"
                     >
                 </div>
 
@@ -1020,7 +1020,7 @@ function pageUrl($page, $queryParams) {
 
                 <div class="data-group">
                     <label>Medical History</label>
-                    <input type="text" id="e_history" name="medical_history" readonly>
+                    <input type="text" id="e_history" name="medical_history">
                 </div>
 
                 <div class="data-group">

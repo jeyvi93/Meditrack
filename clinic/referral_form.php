@@ -85,17 +85,42 @@ if ($_SESSION['role'] === 'Clinic Staff') {
                         <i class="fas fa-user-injured"></i>
                         <h2>Patient Information</h2>
                     </div>
-                    <div class="input-grid three-cols">
+                    <div class="input-grid three-cols">       
                         <div class="input-group">
-                            <label>Full Name</label>
+                            <label for="lastName">Last Name</label>
                             <input
                                 type="text"
-                                id="fullName"
-                                name="full_name"
-                                placeholder="Last Name, First Name, Middle Name"
+                                id="lastName"
+                                name="last_name"
+                                placeholder="Enter Last Name"
                                 pattern="[A-Za-zÀ-ÿ .'-]+"
                                 title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
                                 required
+                            >
+                        </div>
+
+                        <div class="input-group">
+                            <label for="firstName">First Name</label>
+                            <input
+                                type="text"
+                                id="firstName"
+                                name="first_name"
+                                placeholder="Enter First Name"
+                                pattern="[A-Za-zÀ-ÿ .'-]+"
+                                title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
+                                required
+                            >
+                        </div>
+
+                        <div class="input-group">
+                            <label for="middle_name">Middle Name <span class="middle-name-note">(Leave blank if none)</span></label>
+                            <input
+                                type="text"
+                                id="middleName"
+                                name="middle_name"
+                                placeholder="Enter Middle Name"
+                                pattern="[A-Za-zÀ-ÿ .'-]+"
+                                title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
                             >
                         </div>
                         <div class="input-group">

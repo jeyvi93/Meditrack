@@ -27,9 +27,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // PERSONAL INFORMATION
     // ==========================
 
+    $last_name = trim($_POST['last_name'] ?? '');
     $first_name = trim($_POST['first_name'] ?? '');
     $middle_name = trim($_POST['middle_name'] ?? '');
-    $last_name = trim($_POST['last_name'] ?? '');
     $date_of_birth = $_POST['date_of_birth'] ?? '';
     $sex = $_POST['sex'] ?? '';
     $position = $_POST['position'] ?? '';
@@ -130,30 +130,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // HEALTH INFORMATION
     // ==========================
 
-    $blood_type = $_POST['blood_type'] ?? '';
-    $height = $_POST['height'] ?? '';
-    $weight = $_POST['weight'] ?? '';
-    $allergies = trim($_POST['allergies'] ?? '');
-    $medical_history = trim($_POST['medical_history'] ?? '');
-    $current_medications = trim($_POST['current_medications'] ?? '');
-    $vaccines = trim($_POST['vaccines'] ?? '');
+    $blood_type = trim($_POST['blood_type'] ?? '') ?: 'Unknown';
 
+    $height = trim($_POST['height'] ?? '') !== ''
+        ? trim($_POST['height'])
+        : null;
 
-    // Validate height if provided
-    if ($height !== '' && (!is_numeric($height) || $height < 1)) {
-        $_SESSION['error'] = "Height must be a valid number greater than 0.";
-        header("Location: ../clinic/staffs.php");
-        exit();
-    }
+    $weight = trim($_POST['weight'] ?? '') !== ''
+        ? trim($_POST['weight'])
+        : null;
 
-
-    // Validate weight if provided
-    if ($weight !== '' && (!is_numeric($weight) || $weight < 1)) {
-        $_SESSION['error'] = "Weight must be a valid number greater than 0.";
-        header("Location: ../clinic/staffs.php");
-        exit();
-    }
-
+    $allergies = trim($_POST['allergies'] ?? '') ?: null;
+    $medical_history = trim($_POST['medical_history'] ?? '') ?: null;
+    $current_medications = trim($_POST['current_medications'] ?? '') ?: null;
+    $vaccines = trim($_POST['vaccines'] ?? '') ?: null;
 
     // ==========================
     // INSURANCE INFORMATION
@@ -211,9 +201,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ==========================
 
     $sql = "UPDATE staffs SET
+
+        last_name = ?,
         first_name = ?,
         middle_name = ?,
-        last_name = ?,
         date_of_birth = ?,
         sex = ?,
         position = ?,
@@ -254,9 +245,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_bind_param(
         $stmt,
         "sssssssssssddsssssssssss",
+        $last_name,
         $first_name,
         $middle_name,
-        $last_name,
         $date_of_birth,
         $sex,
         $position,

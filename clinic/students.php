@@ -362,20 +362,20 @@ onclick='openStudentModal({
     address: <?= json_encode($student["address"]) ?>,
 
     blood: <?= json_encode($student["blood_type"]) ?>,
-    height: <?= json_encode($student["height"]) ?>,
-    weight: <?= json_encode($student["weight"]) ?>,
-    allergies: <?= json_encode($student["allergies"]) ?>,
-    history: <?= json_encode($student["medical_history"]) ?>,
-    medications: <?= json_encode($student["current_medications"]) ?>,
-    vaccines: <?= json_encode($student["vaccines"]) ?>,
+    height: <?= json_encode($student["height"] ?? null) ?>,
+    weight: <?= json_encode($student["weight"] ?? null) ?>,
+    allergies: <?= json_encode($student["allergies"] ?? null) ?>,
+    history: <?= json_encode($student["medical_history"] ?? null) ?>,
+    medications: <?= json_encode($student["current_medications"] ?? null) ?>,
+    vaccines: <?= json_encode($student["vaccines"] ?? null) ?>,
 
     emergencyName: <?= json_encode($student["emergency_name"]) ?>,
     relationship: <?= json_encode($student["emergency_relationship"]) ?>,
     emergencyNumber: <?= json_encode($student["emergency_contact"]) ?>,
 
-    philhealth: <?= json_encode($student["philhealth_number"]) ?>,
-    insuranceNumber: <?= json_encode($student["insurance_number"]) ?>,
-    insuranceCompany: <?= json_encode($student["insurance_company"]) ?>,
+    philhealth: <?= json_encode($student["philhealth_number"] ?? null) ?>,
+    insuranceNumber: <?= json_encode($student["insurance_number"] ?? null) ?>,
+    insuranceCompany: <?= json_encode($student["insurance_company"] ?? null) ?>,
 
 })'>
     <i class="bx bx-show"></i>
@@ -742,6 +742,16 @@ onclick='openEditStudentModal({
 
                 <input
                     type="text"
+                    id="e_lastName"
+                    name="last_name"
+                    placeholder="Last Name"
+                    pattern="[A-Za-zÀ-ÿ\s.'-]+"
+                    title="Last name should contain letters, spaces, and common name punctuation only."
+                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                    required>
+
+                <input
+                    type="text"
                     id="e_firstName"
                     name="first_name"
                     placeholder="First Name"
@@ -758,16 +768,6 @@ onclick='openEditStudentModal({
                     pattern="[A-Za-zÀ-ÿ\s.'-]*"
                     title="Middle name should contain letters, spaces, and common name punctuation only."
                     oninput="this.value = this.value.replace(/[0-9]/g, '')">
-
-                <input
-                    type="text"
-                    id="e_lastName"
-                    name="last_name"
-                    placeholder="Last Name"
-                    pattern="[A-Za-zÀ-ÿ\s.'-]+"
-                    title="Last name should contain letters, spaces, and common name punctuation only."
-                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
-                    required>
 
             </div>
 
@@ -865,6 +865,7 @@ onclick='openEditStudentModal({
             <div class="data-group">
                 <label>Blood Type</label>
                 <select id="e_blood" name="blood_type">
+                    <option value="Unknown">Unknown</option>
                     <option value="A+">A+</option>
                     <option value="A-">A-</option>
                     <option value="B+">B+</option>
@@ -873,18 +874,17 @@ onclick='openEditStudentModal({
                     <option value="O-">O-</option>
                     <option value="AB+">AB+</option>
                     <option value="AB-">AB-</option>
-                    <option value="Unknown">Unknown</option>
                 </select>
             </div>
 
             <div class="data-group">
                 <label>Height (cm)</label>
-                <input type="number" step="0.01" id="e_height" name="height" required>
+                <input type="number" step="0.01" id="e_height" name="height">
             </div>
 
             <div class="data-group">
                 <label>Weight (kg)</label>
-                <input type="number" step="0.01" id="e_weight" name="weight" required>
+                <input type="number" step="0.01" id="e_weight" name="weight">
             </div>
 
             <div class="data-group">

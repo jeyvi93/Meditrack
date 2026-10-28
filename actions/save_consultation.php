@@ -43,7 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $date = $_POST['consultation_date'] ?? null;
 $time = $_POST['consultation_time'] ?? null;
 $patient_type = $_POST['patient_type'] ?? null;
-$full_name = $_POST['full_name'] ?? null;
+$last_name = trim($_POST['last_name'] ?? '');
+$first_name = trim($_POST['first_name'] ?? '');
+$middle_name = trim($_POST['middle_name'] ?? '');
+
+$full_name = $last_name . ', ' . $first_name;
+
+if ($middle_name !== '') {
+    $full_name .= ' ' . $middle_name;
+}
 $age = $_POST['age'] ?? null;
 $sex = $_POST['sex'] ?? null;
 $contact_number = $_POST['contact_number'] ?? null;
@@ -72,7 +80,8 @@ if (
     empty($date) ||
     empty($time) ||
     empty($patient_type) ||
-    empty($full_name)
+    $last_name === '' ||
+    $first_name === ''
 ) {
 
     echo json_encode([
@@ -82,7 +91,6 @@ if (
 
     exit();
 }
-
 
 // ==========================
 // START TRANSACTION

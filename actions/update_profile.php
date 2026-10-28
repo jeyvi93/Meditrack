@@ -20,7 +20,6 @@ if (!$userId) {
 // GET FORM DATA
 // ==========================
 
-$fullName = trim($_POST['full_name'] ?? '');
 $email = trim($_POST['email'] ?? '');
 
 
@@ -28,8 +27,8 @@ $email = trim($_POST['email'] ?? '');
 // VALIDATE INPUT
 // ==========================
 
-if ($fullName === '' || $email === '') {
-    $_SESSION['error'] = "Full name and email address are required.";
+if ($email === '') {
+    $_SESSION['error'] = "Email address is required.";
     header("Location: ../patient/edit_profile.php");
     exit();
 }
@@ -74,6 +73,7 @@ if (!$currentUser) {
 }
 
 $currentEmail = $currentUser['email'];
+$currentName = $currentUser['full_name'];
 
 
 // ==========================
@@ -153,7 +153,7 @@ if ($email !== $currentEmail) {
 
 
 // ==========================
-// UPDATE NAME ONLY IF EMAIL IS CHANGING
+// REQUEST EMAIL CHANGE AND SEND VERIFICATION
 // ==========================
 
 if ($email !== $currentEmail) {
@@ -161,12 +161,10 @@ if ($email !== $currentEmail) {
     $token = bin2hex(random_bytes(32));
     $expires = date("Y-m-d H:i:s", time() + 900);
 
-    // Save the name and pending email.
     // The active email remains unchanged until verification.
-    $updateSql = "
+        $updateSql = "
         UPDATE users
-        SET full_name = ?,
-            pending_email = ?,
+        SET pending_email = ?,
             email_change_token = ?,
             email_change_expires = ?
         WHERE id = ?
@@ -174,16 +172,9 @@ if ($email !== $currentEmail) {
 
     $updateStmt = mysqli_prepare($conn, $updateSql);
 
-    if (!$updateStmt) {
-        $_SESSION['error'] = "Unable to update your profile. Please try again.";
-        header("Location: ../patient/edit_profile.php");
-        exit();
-    }
-
     mysqli_stmt_bind_param(
         $updateStmt,
-        "ssssi",
-        $fullName,
+        "sssi",
         $email,
         $token,
         $expires,
@@ -247,13 +238,13 @@ if ($email !== $currentEmail) {
 
         $mail->setFrom($mailConfig['username'], "MediTrack");
 
-        $mail->addAddress($email, $fullName);
+        $mail->addAddress($email, $currentName);
 
         $mail->isHTML(true);
         $mail->Subject = "Verify Your New MediTrack Email";
 
         $safeName = htmlspecialchars(
-            $fullName,
+            $currentName,
             ENT_QUOTES | ENT_SUBSTITUTE,
             'UTF-8'
         );
@@ -326,19 +317,15 @@ if ($email !== $currentEmail) {
             mysqli_stmt_close($clearStmt);
         }
 
-        $_SESSION['full_name'] = $fullName;
-
         $_SESSION['error'] =
-            "Your name was updated, but we couldn't send the verification email. Please try changing your email again.";
+        "We couldn't send the verification email. Please try changing your email again.";
 
         header("Location: ../patient/edit_profile.php");
         exit();
     }
 
 
-    // Update only the name in the current session.
     // Keep the old email in the session until verified.
-    $_SESSION['full_name'] = $fullName;
 
     $_SESSION['success'] =
         "A verification link has been sent to your new email address. Your email will change after verification.";
@@ -349,41 +336,11 @@ if ($email !== $currentEmail) {
 
 
 // ==========================
-// EMAIL UNCHANGED: UPDATE NAME
+// EMAIL UNCHANGED: NO UPDATE NEEDED
 // ==========================
 
-$updateSql = "
-    UPDATE users
-    SET full_name = ?
-    WHERE id = ?
-";
+$_SESSION['success'] = "Your profile information is already up to date.";
 
-$updateStmt = mysqli_prepare($conn, $updateSql);
-
-if (!$updateStmt) {
-    $_SESSION['error'] = "Unable to update your profile. Please try again.";
-    header("Location: ../patient/edit_profile.php");
-    exit();
-}
-
-mysqli_stmt_bind_param($updateStmt, "si", $fullName, $userId);
-
-if (mysqli_stmt_execute($updateStmt)) {
-
-    $_SESSION['full_name'] = $fullName;
-
-    mysqli_stmt_close($updateStmt);
-
-    $_SESSION['success'] =
-        "Your profile information has been successfully updated.";
-
-    header("Location: ../patient/edit_profile.php");
-    exit();
-}
-
-mysqli_stmt_close($updateStmt);
-
-$_SESSION['error'] = "Unable to update your profile. Please try again.";
 header("Location: ../patient/edit_profile.php");
 exit();
 

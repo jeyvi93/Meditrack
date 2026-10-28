@@ -47,37 +47,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = trim($_POST['address']);
 
     // Medical Information
-    $blood_type = trim($_POST['blood_type']);
-    $height = $_POST['height'];
-    $weight = $_POST['weight'];
-    $allergies = trim($_POST['allergies']) !== '' 
-        ? trim($_POST['allergies']) 
-        : 'N/A';
+    $blood_type = trim($_POST['blood_type'] ?? 'Unknown');
+    if ($blood_type === '') {
+        $blood_type = 'Unknown';
+    }
 
-    $medical_history = trim($_POST['medical_history']) !== '' 
-        ? trim($_POST['medical_history']) 
-        : 'N/A';
+    $height = trim($_POST['height'] ?? '') !== ''
+        ? trim($_POST['height'])
+        : null;
 
-    $current_medications = trim($_POST['current_medications']) !== '' 
-        ? trim($_POST['current_medications']) 
-        : 'N/A';
+    $weight = trim($_POST['weight'] ?? '') !== ''
+        ? trim($_POST['weight'])
+        : null;
 
-    $vaccines = trim($_POST['vaccines']) !== '' 
-        ? trim($_POST['vaccines']) 
-        : 'N/A';
+    $allergies = trim($_POST['allergies'] ?? '') !== ''
+        ? trim($_POST['allergies'])
+        : null;
+
+    $medical_history = trim($_POST['medical_history'] ?? '') !== ''
+        ? trim($_POST['medical_history'])
+        : null;
+
+    $current_medications = trim($_POST['current_medications'] ?? '') !== ''
+        ? trim($_POST['current_medications'])
+        : null;
+
+    $vaccines = trim($_POST['vaccines'] ?? '') !== ''
+        ? trim($_POST['vaccines'])
+        : null;
 
     // Insurance Information
-    $philhealth_number = trim($_POST['philhealth_number']) !== '' 
-        ? trim($_POST['philhealth_number']) 
-        : 'N/A';
+    $philhealth_number = trim($_POST['philhealth_number'] ?? '') !== ''
+        ? trim($_POST['philhealth_number'])
+        : null;
 
-    $insurance_number = trim($_POST['insurance_number']) !== '' 
-        ? trim($_POST['insurance_number']) 
-        : 'N/A';
+    $insurance_number = trim($_POST['insurance_number'] ?? '') !== ''
+        ? trim($_POST['insurance_number'])
+        : null;
 
-    $insurance_company = trim($_POST['insurance_company']) !== '' 
-        ? trim($_POST['insurance_company']) 
-        : 'N/A';
+    $insurance_company = trim($_POST['insurance_company'] ?? '') !== ''
+        ? trim($_POST['insurance_company'])
+        : null;
 
     // Emergency Contact
     $emergency_name = trim($_POST['emergency_name']);

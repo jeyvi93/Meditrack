@@ -564,3 +564,10 @@
         font-size: 0.72rem;
     }
 }
+
+.middle-name-note {
+    font-size: 13px;
+    font-weight: 400;
+    color: #6c757d;
+    margin-left: 4px;
+}

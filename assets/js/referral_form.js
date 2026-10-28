@@ -45,9 +45,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // ======================
     // NAME INPUT VALIDATION
     // ======================
+    
     const nameFields = [
         document.getElementById("DoctorName"),
-        document.getElementById("fullName"),
+        document.getElementById("lastName"),
+        document.getElementById("firstName"),
+        document.getElementById("middleName"),
         document.getElementById("parent_name"),
         document.getElementById("spouse_name")
     ];
