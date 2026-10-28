@@ -182,7 +182,13 @@ function openStudentModal(data) {
     document.getElementById("studentModal").style.display = "flex";
 
     document.getElementById("m_studentId").textContent = data.id;
-    document.getElementById("m_fullName").textContent = data.name;
+        const fullName = [
+        data.first_name,
+        data.middle_name,
+        data.last_name
+    ].filter(name => name && name.trim() !== "").join(" ");
+
+    document.getElementById("m_fullName").textContent = fullName;
     document.getElementById("m_dob").textContent = data.dob;
     document.getElementById("m_age").textContent = data.age;
     document.getElementById("m_sex").textContent = data.sex;
@@ -229,7 +235,9 @@ function openEditStudentModal(data) {
     document.getElementById("e_studentId").value = data.id;
     document.getElementById("e_studentIdDisplay").value = data.id;
 
-    document.getElementById("e_fullName").value = data.name;
+    document.getElementById("e_firstName").value = data.first_name;
+    document.getElementById("e_middleName").value = data.middle_name || "";
+    document.getElementById("e_lastName").value = data.last_name;
     document.getElementById("e_dob").value = data.dob;
     document.getElementById("e_age").value = data.age;
     document.getElementById("e_sex").value = data.sex;
@@ -273,8 +281,18 @@ function closeEditStudentModal() {
 
 function openDeleteStudentModal(student) {
 
+    const middleName = student.middle_name
+        ? student.middle_name.trim()
+        : "";
+
+    const fullName = [
+        student.first_name,
+        middleName,
+        student.last_name
+    ].filter(Boolean).join(" ");
+
     document.getElementById("d_studentId").value = student.id;
-    document.getElementById("d_studentName").textContent = student.name;
+    document.getElementById("d_studentName").textContent = fullName;
 
     document.getElementById("deleteStudentModal").classList.add("active");
 

@@ -22,7 +22,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $year_level = $_POST['year_level'];
 
     // Personal Information
-    $full_name = trim($_POST['full_name']);
+    $first_name = trim($_POST['first_name'] ?? '');
+    $middle_name = trim($_POST['middle_name'] ?? '');
+    $last_name = trim($_POST['last_name'] ?? '');
+
+    $name_pattern = "/^[\p{L}\s.'-]+$/u";
+
+    if (
+        $first_name === '' ||
+        $last_name === '' ||
+        !preg_match($name_pattern, $first_name) ||
+        !preg_match($name_pattern, $last_name) ||
+        ($middle_name !== '' && !preg_match($name_pattern, $middle_name))
+    ) {
+        $_SESSION['error'] = "Please enter valid first, middle, and last names.";
+
+        header("Location: ../clinic/add_student.php");
+        exit();
+    }
+
     $date_of_birth = $_POST['date_of_birth'];
     $sex = $_POST['sex'];
     $contact_number = trim($_POST['contact_number']);
@@ -94,7 +112,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Insert Student
     $sql = "INSERT INTO students (
         student_id_number,
-        full_name,
+        first_name,
+        middle_name,
+        last_name,
         date_of_birth,
         sex,
         course,
@@ -116,7 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         emergency_relationship,
         emergency_contact
     ) VALUES (
-        ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+        ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
     )";
 
 
@@ -130,9 +150,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     mysqli_stmt_bind_param(
         $stmt,
-        "sssssissssssssssssssss",
+        "sssssssissssssssssssssss",
         $student_id,
-        $full_name,
+        $first_name,
+        $middle_name,
+        $last_name,
         $date_of_birth,
         $sex,
         $course,

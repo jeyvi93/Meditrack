@@ -240,3 +240,10 @@
     background: #b91c1c;
     transform: translateY(-1px);
 }
+
+.middle-name-note {
+    font-size: 13px;
+    font-weight: 400;
+    color: #6c757d;
+    margin-left: 4px;
+}

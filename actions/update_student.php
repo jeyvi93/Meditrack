@@ -18,8 +18,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Student ID (Hidden Input)
     $student_id = $_POST['student_id_number'];
 
+    // Name Information
+    $first_name = trim($_POST['first_name'] ?? '');
+    $middle_name = trim($_POST['middle_name'] ?? '');
+    $last_name = trim($_POST['last_name'] ?? '');
+
     // Personal Information
-    $full_name = $_POST['full_name'];
     $date_of_birth = $_POST['date_of_birth'];
     $sex = $_POST['sex'];
     $course = $_POST['course'];
@@ -49,7 +53,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     $sql = "UPDATE students SET
-        full_name = ?,
+        first_name = ?,
+        middle_name = ?,
+        last_name = ?,
         date_of_birth = ?,
         sex = ?,
         course = ?,
@@ -82,8 +88,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     mysqli_stmt_bind_param(
         $stmt,
-        "ssssissssddsssssssssss",
-        $full_name,
+        "ssssssissssddsssssssssss",
+        $first_name,
+        $middle_name,
+        $last_name,
         $date_of_birth,
         $sex,
         $course,

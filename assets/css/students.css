@@ -770,3 +770,17 @@ tbody tr:hover {
 
     color: inherit;
 }
+
+/* Edit Student Name Fields */
+.name-fields {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.name-fields input {
+    flex: 1;
+    min-width: 0;
+    width: 0;
+    box-sizing: border-box;
+}

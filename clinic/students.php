@@ -52,7 +52,9 @@ if ($search !== '') {
 
     $where[] = "(
         student_id_number LIKE ?
-        OR full_name LIKE ?
+        OR first_name LIKE ?
+        OR middle_name LIKE ?
+        OR last_name LIKE ?
         OR philhealth_number LIKE ?
     )";
 
@@ -61,8 +63,10 @@ if ($search !== '') {
     $params[] = $searchParam;
     $params[] = $searchParam;
     $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
 
-    $types .= "sss";
+    $types .= "sssss";
 }
 
 if ($department !== '') {
@@ -120,7 +124,7 @@ $sql = "
     SELECT *
     FROM students
     $whereSql
-    ORDER BY full_name ASC
+    ORDER BY last_name ASC, first_name ASC, middle_name ASC
     LIMIT $recordsPerPage OFFSET $offset
 ";
 
@@ -291,7 +295,15 @@ function pageUrl($page, $queryParams) {
     </td>
 
     <td>
-        <?php echo htmlspecialchars($student['full_name']); ?>
+        <?php
+        $displayName = trim(
+            ($student['last_name'] ?? '') . ', ' .
+            ($student['first_name'] ?? '') . ' ' .
+            ($student['middle_name'] ?? '')
+        );
+
+        echo htmlspecialchars($displayName);
+        ?>
     </td>
 
     <td>
@@ -332,7 +344,9 @@ class="icon-btn view"
 title="View"
 onclick='openStudentModal({
     id: <?= json_encode($student["student_id_number"]) ?>,
-    name: <?= json_encode($student["full_name"]) ?>,
+    first_name: <?= json_encode($student["first_name"]) ?>,
+    middle_name: <?= json_encode($student["middle_name"] ?? "") ?>,
+    last_name: <?= json_encode($student["last_name"]) ?>,
     dob: <?= json_encode($student["date_of_birth"]) ?>,
     age: <?= json_encode(date_diff(date_create($student["date_of_birth"]), date_create("today"))->y) ?>,
     sex: <?= json_encode($student["sex"]) ?>,
@@ -373,7 +387,9 @@ class="icon-btn edit"
 title="Edit"
 onclick='openEditStudentModal({
     id: <?= json_encode($student["student_id_number"]) ?>,
-    name: <?= json_encode($student["full_name"]) ?>,
+    first_name: <?= json_encode($student["first_name"]) ?>,
+    middle_name: <?= json_encode($student["middle_name"] ?? "") ?>,
+    last_name: <?= json_encode($student["last_name"]) ?>,
     dob: <?= json_encode($student["date_of_birth"]) ?>,
     age: <?= json_encode(date_diff(date_create($student["date_of_birth"]), date_create("today"))->y) ?>,
     sex: <?= json_encode($student["sex"]) ?>,
@@ -408,10 +424,12 @@ onclick='openEditStudentModal({
                 <button
                     class="icon-btn delete"
                     title="Delete"
-                    onclick="openDeleteStudentModal({
-                        id:'<?php echo $student['student_id_number']; ?>',
-                        name:'<?php echo addslashes($student['full_name']); ?>'
-                    })">
+                    onclick='openDeleteStudentModal({
+                        id: <?= json_encode($student["student_id_number"]) ?>,
+                        first_name: <?= json_encode($student["first_name"]) ?>,
+                        middle_name: <?= json_encode($student["middle_name"] ?? "") ?>,
+                        last_name: <?= json_encode($student["last_name"]) ?>
+                    })'>
 
                     <i class="bx bx-trash"></i>
 
@@ -719,21 +737,46 @@ onclick='openEditStudentModal({
         </div>
 
         <div class="summary-info">
-            <input
-            type="text"
-            id="e_fullName"
-            name="full_name"
-            placeholder="Last Name, First Name Middle Name"
-            pattern="[A-Za-zÀ-ÿ\s.,'-]+"
-            title="Full name should contain letters, spaces, and common name punctuation only."
-            oninput="this.value = this.value.replace(/[0-9]/g, '')"
-            required>
 
-            <!-- Display only -->
+            <div class="name-fields">
+
+                <input
+                    type="text"
+                    id="e_firstName"
+                    name="first_name"
+                    placeholder="First Name"
+                    pattern="[A-Za-zÀ-ÿ\s.'-]+"
+                    title="First name should contain letters, spaces, and common name punctuation only."
+                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                    required>
+
+                <input
+                    type="text"
+                    id="e_middleName"
+                    name="middle_name"
+                    placeholder="Middle Name"
+                    pattern="[A-Za-zÀ-ÿ\s.'-]*"
+                    title="Middle name should contain letters, spaces, and common name punctuation only."
+                    oninput="this.value = this.value.replace(/[0-9]/g, '')">
+
+                <input
+                    type="text"
+                    id="e_lastName"
+                    name="last_name"
+                    placeholder="Last Name"
+                    pattern="[A-Za-zÀ-ÿ\s.'-]+"
+                    title="Last name should contain letters, spaces, and common name punctuation only."
+                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                    required>
+
+            </div>
+
+            <!-- Student ID display -->
             <input
                 type="text"
                 id="e_studentIdDisplay"
                 disabled>
+
         </div>
 
     </div>

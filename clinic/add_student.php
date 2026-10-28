@@ -100,8 +100,44 @@ unset($_SESSION['error']);
                                 <h2>Personal Information</h2>
                             </div>
                             <div class="input-group">
-                                <label>Full Name</label>
-                                <input type="text" name="full_name" placeholder="Last Name, First Name Middle Name" pattern="[A-Za-zÀ-ÿ\s.,'-]+" title="Full name should contain letters, spaces, and common name punctuation only." oninput="this.value = this.value.replace(/[0-9]/g, '')" required>
+                                <label for="first_name">First Name</label>
+                                <input
+                                    type="text"
+                                    id="first_name"
+                                    name="first_name"
+                                    placeholder="First Name"
+                                    pattern="[A-Za-zÀ-ÿ\s.'-]+"
+                                    title="First name should contain letters and common name punctuation only."
+                                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                                    required
+                                >
+                            </div>
+
+                            <div class="input-group">
+                                <label for="middle_name">Middle Name <span class="middle-name-note">(Leave blank if none)</span></label>
+                                <input
+                                    type="text"
+                                    id="middle_name"
+                                    name="middle_name"
+                                    placeholder="Middle Name"
+                                    pattern="[A-Za-zÀ-ÿ\s.'-]*"
+                                    title="Middle name should contain letters and common name punctuation only."
+                                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                                >
+                            </div>
+
+                            <div class="input-group">
+                                <label for="last_name">Last Name</label>
+                                <input
+                                    type="text"
+                                    id="last_name"
+                                    name="last_name"
+                                    placeholder="Last Name"
+                                    pattern="[A-Za-zÀ-ÿ\s.'-]+"
+                                    title="Last name should contain letters and common name punctuation only."
+                                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                                    required
+                                >
                             </div>
                             <div class="input-row three-cols">
                                 <div class="input-group">
