@@ -60,7 +60,9 @@ if ($search !== '') {
 
     $where[] = "(
         staff_id_number LIKE ?
-        OR full_name LIKE ?
+        OR first_name LIKE ?
+        OR middle_name LIKE ?
+        OR last_name LIKE ?
         OR sex LIKE ?
         OR position LIKE ?
         OR designation LIKE ?
@@ -75,8 +77,10 @@ if ($search !== '') {
     $params[] = $searchParam;
     $params[] = $searchParam;
     $params[] = $searchParam;
+    $params[] = $searchParam;
+    $params[] = $searchParam;
 
-    $types .= "ssssss";
+    $types .= "ssssssss";
 }
 
 if ($department !== '' && $department !== 'all') {
@@ -157,7 +161,7 @@ $sql = "
     SELECT *
     FROM staffs
     $whereSql
-    ORDER BY full_name ASC
+    ORDER BY last_name ASC, first_name ASC, middle_name ASC
     LIMIT $recordsPerPage OFFSET $offset
 ";
 
@@ -407,7 +411,11 @@ function pageUrl($page, $queryParams) {
     </td>
 
     <td>
-        <?= htmlspecialchars($staff['full_name']); ?>
+        <?= htmlspecialchars(
+            trim($staff['last_name'] ?? '') . ', ' .
+            trim($staff['first_name'] ?? '') . ' ' .
+            trim($staff['middle_name'] ?? '')
+        ); ?>
     </td>
 
     <td>
@@ -437,7 +445,9 @@ function pageUrl($page, $queryParams) {
                 onclick='openStaffModal({
 
                     id: <?= json_encode($staff["staff_id_number"]) ?>,
-                    name: <?= json_encode($staff["full_name"]) ?>,
+                    first_name: <?= json_encode($staff["first_name"]) ?>,
+                    middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
+                    last_name: <?= json_encode($staff["last_name"]) ?>,
                     dob: <?= json_encode($staff["date_of_birth"]) ?>,
                     age: <?= json_encode(date_diff(date_create($staff["date_of_birth"]), date_create("today"))->y) ?>,
 
@@ -479,7 +489,9 @@ function pageUrl($page, $queryParams) {
                 onclick='openEditStaffModal({
 
                     id: <?= json_encode($staff["staff_id_number"]) ?>,
-                    name: <?= json_encode($staff["full_name"]) ?>,
+                    first_name: <?= json_encode($staff["first_name"]) ?>,
+                    middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
+                    last_name: <?= json_encode($staff["last_name"]) ?>,
                     dob: <?= json_encode($staff["date_of_birth"]) ?>,
                     age: <?= json_encode(date_diff(date_create($staff["date_of_birth"]), date_create("today"))->y) ?>,
 
@@ -521,10 +533,10 @@ function pageUrl($page, $queryParams) {
                 class="icon-btn delete"
                 title="Delete"
                 onclick='openDeleteStaffModal({
-
                     id: <?= json_encode($staff["staff_id_number"]) ?>,
-                    name: <?= json_encode($staff["full_name"]) ?>
-
+                    first_name: <?= json_encode($staff["first_name"] ?? "") ?>,
+                    middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
+                    last_name: <?= json_encode($staff["last_name"] ?? "") ?>
                 })'>
 
                 <i class="bx bx-trash"></i>
@@ -536,9 +548,6 @@ function pageUrl($page, $queryParams) {
         </div>
 
     </td>
-
-</tr>
-
 
 </tr>
 
@@ -825,20 +834,45 @@ function pageUrl($page, $queryParams) {
             </div>
 
             <div class="summary-info">
-                <input
-                    type="text"
-                    id="e_fullName"
-                    name="full_name"
-                    placeholder="Last Name, First Name Middle Name"
-                    pattern="[A-Za-zÀ-ÿ\s.,'-]+"
-                    title="Full name should contain letters, spaces, and common name punctuation only."
-                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
-                    required
-                >
-                <input type="hidden" id="e_staffId" name="staff_id_number">
-                <input type="text" id="e_staffIdDisplay" readonly>
-            </div>
 
+                <div class="name-fields">
+                    <input
+                        type="text"
+                        id="e_firstName"
+                        name="first_name"
+                        placeholder="First Name"
+                        pattern="[A-Za-zÀ-ÿ\s.,'-]+"
+                        title="First name should contain letters, spaces, and common name punctuation only."
+                        oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                        required
+                    >
+
+                    <input
+                        type="text"
+                        id="e_middleName"
+                        name="middle_name"
+                        placeholder="Middle Name"
+                        pattern="[A-Za-zÀ-ÿ\s.,'-]+"
+                        title="Middle name should contain letters, spaces, and common name punctuation only."
+                        oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                    >
+
+                    <input
+                        type="text"
+                        id="e_lastName"
+                        name="last_name"
+                        placeholder="Last Name"
+                        pattern="[A-Za-zÀ-ÿ\s.,'-]+"
+                        title="Last name should contain letters, spaces, and common name punctuation only."
+                        oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                        required
+                    >
+
+                </div>
+                    <input type="hidden" id="e_staffId" name="staff_id_number">
+                    <input type="text" id="e_staffIdDisplay" readonly>
+                
+            </div>
         </div>
 
         <!-- PERSONAL INFO -->
@@ -1003,39 +1037,39 @@ function pageUrl($page, $queryParams) {
         </div>
 
         <!-- INSURANCE INFORMATION -->
-<div class="info-section">
+        <div class="info-section">
 
-    <div class="info-title">Insurance Information</div>
+            <div class="info-title">Insurance Information</div>
 
-    <div class="info-grid">
+            <div class="info-grid">
 
-        <div class="data-group">
-            <label>PhilHealth Number</label>
-            <input
-                type="text"
-                id="e_philhealth"
-                name="philhealth_number">
+                <div class="data-group">
+                    <label>PhilHealth Number</label>
+                    <input
+                        type="text"
+                        id="e_philhealth"
+                        name="philhealth_number">
+                </div>
+
+                <div class="data-group">
+                    <label>Insurance Number</label>
+                    <input
+                        type="text"
+                        id="e_insuranceNumber"
+                        name="insurance_number">
+                </div>
+
+                <div class="data-group full-width">
+                    <label>Insurance Company</label>
+                    <input
+                        type="text"
+                        id="e_insuranceCompany"
+                        name="insurance_company">
+                </div>
+
+            </div>
+
         </div>
-
-        <div class="data-group">
-            <label>Insurance Number</label>
-            <input
-                type="text"
-                id="e_insuranceNumber"
-                name="insurance_number">
-        </div>
-
-        <div class="data-group full-width">
-            <label>Insurance Company</label>
-            <input
-                type="text"
-                id="e_insuranceCompany"
-                name="insurance_company">
-        </div>
-
-    </div>
-
-</div>
 
         <!-- EMERGENCY INFO -->
         <div class="info-section">

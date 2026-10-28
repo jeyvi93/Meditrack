@@ -17,7 +17,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Get form data
     $staff_id = $_POST['staff_id_number'];
-    $full_name = $_POST['full_name'];
+    $first_name = trim($_POST['first_name'] ?? '');
+    $middle_name = trim($_POST['middle_name'] ?? '');
+    $last_name = trim($_POST['last_name'] ?? '');
     $date_of_birth = $_POST['date_of_birth'];
     $sex = $_POST['sex'];
     $position = $_POST['position'];
@@ -70,7 +72,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $sql = "INSERT INTO staffs (
         staff_id_number,
-        full_name,
+        first_name,
+        middle_name,
+        last_name,
         date_of_birth,
         sex,
         position,
@@ -92,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         emergency_relationship,
         emergency_contact
     ) VALUES (
-        ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+        ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
     )";
 
 
@@ -106,9 +110,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     mysqli_stmt_bind_param(
         $stmt,
-        "ssssssssssddssssssssss",
+        "sssssssssssddsssssssssss",
         $staff_id,
-        $full_name,
+        $first_name,
+        $middle_name,
+        $last_name,
         $date_of_birth,
         $sex,
         $position,

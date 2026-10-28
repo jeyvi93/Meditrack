@@ -206,7 +206,13 @@ function openStaffModal(data) {
     document.getElementById("staffModal").style.display = "flex";
 
     document.getElementById("m_staffId").textContent = data.id;
-    document.getElementById("m_fullName").textContent = data.name;
+        const fullName = [
+        data.first_name,
+        data.middle_name,
+        data.last_name
+    ].filter(name => name && name.trim() !== "").join(" ");
+
+    document.getElementById("m_fullName").textContent = fullName;
     document.getElementById("m_dob").textContent = data.dob;
     document.getElementById("m_age").textContent = data.age;
     document.getElementById("m_sex").textContent = data.sex;
@@ -263,7 +269,9 @@ function openEditStaffModal(data) {
     // Display only
     document.getElementById("e_staffIdDisplay").value = data.id;
 
-    document.getElementById("e_fullName").value = data.name;
+    document.getElementById("e_firstName").value = data.first_name || "";
+    document.getElementById("e_middleName").value = data.middle_name || "";
+    document.getElementById("e_lastName").value = data.last_name || "";
 
     document.getElementById("e_dob").value = data.dob;
     document.getElementById("e_age").value = data.age;
@@ -314,7 +322,13 @@ window.addEventListener("click", function (e) {
 function openDeleteStaffModal(data) {
 
     document.getElementById("d_staffId").value = data.id;
-    document.getElementById("d_staffName").textContent = data.name;
+        const fullName = [
+        data.first_name,
+        data.middle_name,
+        data.last_name
+    ].filter(name => name && name.trim() !== "").join(" ");
+
+    document.getElementById("d_staffName").textContent = fullName;
 
     document.getElementById("deleteStaffModal").classList.add("active");
 

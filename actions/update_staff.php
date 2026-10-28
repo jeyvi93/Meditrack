@@ -27,7 +27,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // PERSONAL INFORMATION
     // ==========================
 
-    $full_name = trim($_POST['full_name'] ?? '');
+    $first_name = trim($_POST['first_name'] ?? '');
+    $middle_name = trim($_POST['middle_name'] ?? '');
+    $last_name = trim($_POST['last_name'] ?? '');
     $date_of_birth = $_POST['date_of_birth'] ?? '';
     $sex = $_POST['sex'] ?? '';
     $position = $_POST['position'] ?? '';
@@ -38,17 +40,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     // ==========================
-    // FULL NAME VALIDATION
+    // NAME VALIDATION
     // ==========================
 
-    if ($full_name === '') {
-        $_SESSION['error'] = "Full name is required.";
+    if ($first_name === '' || $last_name === '') {
+        $_SESSION['error'] = "First name and last name are required.";
         header("Location: ../clinic/staffs.php");
         exit();
     }
 
-    if (!preg_match("/^[A-Za-zÀ-ÿ\s.,'-]+$/", $full_name)) {
-        $_SESSION['error'] = "Full name should contain letters, spaces, and common name punctuation only.";
+    if (
+        !preg_match("/^[A-Za-zÀ-ÿ\s.,'-]+$/", $first_name) ||
+        !preg_match("/^[A-Za-zÀ-ÿ\s.,'-]+$/", $last_name) ||
+        ($middle_name !== '' &&
+            !preg_match("/^[A-Za-zÀ-ÿ\s.,'-]+$/", $middle_name))
+    ) {
+        $_SESSION['error'] = "Names should contain letters, spaces, and common name punctuation only.";
         header("Location: ../clinic/staffs.php");
         exit();
     }
@@ -204,7 +211,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ==========================
 
     $sql = "UPDATE staffs SET
-        full_name = ?,
+        first_name = ?,
+        middle_name = ?,
+        last_name = ?,
         date_of_birth = ?,
         sex = ?,
         position = ?,
@@ -244,8 +253,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     mysqli_stmt_bind_param(
         $stmt,
-        "sssssssssddsssssssssss",
-        $full_name,
+        "sssssssssssddsssssssssss",
+        $first_name,
+        $middle_name,
+        $last_name,
         $date_of_birth,
         $sex,
         $position,

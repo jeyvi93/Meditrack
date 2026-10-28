@@ -662,30 +662,30 @@ onclick='openEditStudentModal({
         </div>
 
          <!-- INSURANCE INFORMATION -->
-<div class="info-section">
+        <div class="info-section">
 
-    <div class="info-title">Insurance Information</div>
+            <div class="info-title">Insurance Information</div>
 
-    <div class="info-grid">
+            <div class="info-grid">
 
-        <div class="form-group">
-            <label>PhilHealth Number</label>
-            <p id="m_philhealth">--</p>
+                <div class="form-group">
+                    <label>PhilHealth Number</label>
+                    <p id="m_philhealth">--</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Insurance Number</label>
+                    <p id="m_insuranceNumber">--</p>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Insurance Company</label>
+                    <p id="m_insuranceCompany">--</p>
+                </div>
+
+            </div>
+
         </div>
-
-        <div class="form-group">
-            <label>Insurance Number</label>
-            <p id="m_insuranceNumber">--</p>
-        </div>
-
-        <div class="form-group full-width">
-            <label>Insurance Company</label>
-            <p id="m_insuranceCompany">--</p>
-        </div>
-
-    </div>
-
-</div>
 
         <!-- EMERGENCY INFO -->
         <div class="info-section">
