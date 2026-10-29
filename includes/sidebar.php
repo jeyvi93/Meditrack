@@ -94,11 +94,11 @@ if ($pendingStmt) {
                 </li>
 
                 <li>
-                    <a href="archived_records.php"
-                    class="<?= $currentPage === 'archived_records.php' ? 'active' : '' ?>">
+                    <a href="archived_records.php">
                         <i class='bx bx-archive'></i> Archive
                     </a>
                 </li>
+
             <?php endif; ?>
         </ul>
     </nav>

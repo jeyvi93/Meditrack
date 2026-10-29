@@ -526,6 +526,7 @@ function closeMessageModal() {
     }
 }
 </script>
+<script src="../includes/includes.js"></script>
 </body>
 </html>
 
