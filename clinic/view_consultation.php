@@ -403,14 +403,26 @@ function pageUrl($page, $queryParams) {
                 <!-- TABLE FOOTER -->
                 <div class="table-footer">
 
+                    <?php
+                    $displayPage = max(1, (int) $currentPage);
+                    $displayLimit = max(1, (int) $recordsPerPage);
+                    $displayTotal = max(0, (int) $totalRecords);
+
+                    $showingFrom = $displayTotal > 0
+                        ? (($displayPage - 1) * $displayLimit + 1)
+                        : 0;
+
+                    $showingTo = min($displayPage * $displayLimit, $displayTotal);
+                    ?>
+
                     <p>
                         Showing
-                        <?= $totalRecords > 0 ? (($currentPage - 1) * $recordsPerPage + 1) : 0 ?>
+                        <?= $showingFrom ?>
                         -
-                        <?= min($currentPage * $recordsPerPage, $totalRecords) ?>
+                        <?= $showingTo ?>
                         of
-                        <?= $totalRecords ?>
-                        <?= $totalRecords === 1 ? 'record' : 'records' ?>
+                        <?= $displayTotal ?>
+                        <?= $displayTotal === 1 ? 'record' : 'records' ?>
                     </p>
 
                     <?php if ($totalPages > 1): ?>
