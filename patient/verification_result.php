@@ -96,7 +96,7 @@ if ($status === "success") {
 
                 <div class="verification-icon success">
 
-                    <i class="bx bx-check-circle"></i>
+                    <i class="bx bx-check"></i>
 
                 </div>
 

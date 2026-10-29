@@ -180,7 +180,9 @@ $full_name = $_SESSION['full_name'] ?? 'User';
 
     <div class="modal-box logout-modal">
 
-        <i class='bx bx-log-out-circle logout-icon'></i>
+        <div class="message-icon warning">
+            <i class='bx bx-log-out'></i>
+        </div>
 
         <h3>Sign Out?</h3>
 

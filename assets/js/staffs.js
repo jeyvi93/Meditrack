@@ -364,6 +364,61 @@ window.addEventListener("click", function (e) {
 
 });
 
+// =========================
+// ARCHIVE STAFF MODAL
+// =========================
+
+function openArchiveStaffModal(data) {
+
+    const fullName = [
+        data.last_name,
+        [
+            data.first_name,
+            data.middle_name
+        ].filter(name => name && name.trim() !== "").join(" ")
+    ].filter(name => name && name.trim() !== "").join(", ");
+
+    document.getElementById("archiveStaffId").value = data.id;
+    document.getElementById("archiveStaffName").textContent = fullName;
+
+    document.getElementById("archiveStaffModal").classList.add("active");
+}
+
+function closeArchiveStaffModal() {
+
+    document.getElementById("archiveStaffModal").classList.remove("active");
+
+}
+
+function confirmArchiveStaff() {
+
+    const id = document.getElementById("archiveStaffId").value;
+
+    if (!id) return;
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "../actions/archive_staff.php";
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "id";
+    input.value = id;
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+
+}
+
+window.addEventListener("click", function (e) {
+
+    if (e.target === document.getElementById("archiveStaffModal")) {
+        closeArchiveStaffModal();
+    }
+
+});
+
 
 // =========================
 // AUTO COMPUTE AGE

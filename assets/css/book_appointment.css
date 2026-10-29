@@ -358,18 +358,22 @@
 }
 
 /* SUCCESS MODAL */
-.success-modal i {
-    font-size: 3.5rem;
+.success-modal .message-icon.success {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #dcfce7;
 }
 
-.success-modal h3 {
-    color: var(--navy-dark);
-    margin-bottom: 10px;
-}
-
-.success-modal p {
-    color: var(--text-muted);
-    line-height: 1.6;
+.success-modal .message-icon.success i.bx-check {
+    font-size: 42px;
+    color: #22c55e !important;
+    margin: 0;
+    line-height: 1;
 }
 
 /* SINGLE BUTTON */

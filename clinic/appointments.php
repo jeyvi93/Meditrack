@@ -1198,7 +1198,7 @@ $rejected = $rejectedStmt->get_result();
 
             <?php if(isset($_SESSION['success'])): ?>
 
-                <i class='bx bx-check-circle'></i>
+                <i class='bx bx-check'></i>
 
             <?php else: ?>
 

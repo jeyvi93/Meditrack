@@ -216,7 +216,7 @@ unset($_SESSION['error']);
         </p>
 
         <button type="button" class="btn-error" onclick="closeErrorModal()">
-            <i class='bx bx-check'></i> OK
+            <i class='bx bx-x-circle'></i> OK
         </button>
 
     </div>

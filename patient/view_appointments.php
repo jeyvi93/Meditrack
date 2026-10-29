@@ -5,7 +5,6 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
     exit();
@@ -548,7 +547,9 @@ usort($cancelledAppointments, function ($a, $b) {
 <div id="cancelModal" class="modal-overlay hidden">
     <div class="modal-box">
 
-        <i class='bx bx-error-circle'></i>
+        <div class="message-icon warning">
+            <i class='bx bx-error-circle'></i>
+        </div>
 
         <h3>Cancel Appointment?</h3>
 
@@ -596,7 +597,9 @@ usort($cancelledAppointments, function ($a, $b) {
 <div id="successModal" class="modal-overlay hidden">
     <div class="modal-box success-modal">
 
-        <i class='bx bx-check-circle' style="color: #10b981;"></i>
+        <div class="message-icon success">
+            <i class='bx bx-check'></i>
+        </div>
 
         <h3>Appointment Cancelled!</h3>
 

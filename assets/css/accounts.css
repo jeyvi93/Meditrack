@@ -187,44 +187,114 @@ tbody tr:hover {
     color: #996000;
 }
 
-/* Footer and Pagination */
+/* ==========================
+   FOOTER AND PAGINATION
+========================== */
+
 .table-footer {
+    padding: 16px 20px;
+    margin-top: 0;
+
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
-    margin-top: 20px;
-    flex-wrap: wrap;
+
+    border-top: 1px solid #e2e8f0;
+
+    font-size: 0.85rem;
+    color: #64748b;
 }
 
 .table-footer p {
     margin: 0;
-    color: #777;
-    font-size: 13px;
+    color: #64748b;
+    font-size: 0.85rem;
 }
 
 .pagination {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    color: #555;
+    justify-content: center;
+    gap: 6px;
+
+    font-size: 0.85rem;
+    color: #64748b;
 }
 
-.page-btn {
+.btn-page {
+    width: 38px;
+    height: 38px;
+
     display: inline-flex;
     align-items: center;
-    padding: 9px 13px;
-    border: 1px solid #ddd;
-    border-radius: 7px;
-    color: #333;
-    text-decoration: none;
+    justify-content: center;
+
+    padding: 0;
+    margin: 0;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+
     background: #fff;
+    color: #334155;
+
+    text-decoration: none;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    box-sizing: border-box;
+
+    transition: all 0.2s ease;
 }
 
-.page-btn:hover {
-    border-color: #800000;
-    color: #800000;
+/* HOVER */
+.btn-page:hover:not(:disabled) {
+    background: #1e40af;
+    border-color: #1e40af;
+    color: #fff;
+}
+
+/* ACTIVE PAGE */
+.btn-page.active {
+    background: #1e40af;
+    color: #fff;
+    border-color: #1e40af;
+}
+
+/* DISABLED ARROWS */
+.btn-page:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: #fff;
+    color: #64748b;
+}
+
+/* ARROW ICONS */
+.pagination .btn-page i {
+    font-size: 1.1rem;
+    line-height: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: inherit;
+}
+
+@media (max-width: 600px) {
+    .table-footer {
+        padding: 16px;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+    }
 }
 
 /* Responsive */

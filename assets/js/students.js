@@ -317,6 +317,53 @@ function confirmDeleteStudent() {
 
 }
 
+// =====================
+// ARCHIVE STUDENT MODAL
+// =====================
+
+function openArchiveStudentModal(student) {
+
+    const fullName = [
+        student.last_name,
+        [
+            student.first_name,
+            student.middle_name
+        ].filter(name => name && name.trim() !== "").join(" ")
+    ].filter(name => name && name.trim() !== "").join(", ");
+
+    document.getElementById("archiveStudentId").value = student.id;
+    document.getElementById("archiveStudentName").textContent = fullName;
+
+    document.getElementById("archiveStudentModal").classList.add("active");
+}
+
+function closeArchiveStudentModal() {
+
+    document.getElementById("archiveStudentModal").classList.remove("active");
+}
+
+function confirmArchiveStudent() {
+
+    const id = document.getElementById("archiveStudentId").value;
+
+    if (!id) {
+        return;
+    }
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "../actions/archive_student.php";
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "id";
+    input.value = id;
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+}
+
 
 // =====================
 // CLICK OUTSIDE MODALS
@@ -335,6 +382,10 @@ window.addEventListener("click", function (e) {
     if (e.target === document.getElementById("deleteStudentModal")) {
         closeDeleteStudentModal();
     }
+
+    if (e.target === document.getElementById("archiveStudentModal")) {
+    closeArchiveStudentModal();
+}
 
 });
 

@@ -273,6 +273,23 @@ tbody tr:hover {
     color: var(--danger);
 }
 
+/* =========================
+   ARCHIVE BUTTON
+========================= */
+
+.icon-btn.archive i {
+    color: #d97706;
+}
+
+.icon-btn.archive:hover {
+    border-color: #d97706;
+    transform: translateY(-1px);
+}
+
+.icon-btn.archive:hover i {
+    color: #d97706;
+}
+
 /* smooth icon transition */
 .icon-btn i {
     transition: all 0.2s ease;
@@ -783,4 +800,149 @@ tbody tr:hover {
     min-width: 0;
     width: 0;
     box-sizing: border-box;
+}
+
+/* DELETE STUDENT MODAL WARNING ICON */
+.delete-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background-color: #fee2e2;
+}
+
+.delete-icon i.bx.bx-error-circle {
+    font-size: 42px;
+    color: #ef4444;
+    line-height: 1;
+}
+
+.action-buttons,
+.action-buttons button {
+    position: relative;
+    pointer-events: auto;
+}
+
+
+/* =========================
+   ARCHIVE STUDENT MODAL
+========================= */
+
+.archive-mode {
+    width: 100%;
+    max-width: 440px;
+    padding: 32px;
+    text-align: center;
+    border-radius: 16px;
+}
+
+.archive-mode h2 {
+    margin: 0 0 12px;
+    color: var(--navy-dark);
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.archive-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff7ed;
+}
+
+.archive-icon i {
+    font-size: 36px;
+    color: #d97706;
+}
+
+.archive-description {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.archive-description strong {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+.archive-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 13px;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+    background: #fff7ed;
+    text-align: left;
+}
+
+.archive-notice i {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: #c2410c;
+    font-size: 20px;
+}
+
+.archive-notice p {
+    margin: 0;
+    color: #9a3412;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.archive-mode .modal-actions {
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-archive {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #b45309;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-archive:hover {
+    background: #92400e;
+    transform: translateY(-1px);
+}
+
+.btn-archive i {
+    font-size: 1.05rem;
+}
+
+@media (max-width: 480px) {
+    .archive-mode {
+        padding: 24px 20px;
+    }
+
+    .archive-mode .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .archive-mode .modal-actions button {
+        width: 100%;
+    }
 }

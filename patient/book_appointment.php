@@ -2,7 +2,7 @@
     session_start();
 
     if (!isset($_SESSION['user_id'])) {
-        header("Location: ../login.php");
+        header("Location: ../index.php");
         exit();
     }
 
@@ -161,7 +161,9 @@
     <!-- SUCCESS MODAL -->
     <div id="successAppointmentModal" class="modal-overlay hidden">
         <div class="modal-box success-modal">
-            <i class='bx bx-check-circle' style="color: #10b981;"></i>
+            <div class="message-icon success">
+                <i class='bx bx-check'></i>
+            </div>
 
             <h3>Appointment Submitted!</h3>
 

@@ -321,36 +321,104 @@ while ($row = mysqli_fetch_assoc($rolesResult)) {
             </table>
         </div>
 
+        <!-- TABLE FOOTER -->
         <div class="table-footer">
+
             <p>
-                Showing <?= count($accounts) ?> of <?= $totalRecords ?> account(s)
+                Showing
+                <?= $totalRecords > 0
+                    ? (($page - 1) * $recordsPerPage + 1)
+                    : 0 ?>
+                -
+                <?= min($page * $recordsPerPage, $totalRecords) ?>
+                of
+                <?= $totalRecords ?>
+                <?= $totalRecords === 1 ? 'record' : 'records' ?>
             </p>
 
             <?php if ($totalPages > 1): ?>
+
                 <nav class="pagination" aria-label="Account list pages">
+
+                    <!-- PREVIOUS -->
                     <?php if ($page > 1): ?>
-                        <a href="?<?= http_build_query([
-                            'search' => $search,
-                            'role' => $roleFilter,
-                            'page' => $page - 1
-                        ]) ?>" class="page-btn">
-                            Previous
+
+                        <a
+                            href="?<?= http_build_query([
+                                'search' => $search,
+                                'role' => $roleFilter,
+                                'page' => $page - 1
+                            ]) ?>"
+                            class="btn-page"
+                            aria-label="Previous page"
+                        >
+                            <i class="bx bx-chevron-left"></i>
                         </a>
+
+                    <?php else: ?>
+
+                        <button
+                            type="button"
+                            class="btn-page"
+                            disabled
+                            aria-label="Previous page"
+                        >
+                            <i class="bx bx-chevron-left"></i>
+                        </button>
+
                     <?php endif; ?>
 
-                    <span>Page <?= $page ?> of <?= $totalPages ?></span>
 
+                    <!-- PAGE NUMBERS -->
+                    <?php for ($pageNumber = 1; $pageNumber <= $totalPages; $pageNumber++): ?>
+
+                        <a
+                            href="?<?= http_build_query([
+                                'search' => $search,
+                                'role' => $roleFilter,
+                                'page' => $pageNumber
+                            ]) ?>"
+                            class="btn-page <?= $pageNumber === $page ? 'active' : '' ?>"
+                            <?= $pageNumber === $page ? 'aria-current="page"' : '' ?>
+                        >
+                            <?= $pageNumber ?>
+                        </a>
+
+                    <?php endfor; ?>
+
+
+                    <!-- NEXT -->
                     <?php if ($page < $totalPages): ?>
-                        <a href="?<?= http_build_query([
-                            'search' => $search,
-                            'role' => $roleFilter,
-                            'page' => $page + 1
-                        ]) ?>" class="page-btn">
-                            Next
+
+                        <a
+                            href="?<?= http_build_query([
+                                'search' => $search,
+                                'role' => $roleFilter,
+                                'page' => $page + 1
+                            ]) ?>"
+                            class="btn-page"
+                            aria-label="Next page"
+                        >
+                            <i class="bx bx-chevron-right"></i>
                         </a>
+
+                    <?php else: ?>
+
+                        <button
+                            type="button"
+                            class="btn-page"
+                            disabled
+                            aria-label="Next page"
+                        >
+                            <i class="bx bx-chevron-right"></i>
+                        </button>
+
                     <?php endif; ?>
+
                 </nav>
+
             <?php endif; ?>
+
         </div>
     </section>
 </main>

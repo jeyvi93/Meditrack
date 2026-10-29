@@ -2,7 +2,7 @@
 require_once "../config/database.php";
 
 $role = $_SESSION['role'] ?? '';
-
+$currentPage = basename($_SERVER['PHP_SELF']);
 $pendingAppointmentCount = 0;
 
 $pendingSql = "
@@ -90,6 +90,13 @@ if ($pendingStmt) {
                 <li>
                     <a href="referral_form.php">
                         <i class='bx bxs-share-alt'></i> Referrals
+                    </a>
+                </li>
+
+                <li>
+                    <a href="archived_records.php"
+                    class="<?= $currentPage === 'archived_records.php' ? 'active' : '' ?>">
+                        <i class='bx bx-archive'></i> Archive
                     </a>
                 </li>
             <?php endif; ?>

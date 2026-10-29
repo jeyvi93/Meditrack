@@ -1,5 +1,7 @@
 <?php
 
+
+
 require_once "../config/database.php";
 
 $token = trim($_GET["token"] ?? "");

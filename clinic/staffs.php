@@ -52,7 +52,7 @@ $position = isset($_GET['position'])
 // BUILD WHERE CONDITION
 // ==========================
 
-$where = [];
+$where = ["is_archived = 0"];
 $params = [];
 $types = "";
 
@@ -158,7 +158,12 @@ $offset = ($currentPage - 1) * $recordsPerPage;
 // ==========================
 
 $sql = "
-    SELECT *
+    SELECT staffs.*,
+           EXISTS (
+               SELECT 1
+               FROM users
+               WHERE users.staff_id = staffs.id
+           ) AS has_account
     FROM staffs
     $whereSql
     ORDER BY last_name ASC, first_name ASC, middle_name ASC
@@ -527,21 +532,45 @@ function pageUrl($page, $queryParams) {
             <?php endif; ?>
 
 
-            <!-- Delete Button -->
+            
             <?php if ($role !== 'Clinic Staff'): ?>
-            <button
-                class="icon-btn delete"
-                title="Delete"
-                onclick='openDeleteStaffModal({
-                    id: <?= json_encode($staff["staff_id_number"]) ?>,
-                    first_name: <?= json_encode($staff["first_name"] ?? "") ?>,
-                    middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
-                    last_name: <?= json_encode($staff["last_name"] ?? "") ?>
-                })'>
 
-                <i class="bx bx-trash"></i>
+                <?php if ((int) $staff['has_account'] === 1): ?>
 
-            </button>
+                    <!-- Archive Button -->
+                    <button
+                        type="button"
+                        class="icon-btn archive"
+                        title="Archive"
+                        onclick='openArchiveStaffModal({
+                            id: <?= json_encode($staff["staff_id_number"]) ?>,
+                            first_name: <?= json_encode($staff["first_name"] ?? "") ?>,
+                            middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
+                            last_name: <?= json_encode($staff["last_name"] ?? "") ?>
+                        })'>
+
+                        <i class="bx bx-archive"></i>
+
+                    </button>
+
+                <?php else: ?>
+
+                    <!-- Existing Delete Button -->
+                    <button
+                        class="icon-btn delete"
+                        title="Delete"
+                        onclick='openDeleteStaffModal({
+                            id: <?= json_encode($staff["staff_id_number"]) ?>,
+                            first_name: <?= json_encode($staff["first_name"] ?? "") ?>,
+                            middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
+                            last_name: <?= json_encode($staff["last_name"] ?? "") ?>
+                        })'>
+
+                        <i class="bx bx-trash"></i>
+
+                    </button>
+
+                <?php endif; ?>
 
             <?php endif; ?>
 
@@ -570,14 +599,26 @@ function pageUrl($page, $queryParams) {
                 <!-- TABLE FOOTER -->
                 <div class="table-footer">
 
+                    <?php
+                    $displayPage = max(1, (int) $currentPage);
+                    $displayLimit = max(1, (int) $recordsPerPage);
+                    $displayTotal = max(0, (int) $totalRecords);
+
+                    $showingFrom = $displayTotal > 0
+                        ? (($displayPage - 1) * $displayLimit + 1)
+                        : 0;
+
+                    $showingTo = min($displayPage * $displayLimit, $displayTotal);
+                    ?>
+
                     <p>
                         Showing
-                        <?= $totalRecords > 0 ? (($currentPage - 1) * $recordsPerPage + 1) : 0 ?>
+                        <?= $showingFrom ?>
                         -
-                        <?= min($currentPage * $recordsPerPage, $totalRecords) ?>
+                        <?= $showingTo ?>
                         of
-                        <?= $totalRecords ?>
-                        <?= $totalRecords === 1 ? 'record' : 'records' ?>
+                        <?= $displayTotal ?>
+                        <?= $displayTotal === 1 ? 'record' : 'records' ?>
                     </p>
 
                     <?php if ($totalPages > 1): ?>
@@ -1166,6 +1207,51 @@ function pageUrl($page, $queryParams) {
     </div>
 </div>
 
+<!-- ARCHIVE STAFF CONFIRMATION MODAL -->
+<div id="archiveStaffModal" class="modal">
+    <div class="modal-content modal-container archive-mode">
+
+        <input type="hidden" id="archiveStaffId">
+
+        <div class="archive-icon">
+            <i class="bx bx-archive"></i>
+        </div>
+
+        <h2>Archive Staff?</h2>
+
+        <p class="archive-description">
+            Are you sure you want to archive
+            <strong id="archiveStaffName">this staff member</strong>?
+        </p>
+
+        <div class="archive-notice">
+            <i class="bx bx-info-circle"></i>
+            <p>
+                This staff member will be moved to Archived Records.
+                You can restore the record later.
+            </p>
+        </div>
+
+        <div class="modal-actions">
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="closeArchiveStaffModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="btn-archive"
+                id="confirmArchiveStaffBtn"
+                onclick="confirmArchiveStaff()">
+                Archive Staff
+            </button>
+        </div>
+
+    </div>
+</div>
+
 <?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
 
 <div id="messageModal" class="modal active">
@@ -1176,7 +1262,7 @@ function pageUrl($page, $queryParams) {
 
             <?php if (isset($_SESSION['success'])): ?>
 
-                <i class='bx bx-check-circle'></i>
+                <i class='bx bx-check'></i>
 
             <?php else: ?>
 

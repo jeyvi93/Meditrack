@@ -44,7 +44,7 @@ $department = isset($_GET['department'])
 // BUILD WHERE CONDITION
 // ==========================
 
-$where = [];
+$where = ["is_archived = 0"];
 $params = [];
 $types = "";
 
@@ -104,11 +104,12 @@ mysqli_stmt_execute($countStmt);
 
 $countResult = mysqli_stmt_get_result($countStmt);
 
-$totalRecords = mysqli_fetch_assoc($countResult)['total'];
+$countRow = mysqli_fetch_assoc($countResult);
+$totalRecords = (int) ($countRow['total'] ?? 0);
 
 mysqli_stmt_close($countStmt);
 
-$totalPages = ceil($totalRecords / $recordsPerPage);
+$totalPages = (int) ceil($totalRecords / $recordsPerPage);
 
 // ==========================
 // OFFSET
@@ -117,11 +118,16 @@ $totalPages = ceil($totalRecords / $recordsPerPage);
 $offset = ($currentPage - 1) * $recordsPerPage;
 
 // ==========================
-// GET STUDENTS
+// GET STUDENT RECORDS
 // ==========================
 
 $sql = "
-    SELECT *
+    SELECT students.*,
+           EXISTS (
+               SELECT 1
+               FROM users
+               WHERE users.student_id = students.id
+           ) AS has_account
     FROM students
     $whereSql
     ORDER BY last_name ASC, first_name ASC, middle_name ASC
@@ -421,19 +427,44 @@ onclick='openEditStudentModal({
 <?php endif; ?>
 
             <?php if ($role !== 'Clinic Staff'): ?>
-                <button
-                    class="icon-btn delete"
-                    title="Delete"
-                    onclick='openDeleteStudentModal({
-                        id: <?= json_encode($student["student_id_number"]) ?>,
-                        first_name: <?= json_encode($student["first_name"]) ?>,
-                        middle_name: <?= json_encode($student["middle_name"] ?? "") ?>,
-                        last_name: <?= json_encode($student["last_name"]) ?>
-                    })'>
 
-                    <i class="bx bx-trash"></i>
+                <?php if ((int) $student['has_account'] === 1): ?>
 
-                </button>
+                    <!-- Archive Button -->
+                    <button
+                        type="button"
+                        class="icon-btn archive"
+                        title="Archive"
+                        onclick='openArchiveStudentModal({
+                            id: <?= (int) $student["id"] ?>,
+                            first_name: <?= json_encode($student["first_name"]) ?>,
+                            middle_name: <?= json_encode($student["middle_name"] ?? "") ?>,
+                            last_name: <?= json_encode($student["last_name"]) ?>
+                        })'>
+
+                        <i class="bx bx-archive"></i>
+
+                    </button>
+
+                <?php else: ?>
+
+                    <!-- Existing Delete Button -->
+                    <button
+                        type="button"
+                        class="icon-btn delete"
+                        title="Delete"
+                        onclick='openDeleteStudentModal({
+                            id: <?= (int) $student["id"] ?>,
+                            first_name: <?= json_encode($student["first_name"]) ?>,
+                            middle_name: <?= json_encode($student["middle_name"] ?? "") ?>,
+                            last_name: <?= json_encode($student["last_name"]) ?>
+                        })'>
+
+                        <i class="bx bx-trash"></i>
+
+                    </button>
+
+                <?php endif; ?>
 
             <?php endif; ?>
 
@@ -464,15 +495,29 @@ onclick='openEditStudentModal({
                 <!-- TABLE FOOTER -->
                 <div class="table-footer">
 
+                    
+                    <?php
+                    $displayPage = max(1, (int) $currentPage);
+                    $displayLimit = max(1, (int) $recordsPerPage);
+                    $displayTotal = max(0, (int) $totalRecords);
+
+                    $showingFrom = $displayTotal > 0
+                        ? (($displayPage - 1) * $displayLimit + 1)
+                        : 0;
+
+                    $showingTo = min($displayPage * $displayLimit, $displayTotal);
+                    ?>
+
                     <p>
                         Showing
-                        <?= $totalRecords > 0 ? (($currentPage - 1) * $recordsPerPage + 1) : 0 ?>
+                        <?= $showingFrom ?>
                         -
-                        <?= min($currentPage * $recordsPerPage, $totalRecords) ?>
+                        <?= $showingTo ?>
                         of
-                        <?= $totalRecords ?>
-                        <?= $totalRecords === 1 ? 'record' : 'records' ?>
+                        <?= $displayTotal ?>
+                        <?= $displayTotal === 1 ? 'record' : 'records' ?>
                     </p>
+
 
                     <?php if ($totalPages > 1): ?>
 
@@ -1051,6 +1096,53 @@ onclick='openEditStudentModal({
     </div>
 </div>
 
+
+<!-- ARCHIVE STUDENT CONFIRMATION MODAL -->
+<div id="archiveStudentModal" class="modal">
+    <div class="modal-content modal-container archive-mode">
+
+        <input type="hidden" id="archiveStudentId">
+
+        <div class="archive-icon">
+            <i class="bx bx-archive"></i>
+        </div>
+
+        <h2>Archive Student?</h2>
+
+        <p class="archive-description">
+            Are you sure you want to archive
+            <strong id="archiveStudentName">this student</strong>?
+        </p>
+
+        <div class="archive-notice">
+            <i class="bx bx-info-circle"></i>
+            <p>
+                The student will be moved to Archived Records.
+                You can restore the record later.
+            </p>
+        </div>
+
+        <div class="modal-actions">
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="closeArchiveStudentModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="btn-archive"
+                id="confirmArchiveStudentBtn"
+                onclick="confirmArchiveStudent()">
+                Archive Student
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
 <?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
 
 <div id="messageModal" class="modal active">
@@ -1061,7 +1153,7 @@ onclick='openEditStudentModal({
 
             <?php if (isset($_SESSION['success'])): ?>
 
-                <i class='bx bx-check-circle'></i>
+                <i class='bx bx-check'></i>
 
             <?php else: ?>
 

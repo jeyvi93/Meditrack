@@ -140,7 +140,7 @@ $is_restock = ($mode === 'restock');
     <div class="modal-content success-modal-content">
 
         <div class="success-icon">
-            <i class="bx bx-check-circle"></i>
+            <i class="bx bx-check"></i>
         </div>
 
         <div class="success-message">

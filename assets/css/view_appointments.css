@@ -493,13 +493,22 @@ html, body {
 }
 
 /* SUCCESS MODAL */
-.success-modal {
-    max-width: 350px;
-    width: 90%;
+.success-modal .message-icon.success {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #dcfce7;
 }
 
-.success-modal i {
-    font-size: 3.5rem;
+.success-modal .message-icon.success i.bx.bx-check {
+    font-size: 42px;
+    color: #22c55e !important;
+    margin: 0;
+    line-height: 1;
 }
 
 .success-modal h3 {
@@ -510,6 +519,25 @@ html, body {
 .success-modal p {
     color: var(--text-muted);
     line-height: 1.6;
+}
+
+/* CANCEL APPOINTMENT WARNING ICON */
+#cancelModal .message-icon.warning {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #fee2e2;
+}
+
+#cancelModal .message-icon.warning i.bx.bx-error-circle {
+    font-size: 42px;
+    color: #ef4444 !important;
+    margin: 0;
+    line-height: 1;
 }
 
 /* SINGLE BUTTON */

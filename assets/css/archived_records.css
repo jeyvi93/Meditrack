@@ -1,0 +1,59 @@
+/* Archived Records tabs */
+.archive-tabs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.archive-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 16px;
+    border-radius: 7px;
+    color: #64748b;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s;
+}
+
+.archive-tab:hover {
+    color: #1e40af;
+    background: #e2e8f0;
+}
+
+.archive-tab.active {
+    color: #ffffff;
+    background: #1e40af;
+    box-shadow: 0 2px 5px rgba(30, 64, 175, 0.18);
+}
+
+.archive-tab i {
+    font-size: 1.1rem;
+}
+
+/* Keep the toolbar aligned with the existing staff page */
+.archive-tabs {
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .archive-tabs {
+        width: 100%;
+    }
+
+    .archive-tab {
+        flex: 1;
+        padding: 10px 8px;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+}

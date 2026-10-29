@@ -274,3 +274,22 @@
     }
 
 }
+
+/* LOGOUT MODAL WARNING ICON */
+#logoutModal .message-icon.warning {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #fee2e2;
+}
+
+#logoutModal .message-icon.warning i.bx.bx-log-out {
+    font-size: 42px;
+    color: #ef4444 !important;
+    margin: 0;
+    line-height: 1;
+}
