@@ -200,7 +200,7 @@ function openStudentModal(data) {
     document.getElementById("m_contact").textContent = data.contact;
     document.getElementById("m_address").textContent = data.address;
 
-    document.getElementById("m_blood").textContent = data.blood || "Unknown";
+    document.getElementById("m_blood").textContent = data.blood || "Not Specified";
     document.getElementById("m_height").textContent = data.height ?? "N/A";
     document.getElementById("m_weight").textContent = data.weight ?? "N/A";
     document.getElementById("m_allergies").textContent = data.allergies || "N/A";
@@ -251,7 +251,7 @@ function openEditStudentModal(data) {
     document.getElementById("e_contact").value = data.contact;
     document.getElementById("e_address").value = data.address;
 
-    document.getElementById("e_blood").value = data.blood;
+    document.getElementById("e_blood").value = data.blood || "";
     document.getElementById("e_height").value = data.height ?? "";
     document.getElementById("e_weight").value = data.weight ?? "";
     document.getElementById("e_allergies").value = data.allergies ?? "";

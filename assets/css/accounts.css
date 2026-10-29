@@ -1,0 +1,259 @@
+/* General Layout */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #f5f6fa;
+    color: #252525;
+}
+
+.main-content {
+    margin-left: 260px;
+    padding: 32px;
+    min-height: 100vh;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.page-header h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.page-header p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+/* Account Card */
+.accounts-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+/* Search and Filter */
+.filter-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 220px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0 12px;
+    height: 42px;
+}
+
+.search-box i {
+    font-size: 20px;
+    color: #777;
+}
+
+.search-box input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.filter-section select {
+    height: 42px;
+    min-width: 150px;
+    padding: 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.btn-filter,
+.btn-reset {
+    height: 42px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-filter {
+    border: none;
+    background: #800000;
+    color: #fff;
+}
+
+.btn-filter:hover {
+    background: #650000;
+}
+
+.btn-reset {
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #444;
+}
+
+/* Table */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+thead {
+    background: #f8f8fa;
+}
+
+th {
+    padding: 15px 14px;
+    font-size: 12px;
+    color: #666;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+td {
+    padding: 16px 14px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+tbody tr:hover {
+    background: #fcfcfd;
+}
+
+.empty-state {
+    text-align: center;
+    color: #777;
+    padding: 35px 15px;
+}
+
+/* Role and Email Status */
+.role-badge,
+.status-badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.role-badge {
+    background: #f0e8ff;
+    color: #6438a5;
+}
+
+.status-badge.verified {
+    background: #e3f7eb;
+    color: #187344;
+}
+
+.status-badge.unverified {
+    background: #fff0d9;
+    color: #996000;
+}
+
+/* Footer and Pagination */
+.table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.table-footer p {
+    margin: 0;
+    color: #777;
+    font-size: 13px;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #555;
+}
+
+.page-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 13px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    color: #333;
+    text-decoration: none;
+    background: #fff;
+}
+
+.page-btn:hover {
+    border-color: #800000;
+    color: #800000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 20px 14px;
+    }
+
+    .accounts-card {
+        padding: 16px;
+    }
+
+    .page-header h1 {
+        font-size: 23px;
+    }
+
+    .filter-section {
+        align-items: stretch;
+    }
+
+    .search-box {
+        flex-basis: 100%;
+    }
+
+    .filter-section select,
+    .btn-filter,
+    .btn-reset {
+        flex: 1;
+    }
+}
+

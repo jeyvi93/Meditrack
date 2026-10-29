@@ -158,7 +158,7 @@ unset($_SESSION['login_email']);
                                     required
                                 >
 
-                                <i class="fas fa-eye password-toggle"
+                                <i class="bx bx-show password-toggle"
                                 onclick="togglePassword('password', this)"></i>
 
                             </div>
@@ -256,12 +256,12 @@ unset($_SESSION['login_email']);
 
         if (input.type === "password") {
             input.type = "text";
-            icon.classList.remove("fa-eye");
-            icon.classList.add("fa-eye-slash");
+            icon.classList.remove("bx-show");
+            icon.classList.add("bx-hide");
         } else {
             input.type = "password";
-            icon.classList.remove("fa-eye-slash");
-            icon.classList.add("fa-eye");
+            icon.classList.remove("bx-hide");
+            icon.classList.add("bx-show");
         }
     }
 

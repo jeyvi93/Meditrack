@@ -99,16 +99,31 @@ unset($_SESSION['error']);
                                 <i class="fas fa-user"></i>
                                 <h2>Personal Information</h2>
                             </div>
+
+                            <div class="input-group">
+                                <label for="last_name">Last Name</label>
+                                <input
+                                    type="text"
+                                    id="last_name"
+                                    name="last_name"
+                                    placeholder="Enter last name"
+                                    pattern="[A-Za-zÀ-ÿ\s.'-]+"
+                                    title="Last name should contain letters and common name punctuation only."
+                                    oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
+                                    required
+                                >
+                            </div>
+
                             <div class="input-group">
                                 <label for="first_name">First Name</label>
                                 <input
                                     type="text"
                                     id="first_name"
                                     name="first_name"
-                                    placeholder="First Name"
+                                    placeholder="Enter first name"
                                     pattern="[A-Za-zÀ-ÿ\s.'-]+"
                                     title="First name should contain letters and common name punctuation only."
-                                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                                    oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                     required
                                 >
                             </div>
@@ -119,26 +134,13 @@ unset($_SESSION['error']);
                                     type="text"
                                     id="middle_name"
                                     name="middle_name"
-                                    placeholder="Middle Name"
+                                    placeholder="Enter middle name"
                                     pattern="[A-Za-zÀ-ÿ\s.'-]*"
                                     title="Middle name should contain letters and common name punctuation only."
-                                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                                    oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 >
                             </div>
 
-                            <div class="input-group">
-                                <label for="last_name">Last Name</label>
-                                <input
-                                    type="text"
-                                    id="last_name"
-                                    name="last_name"
-                                    placeholder="Last Name"
-                                    pattern="[A-Za-zÀ-ÿ\s.'-]+"
-                                    title="Last name should contain letters and common name punctuation only."
-                                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
-                                    required
-                                >
-                            </div>
                             <div class="input-row three-cols">
                                 <div class="input-group">
                                     <label>Birth Date</label>
@@ -203,7 +205,7 @@ unset($_SESSION['error']);
                                 <div class="input-group">
                                     <label>Blood Type</label>
                                     <select name="blood_type">
-                                        <option value="Unknown">Unknown</option>
+                                        <option value="">Select Blood Type</option>
                                         <option value="A+">A+</option>
                                         <option value="A-">A-</option>
                                         <option value="B+">B+</option>

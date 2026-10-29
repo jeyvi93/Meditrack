@@ -1,0 +1,264 @@
+
+/* Create Personnel Account Page */
+
+.main-content {
+    margin-left: 260px;
+    padding: 32px;
+    min-height: 100vh;
+    background: #f5f6fa;
+}
+
+.page-header {
+    margin-bottom: 28px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #252525;
+    margin-bottom: 6px;
+}
+
+.page-header p {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.personnel-card {
+    max-width: 1050px;
+    padding: 36px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.form-heading {
+    margin-bottom: 28px;
+}
+
+.form-heading h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 9px;
+}
+
+.form-heading p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #64748b;
+}
+
+.personnel-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.form-group label {
+    font-size: 15px ;
+    font-weight: 600;
+    color: #334155;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    min-height: 50px;
+    padding: 13px 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #1e293b;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.form-group input[readonly] {
+    background: #f8fafc;
+    color: #64748b;
+    cursor: default;
+}
+
+.field-error {
+    font-size: 12px;
+    color: #dc2626;
+}
+
+.middle-name-note {
+    font-weight: normal;
+    color: #64748b;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 22px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.btn-primary,
+.btn-secondary {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 12px 20px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-primary {
+    border: 1px solid #1e40af;
+    background: #1e40af;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+}
+
+.btn-secondary:hover {
+    background: #f8fafc;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 20px 14px;
+    }
+
+    .personnel-card {
+        padding: 22px 18px;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+}
+
+.password-box {
+    position: relative;
+}
+
+.password-box input {
+    width: 100%;
+    padding-right: 42px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--text-muted);
+    z-index: 2;
+}
+
+.password-toggle:hover {
+    color: var(--primary-blue);
+}
+
+/* Personnel success modal — independent styling */
+.personnel-success-modal {
+    background: #ffffff;
+    width: 100%;
+    max-width: 440px;
+    padding: 32px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
+.personnel-success-icon {
+    color: #16a34a;
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.personnel-success-modal h2 {
+    color: #1e293b;
+    font-size: 24px;
+    margin: 0 0 12px;
+}
+
+.personnel-success-modal p {
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 0 24px;
+    overflow-wrap: anywhere;
+}
+
+.personnel-success-buttons {
+    display: flex;
+    justify-content: center;
+}
+
+.personnel-success-continue {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.personnel-success-continue:hover {
+    background: #1d4ed8;
+}
+
+.personnel-success-continue:focus-visible {
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
+}

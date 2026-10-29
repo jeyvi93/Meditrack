@@ -17,9 +17,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Get form data
     $staff_id = $_POST['staff_id_number'];
-    $first_name = trim($_POST['first_name'] ?? '');
-    $middle_name = trim($_POST['middle_name'] ?? '');
-    $last_name = trim($_POST['last_name'] ?? '');
+    $last_name = mb_convert_case(trim($_POST['last_name'] ?? ''), MB_CASE_TITLE, 'UTF-8');
+    $first_name = mb_convert_case(trim($_POST['first_name'] ?? ''), MB_CASE_TITLE, 'UTF-8');
+    $middle_name = mb_convert_case(trim($_POST['middle_name'] ?? ''), MB_CASE_TITLE, 'UTF-8');
     $date_of_birth = $_POST['date_of_birth'];
     $sex = $_POST['sex'];
     $position = $_POST['position'];
@@ -30,7 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     
     // Medical Information
-    $blood_type = trim($_POST['blood_type'] ?? '') ?: 'Unknown';
+    $blood_type = trim($_POST['blood_type'] ?? '');
+
+    if ($blood_type === '') {
+        $blood_type = null;
+    }
 
     $height = trim($_POST['height'] ?? '') !== ''
         ? trim($_POST['height'])
@@ -100,9 +104,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $sql = "INSERT INTO staffs (
         staff_id_number,
+        last_name,
         first_name,
         middle_name,
-        last_name,
         date_of_birth,
         sex,
         position,
@@ -124,7 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         emergency_relationship,
         emergency_contact
     ) VALUES (
-        ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+        ?,?,?,?,?,?,?,?,?,?,?,NULLIF(?, ''),?,?,?,?,?,?,?,?,?,?,?,?
     )";
 
 
@@ -134,15 +138,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!$stmt) {
         die("Prepare failed: " . mysqli_error($conn));
     }
-
-
+    
     mysqli_stmt_bind_param(
         $stmt,
         "sssssssssssddsssssssssss",
         $staff_id,
+        $last_name,
         $first_name,
         $middle_name,
-        $last_name,
         $date_of_birth,
         $sex,
         $position,
@@ -164,7 +167,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $emergency_relationship,
         $emergency_contact
     );
-
 
     if (mysqli_stmt_execute($stmt)) {
 

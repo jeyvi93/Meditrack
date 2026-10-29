@@ -865,7 +865,7 @@ onclick='openEditStudentModal({
             <div class="data-group">
                 <label>Blood Type</label>
                 <select id="e_blood" name="blood_type">
-                    <option value="Unknown">Unknown</option>
+                    <option value="">Select Blood Type</option>
                     <option value="A+">A+</option>
                     <option value="A-">A-</option>
                     <option value="B+">B+</option>

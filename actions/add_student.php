@@ -22,9 +22,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $year_level = $_POST['year_level'];
 
     // Personal Information
-    $first_name = trim($_POST['first_name'] ?? '');
-    $middle_name = trim($_POST['middle_name'] ?? '');
-    $last_name = trim($_POST['last_name'] ?? '');
+    $last_name = mb_convert_case(trim($_POST['last_name'] ?? ''), MB_CASE_TITLE, 'UTF-8');
+    $first_name = mb_convert_case(trim($_POST['first_name'] ?? ''), MB_CASE_TITLE, 'UTF-8');
+    $middle_name = mb_convert_case(trim($_POST['middle_name'] ?? ''), MB_CASE_TITLE, 'UTF-8');
 
     $name_pattern = "/^[\p{L}\s.'-]+$/u";
 
@@ -47,9 +47,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = trim($_POST['address']);
 
     // Medical Information
-    $blood_type = trim($_POST['blood_type'] ?? 'Unknown');
+    $blood_type = trim($_POST['blood_type'] ?? '');
+
     if ($blood_type === '') {
-        $blood_type = 'Unknown';
+        $blood_type = null;
     }
 
     $height = trim($_POST['height'] ?? '') !== ''
@@ -122,9 +123,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Insert Student
     $sql = "INSERT INTO students (
         student_id_number,
+        last_name,
         first_name,
         middle_name,
-        last_name,
         date_of_birth,
         sex,
         course,
@@ -146,7 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         emergency_relationship,
         emergency_contact
     ) VALUES (
-        ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+        ?,?,?,?,?,?,?,?,?,?,?,NULLIF(?, ''),?,?,?,?,?,?,?,?,?,?,?,?
     )";
 
 
@@ -162,9 +163,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt,
         "sssssssissssssssssssssss",
         $student_id,
+        $last_name,
         $first_name,
         $middle_name,
-        $last_name,
         $date_of_birth,
         $sex,
         $course,

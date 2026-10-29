@@ -185,7 +185,7 @@ unset($_SESSION['error_field']);
                                 <div class="input-box password-box">
                                     <i class="fas fa-lock"></i>
                                     <input type="password" name="password" id="password" placeholder="Enter Password" required>
-                                    <i class="fas fa-eye password-toggle" onclick="togglePassword('password', this)"></i>
+                                    <i class="bx bx-show password-toggle" onclick="togglePassword('password', this)"></i>   
                                 </div>
                                 <?php if ($errorField === 'password'): ?>
                                     <span class="field-error"><?php echo htmlspecialchars($errorMessage); ?></span>
@@ -197,7 +197,7 @@ unset($_SESSION['error_field']);
                                 <div class="input-box password-box">
                                     <i class="fas fa-shield-halved"></i>
                                     <input type="password" name="confirm_password" id="confirm_password" placeholder="Re-enter Password" required>
-                                    <i class="fas fa-eye password-toggle" onclick="togglePassword('confirm_password', this)"></i>
+                                    <i class="bx bx-show password-toggle" onclick="togglePassword('confirm_password', this)"></i>
                                 </div>
                                 <?php if ($errorField === 'confirm_password'): ?>
                                     <span class="field-error"><?php echo htmlspecialchars($errorMessage); ?></span>
@@ -259,14 +259,16 @@ unset($_SESSION['error_field']);
         function togglePassword(inputId, icon) {
             const input = document.getElementById(inputId);
 
+            if (!input) return;
+
             if (input.type === "password") {
                 input.type = "text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
+                icon.classList.remove("bx-show");
+                icon.classList.add("bx-hide");
             } else {
                 input.type = "password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
+                icon.classList.remove("bx-hide");
+                icon.classList.add("bx-show");
             }
         }
 

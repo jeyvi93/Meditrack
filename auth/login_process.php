@@ -42,8 +42,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // ROLE-BASED REDIRECTION
             // ==========================
 
+            // ADMIN SIDE
+            if ($user["role"] == "Administrator") {
+
+                header("Location: ../admin/accounts.php");
+                exit();
+
+            }
+
             // CLINIC SIDE
-            if (
+            elseif (
                 $user["role"] == "School Nurse" ||
                 $user["role"] == "Clinic Staff"
             ) {
