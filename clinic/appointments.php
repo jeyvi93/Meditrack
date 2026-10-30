@@ -7,6 +7,11 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once "../config/database.php";
+
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
 ?>
 
 <?php

@@ -20,6 +20,25 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$role = $_SESSION['role'] ?? '';
+
+if (in_array($role, [
+    'Student',
+    'Teaching Staff',
+    'Non-Teaching Staff'
+], true)) {
+
+    header("Location: ../patient/view_consultation.php");
+    exit();
+
+}
+
+if ($role === 'Administrator') {
+
+    header("Location: ../admin/accounts.php");
+    exit();
+
+}
 
 // ==========================
 // REQUEST METHOD

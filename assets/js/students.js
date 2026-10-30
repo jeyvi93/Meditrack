@@ -191,30 +191,33 @@ function openStudentModal(data) {
         ].filter(name => name && name.trim() !== "").join(", ");
 
     document.getElementById("m_fullName").textContent = fullName;
-    document.getElementById("m_dob").textContent = data.dob;
-    document.getElementById("m_age").textContent = data.age;
-    document.getElementById("m_sex").textContent = data.sex;
-    document.getElementById("m_course").textContent = data.course;
-    document.getElementById("m_year").textContent = data.year;
-    document.getElementById("m_department").textContent = data.department;
-    document.getElementById("m_contact").textContent = data.contact;
-    document.getElementById("m_address").textContent = data.address;
+    document.getElementById("m_dob").textContent = data.dob || "Not Recorded";
+    document.getElementById("m_age").textContent = data.age || "Not Recorded";
+    document.getElementById("m_sex").textContent = data.sex || "Not Recorded";
+    document.getElementById("m_course").textContent = data.course || "Not Recorded";
+    document.getElementById("m_year").textContent = data.year || "Not Recorded";
+    document.getElementById("m_department").textContent = data.department || "Not Recorded";
+    document.getElementById("m_contact").textContent = data.contact || "Not Provided";
+    document.getElementById("m_address").textContent = data.address || "Not Provided";
 
+    // HEALTH INFORMATION
     document.getElementById("m_blood").textContent = data.blood || "Not Specified";
-    document.getElementById("m_height").textContent = data.height ?? "N/A";
-    document.getElementById("m_weight").textContent = data.weight ?? "N/A";
-    document.getElementById("m_allergies").textContent = data.allergies || "N/A";
-    document.getElementById("m_history").textContent = data.history || "N/A";
-    document.getElementById("m_medications").textContent = data.medications || "N/A";
-    document.getElementById("m_vaccines").textContent = data.vaccines || "N/A";
+    document.getElementById("m_height").textContent = data.height ?? "Not Recorded";
+    document.getElementById("m_weight").textContent = data.weight ?? "Not Recorded";
+    document.getElementById("m_allergies").textContent = data.allergies || "Not Recorded";
+    document.getElementById("m_history").textContent = data.history || "Not Recorded";
+    document.getElementById("m_medications").textContent = data.medications || "Not Recorded";
+    document.getElementById("m_vaccines").textContent = data.vaccines || "No Records Available";
 
-    document.getElementById("m_philhealth").textContent = data.philhealth || "N/A";
-    document.getElementById("m_insuranceNumber").textContent = data.insuranceNumber || "N/A";
-    document.getElementById("m_insuranceCompany").textContent = data.insuranceCompany || "N/A";
+    // INSURANCE INFORMATION
+    document.getElementById("m_philhealth").textContent = data.philhealth || "Not Provided";
+    document.getElementById("m_insuranceNumber").textContent = data.insuranceNumber || "Not Provided";
+    document.getElementById("m_insuranceCompany").textContent = data.insuranceCompany || "Not Provided";
 
-    document.getElementById("m_emergencyName").textContent = data.emergencyName;
-    document.getElementById("m_relationship").textContent = data.relationship;
-    document.getElementById("m_emergencyNumber").textContent = data.emergencyNumber;
+    // EMERGENCY CONTACT
+    document.getElementById("m_emergencyName").textContent = data.emergencyName || "Not Provided";
+    document.getElementById("m_relationship").textContent = data.relationship || "Not Provided";
+    document.getElementById("m_emergencyNumber").textContent = data.emergencyNumber || "Not Provided";
 
 
 }

@@ -17,7 +17,7 @@ $search = trim($_GET['search'] ?? '');
 $roleFilter = trim($_GET['role'] ?? '');
 
 // Pagination
-$recordsPerPage = 20;
+$recordsPerPage = 2;
 $page = max(1, (int) ($_GET['page'] ?? 1));
 $offset = ($page - 1) * $recordsPerPage;
 
@@ -139,64 +139,7 @@ while ($row = mysqli_fetch_assoc($rolesResult)) {
 </head>
 <body>
 
-<!-- Static Admin Sidebar -->
-<aside class="sidebar">
-
-    <!-- LOGO -->
-    <div class="logo">
-        <img src="../assets/images/med.png" alt="Logo">
-    </div>
-
-    <!-- MENU -->
-    <nav class="nav-menu">
-        <p class="menu-label">Main Menu</p>
-
-        <ul>
-            <li>
-                <a href="accounts.php" class="active">
-                    <i class='bx bxs-user-detail'></i> Account List
-                </a>
-            </li>
-
-            <li>
-                <a href="create_personnel.php">
-                    <i class='bx bxs-user-plus'></i> Create Personnel Account
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-    <!-- FOOTER -->
-    <div class="sidebar-footer">
-
-        <div class="admin-card" onclick="toggleLogoutMenu()">
-            <img
-                src="https://cdn-icons-png.flaticon.com/512/9131/9131590.png"
-                alt="Administrator"
-            >
-
-            <div class="admin-info">
-                <strong>
-                    <?= htmlspecialchars($_SESSION['full_name'] ?? 'Admin') ?>
-                </strong>
-
-                <small>Administrator</small>
-            </div>
-
-            <i class='bx bx-chevron-up-down'></i>
-        </div>
-
-        <!-- LOGOUT MENU -->
-        <div id="logoutMenu" class="logout-menu">
-            <button type="button" onclick="openLogoutModal()">
-                <i class='bx bx-log-out'></i>
-                Logout
-            </button>
-        </div>
-
-    </div>
-
-</aside>
+<?php include "../includes/admin_sidebar.php"; ?>
 
 <!-- Logout Confirmation Modal -->
 <div id="logoutModal" class="modal-overlay">

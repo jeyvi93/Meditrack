@@ -4,6 +4,21 @@ session_start();
 
 require_once "../config/database.php";
 
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
+
+if (($_SESSION['role'] ?? '') === 'Clinic Staff') {
+    header("Location: ../clinic/dashboard.php");
+    exit();
+}
+
+if (($_SESSION['role'] ?? '') === 'School Nurse') {
+    header("Location: ../clinic/dashboard.php");
+    exit();
+}
+
 $userId = $_SESSION['user_id'] ?? 0;
 
 $user = null;

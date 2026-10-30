@@ -2,7 +2,7 @@
 require_once "../config/database.php";
 
 $role = $_SESSION['role'] ?? '';
-$currentPage = basename($_SERVER['PHP_SELF']);
+$sidebarCurrentPage = basename($_SERVER['PHP_SELF']);
 $pendingAppointmentCount = 0;
 
 $pendingSql = "
@@ -126,9 +126,19 @@ if ($pendingStmt) {
 
         <!-- LOGOUT MENU -->
         <div id="logoutMenu" class="logout-menu">
-            <button onclick="openLogoutModal()">
-                <i class='bx bx-log-out'></i> Logout
+
+            <!-- CHANGE PASSWORD -->
+            <a href="change_personnel_password.php">
+                <i class='bx bx-lock-alt'></i>
+                Change Password
+            </a>
+
+            <!-- LOGOUT -->
+            <button type="button" onclick="openLogoutModal()">
+                <i class='bx bx-log-out'></i>
+                Logout
             </button>
+
         </div>
 
     </div>

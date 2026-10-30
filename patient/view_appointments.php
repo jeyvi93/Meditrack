@@ -17,6 +17,21 @@ unset($_SESSION['success'], $_SESSION['error']);
 
 require_once "../config/database.php";
 
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
+
+if (($_SESSION['role'] ?? '') === 'Clinic Staff') {
+    header("Location: ../clinic/dashboard.php");
+    exit();
+}
+
+if (($_SESSION['role'] ?? '') === 'School Nurse') {
+    header("Location: ../clinic/dashboard.php");
+    exit();
+}
+
 $user_id = $_SESSION['user_id'];
 
 $stmt = $conn->prepare("

@@ -11,6 +11,11 @@ if ($_SESSION['role'] === 'Clinic Staff') {
     exit();
 }
 
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
+
 $errorMessage = $_SESSION['error'] ?? '';
 unset($_SESSION['error']);
 ?>
@@ -190,7 +195,7 @@ unset($_SESSION['error']);
                             </div>
                             <div class="input-group">
                                 <label>Contact Name</label>
-                                <input type="text" name="emergency_name" placeholder="Guardian Full Name" pattern="[A-Za-zÀ-ÿ\s.,'-]+" title="Contact name should contain letters, spaces, and common name punctuation only." required>
+                                <input type="text" name="emergency_name" placeholder="Guardian Full Name" pattern="[A-Za-zÀ-ÿ\s.,'-]+" title="Contact name should contain letters, spaces, and common name punctuation only." oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())" required>
                             </div>
                             <div class="input-row two-cols">
                                 <div class="input-group">

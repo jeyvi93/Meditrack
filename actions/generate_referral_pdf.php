@@ -18,6 +18,26 @@ if ($_SESSION['role'] === 'Clinic Staff') {
     exit("You are not authorized to generate referral PDFs.");
 }
 
+$role = $_SESSION['role'] ?? '';
+
+if (in_array($role, [
+    'Student',
+    'Teaching Staff',
+    'Non-Teaching Staff'
+], true)) {
+
+    header("Location: ../patient/view_consultation.php");
+    exit();
+
+}
+
+if ($role === 'Administrator') {
+
+    header("Location: ../admin/accounts.php");
+    exit();
+
+}
+
 if (!isset($_GET['id'])) {
     exit("Referral ID is missing.");
 }

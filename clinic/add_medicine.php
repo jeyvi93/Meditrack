@@ -13,6 +13,11 @@ if ($_SESSION['role'] === 'Clinic Staff') {
     exit();
 }
 
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
+
 $mode = $_GET['mode'] ?? 'add';
 $medicine_id = $_GET['id'] ?? null;
 $medicine_name = $_GET['medicine'] ?? '';

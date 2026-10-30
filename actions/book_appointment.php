@@ -11,7 +11,20 @@ require_once "../config/database.php";
 $user_id = $_SESSION['user_id'];
 $full_name = $_SESSION['full_name'] ?? '';
 
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
 
+if (($_SESSION['role'] ?? '') === 'Clinic Staff') {
+    header("Location: ../clinic/dashboard.php");
+    exit();
+}
+
+if (($_SESSION['role'] ?? '') === 'School Nurse') {
+    header("Location: ../clinic/dashboard.php");
+    exit();
+}
 // ==========================================
 // ONLY ALLOW POST REQUEST
 // ==========================================

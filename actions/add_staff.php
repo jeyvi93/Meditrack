@@ -11,7 +11,28 @@ if ($_SESSION['role'] === 'Clinic Staff') {
     exit();
 }
 
+$role = $_SESSION['role'] ?? '';
+
+if (in_array($role, [
+    'Student',
+    'Teaching Staff',
+    'Non-Teaching Staff'
+], true)) {
+
+    header("Location: ../patient/view_consultation.php");
+    exit();
+
+}
+
+if ($role === 'Administrator') {
+
+    header("Location: ../admin/accounts.php");
+    exit();
+
+}
+
 require_once "../config/database.php";
+require_once "../includes/clinic_activity_logger.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -169,6 +190,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     );
 
     if (mysqli_stmt_execute($stmt)) {
+
+    // ==========================
+    // CLINIC ACTIVITY LOG
+    // ==========================
+
+    logClinicActivity(
+        $conn,
+        'Added',
+        'Staffs',
+        "Added staff profile for {$first_name} {$last_name}. Staff ID: {$staff_id}."
+    );
 
     $_SESSION['success'] = "Staff Added!";
     $_SESSION['success_message'] = "The staff record has been added successfully.";

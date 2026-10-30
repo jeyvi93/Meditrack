@@ -1,3 +1,15 @@
+:root {
+    --primary-blue: #1e40af;
+    --navy-dark: #1e293b;
+    --accent-blue: #3b82f6;
+    --medical-teal: #0d9488;
+    --bg-light: #f8fafc;
+    --text-main: #334155;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --white: #ffffff;
+}
+
 /* =========================
    DASHBOARD HEADER
 ========================= */
@@ -464,4 +476,181 @@
 
     flex-shrink: 0;
 
+}
+
+/* =========================
+   CLINIC ACTIVITY LOG
+========================= */
+
+.data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.data-card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid #e2e8f0;
+    min-width: 0;
+}
+
+.data-card.full-width {
+    grid-column: span 2;
+}
+
+.data-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 20px;
+}
+
+/* CLINIC ACTIVITY LOG HEADER */
+
+.data-card .card-title-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.data-card .card-title-btn a {
+    font-size: 0.8rem;
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* ACTIVITY TABLE */
+
+.data-card .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.data-card .summary-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 700;
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.data-card .summary-table td {
+    padding: 15px 12px;
+    font-size: 0.85rem;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.data-card .summary-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.data-card .summary-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.data-card .summary-table td strong {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+/* ROLE TEXT */
+
+.data-card .summary-table td:nth-child(3) {
+    color: #64748b;
+    white-space: nowrap;
+}
+
+/* ACTION TEXT */
+
+.data-card .summary-table td:nth-child(5) {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* DESCRIPTION */
+
+.data-card .summary-table td:last-child {
+    min-width: 220px;
+    line-height: 1.5;
+}
+
+/* RESPONSIVE TABLE */
+
+@media (max-width: 768px) {
+
+    .data-card {
+        padding: 18px;
+    }
+
+    .data-card .summary-table {
+        min-width: 750px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .data-card {
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+}
+
+/* =========================
+   CLINIC ACTIVITY LOG TABLE
+========================= */
+
+.data-card .summary-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+/* Date & Time */
+.data-card .summary-table th:first-child,
+.data-card .summary-table td:first-child {
+    width: 13%;
+}
+
+/* Personnel */
+.data-card .summary-table th:nth-child(2),
+.data-card .summary-table td:nth-child(2) {
+    width: 15%;
+}
+
+/* Role */
+.data-card .summary-table th:nth-child(3),
+.data-card .summary-table td:nth-child(3) {
+    width: 12%;
+}
+
+/* Module */
+.data-card .summary-table th:nth-child(4),
+.data-card .summary-table td:nth-child(4) {
+    width: 12%;
+}
+
+/* Action */
+.data-card .summary-table th:nth-child(5),
+.data-card .summary-table td:nth-child(5) {
+    width: 11%;
+    white-space: nowrap;
+}
+
+/* Description */
+.data-card .summary-table th:last-child,
+.data-card .summary-table td:last-child {
+    width: 37%;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
 }

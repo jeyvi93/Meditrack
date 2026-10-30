@@ -35,6 +35,26 @@
         exit();
     }
 
+    $role = $_SESSION['role'] ?? '';
+
+    if (in_array($role, [
+        'Student',
+        'Teaching Staff',
+        'Non-Teaching Staff'
+    ], true)) {
+
+        header("Location: ../patient/view_consultation.php");
+        exit();
+
+    }
+
+    if ($role === 'Administrator') {
+
+        header("Location: ../admin/accounts.php");
+        exit();
+
+    }
+
 
     // ==========================
     // VALIDATE MEDICINE ID
@@ -115,40 +135,6 @@
 
 
     if (mysqli_stmt_execute($stmt)) {
-
-        // ==========================
-        // LOG ACTIVITY
-        // ==========================
-
-        $log_description = $medicine['medicine_name'] . " was returned to stock.";
-
-        $log_stmt = mysqli_prepare(
-            $conn,
-            "INSERT INTO activity_logs
-            (
-                user_id,
-                activity_type,
-                action,
-                description
-            )
-            VALUES (?, ?, ?, ?)"
-        );
-
-        $activity_type = "Medicine";
-        $action = "Returned to Stock";
-
-        mysqli_stmt_bind_param(
-            $log_stmt,
-            "isss",
-            $_SESSION['user_id'],
-            $activity_type,
-            $action,
-            $log_description
-        );
-
-        mysqli_stmt_execute($log_stmt);
-        mysqli_stmt_close($log_stmt);
-
 
         echo json_encode([
             "success" => true,

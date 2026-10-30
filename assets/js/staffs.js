@@ -215,33 +215,45 @@ function openStaffModal(data) {
         ].filter(name => name && name.trim() !== "").join(", ");
 
     document.getElementById("m_fullName").textContent = fullName;
-    document.getElementById("m_dob").textContent = data.dob;
-    document.getElementById("m_age").textContent = data.age;
-    document.getElementById("m_sex").textContent = data.sex;
-    document.getElementById("m_position").textContent = data.position;
-    document.getElementById("m_designation").textContent = data.designation;
-    document.getElementById("m_department").textContent = data.department;
-    document.getElementById("m_contact").textContent = data.contact;
-    document.getElementById("m_address").textContent = data.address;
+    document.getElementById("m_dob").textContent = data.dob || "Not Recorded";
+    document.getElementById("m_age").textContent = data.age ?? "Not Recorded";
+    document.getElementById("m_sex").textContent = data.sex || "Not Recorded";
+    document.getElementById("m_position").textContent = data.position || "Not Recorded";
+    document.getElementById("m_designation").textContent = data.designation || "Not Recorded";
+    document.getElementById("m_department").textContent = data.department || "Not Recorded";
+    document.getElementById("m_contact").textContent = data.contact || "Not Provided";
+    document.getElementById("m_address").textContent = data.address || "Not Provided";
 
+    // HEALTH INFORMATION
     document.getElementById("m_blood").textContent =
-    data.blood && data.blood.trim() !== ""
-        ? data.blood
-        : "Not Specified";
-    document.getElementById("m_height").textContent = data.height != null && data.height !== "" ? data.height + " cm" : "N/A";
-    document.getElementById("m_weight").textContent = data.weight != null && data.weight !== "" ? data.weight + " kg" : "N/A";
-    document.getElementById("m_allergies").textContent = data.allergies || "N/A";
-    document.getElementById("m_history").textContent = data.history || "N/A";
-    document.getElementById("m_medications").textContent = data.medications || "N/A";
-    document.getElementById("m_vaccines").textContent = data.vaccines || "N/A";
+        data.blood && data.blood.trim() !== ""
+            ? data.blood
+            : "Not Specified";
 
-    document.getElementById("m_philhealth").textContent = data.philhealth || "N/A";
-    document.getElementById("m_insuranceNumber").textContent = data.insuranceNumber || "N/A";
-    document.getElementById("m_insuranceCompany").textContent = data.insuranceCompany || "N/A";
+    document.getElementById("m_height").textContent =
+        data.height != null && data.height !== ""
+            ? data.height + " cm"
+            : "Not Recorded";
 
-    document.getElementById("m_emergencyName").textContent = data.emergencyName;
-    document.getElementById("m_relationship").textContent = data.relationship;
-    document.getElementById("m_emergencyNumber").textContent = data.emergencyNumber;
+    document.getElementById("m_weight").textContent =
+        data.weight != null && data.weight !== ""
+            ? data.weight + " kg"
+            : "Not Recorded";
+
+    document.getElementById("m_allergies").textContent = data.allergies || "Not Recorded";
+    document.getElementById("m_history").textContent = data.history || "Not Recorded";
+    document.getElementById("m_medications").textContent = data.medications || "Not Recorded";
+    document.getElementById("m_vaccines").textContent = data.vaccines || "No Records Available";
+
+    // INSURANCE INFORMATION
+    document.getElementById("m_philhealth").textContent = data.philhealth || "Not Provided";
+    document.getElementById("m_insuranceNumber").textContent = data.insuranceNumber || "Not Provided";
+    document.getElementById("m_insuranceCompany").textContent = data.insuranceCompany || "Not Provided";
+
+    // EMERGENCY CONTACT
+    document.getElementById("m_emergencyName").textContent = data.emergencyName || "Not Provided";
+    document.getElementById("m_relationship").textContent = data.relationship || "Not Provided";
+    document.getElementById("m_emergencyNumber").textContent = data.emergencyNumber || "Not Provided";
 
 }
 

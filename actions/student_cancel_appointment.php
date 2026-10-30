@@ -9,6 +9,13 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once "../config/database.php";
 
+if ($role === 'Administrator') {
+
+    header("Location: ../admin/accounts.php");
+    exit();
+
+}
+
 $user_id = (int) $_SESSION['user_id'];
 
 

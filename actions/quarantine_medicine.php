@@ -2,6 +2,7 @@
 
 session_start();
 require_once "../config/database.php";
+require_once "../includes/clinic_activity_logger.php";
 
 header("Content-Type: application/json");
 
@@ -19,6 +20,26 @@ if ($_SESSION['role'] === 'Clinic Staff') {
         "message" => "You are not authorized to quarantine medicine."
     ]);
     exit();
+}
+
+$role = $_SESSION['role'] ?? '';
+
+if (in_array($role, [
+    'Student',
+    'Teaching Staff',
+    'Non-Teaching Staff'
+], true)) {
+
+    header("Location: ../patient/view_consultation.php");
+    exit();
+
+}
+
+if ($role === 'Administrator') {
+
+    header("Location: ../admin/accounts.php");
+    exit();
+
 }
 
 if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
@@ -71,35 +92,13 @@ mysqli_stmt_bind_param($stmt, "i", $id);
 
 if (mysqli_stmt_execute($stmt)) {
 
-    // ==========================
-    // ACTIVITY LOG
-    // ==========================
-
-    $activity_type = "Medicine";
-    $action = "Quarantined";
-
-    $description = "Moved {$medicine['medicine_name']} to quarantine."
-                 . " Batch: {$medicine['batch_number']}.";
-
-    $logStmt = mysqli_prepare(
+    /* Clinic Activity Log */
+    logClinicActivity(
         $conn,
-        "INSERT INTO activity_logs
-        (user_id, activity_type, action, description)
-        VALUES (?, ?, ?, ?)"
+        'Quarantined',
+        'Medicine',
+        "Moved {$medicine['medicine_name']} to quarantine. Batch: {$medicine['batch_number']}."
     );
-
-    mysqli_stmt_bind_param(
-        $logStmt,
-        "isss",
-        $_SESSION['user_id'],
-        $activity_type,
-        $action,
-        $description
-    );
-
-    mysqli_stmt_execute($logStmt);
-    mysqli_stmt_close($logStmt);
-
 
     echo json_encode([
         "success" => true,

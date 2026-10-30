@@ -1,7 +1,5 @@
 <?php
 
-
-
 require_once "../config/database.php";
 
 $token = trim($_GET["token"] ?? "");
@@ -377,8 +375,6 @@ $error = $_GET["error"] ?? "";
                         type="submit"
                         class="btn-save-profile"
                     >
-
-                        <i class='bx bx-lock'></i>
 
                         Reset Password
 

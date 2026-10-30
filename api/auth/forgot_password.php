@@ -41,15 +41,17 @@ $result = mysqli_stmt_get_result($stmt);
 
 /*
 |--------------------------------------------------------------------------
-| Generic Response
+| Gmail not found Response
 |--------------------------------------------------------------------------
 |
-| We do not tell the user whether the email exists.
+|
 |
 */
 
 if (mysqli_num_rows($result) !== 1) {
-    header("Location: ../../patient/forgot_password.php?sent=1");
+    mysqli_stmt_close($stmt);
+
+    header("Location: ../../patient/forgot_password.php?error=not_found");
     exit();
 }
 

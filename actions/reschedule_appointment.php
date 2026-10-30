@@ -5,6 +5,26 @@ session_start();
 require_once "../config/database.php";
 require_once __DIR__ . '/../config/firebase_messaging.php';
 
+$role = $_SESSION['role'] ?? '';
+
+if (in_array($role, [
+    'Student',
+    'Teaching Staff',
+    'Non-Teaching Staff'
+], true)) {
+
+    header("Location: ../patient/view_consultation.php");
+    exit();
+
+}
+
+if ($role === 'Administrator') {
+
+    header("Location: ../admin/accounts.php");
+    exit();
+
+}
+
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     $appointment_id = $_POST['appointment_id'];

@@ -12,6 +12,11 @@ if ($_SESSION['role'] === 'Clinic Staff') {
     header("Location: dashboard.php");
     exit();
 }
+
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -94,6 +99,7 @@ if ($_SESSION['role'] === 'Clinic Staff') {
                                 name="last_name"
                                 placeholder="Enter Last Name"
                                 pattern="[A-Za-zÀ-ÿ .'-]+"
+                                oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
                                 required
                             >
@@ -107,6 +113,7 @@ if ($_SESSION['role'] === 'Clinic Staff') {
                                 name="first_name"
                                 placeholder="Enter First Name"
                                 pattern="[A-Za-zÀ-ÿ .'-]+"
+                                oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
                                 required
                             >
@@ -120,6 +127,7 @@ if ($_SESSION['role'] === 'Clinic Staff') {
                                 name="middle_name"
                                 placeholder="Enter Middle Name"
                                 pattern="[A-Za-zÀ-ÿ .'-]+"
+                                oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
                             >
                         </div>
@@ -176,6 +184,7 @@ if ($_SESSION['role'] === 'Clinic Staff') {
                                     name="parent_name"
                                     placeholder="Parent's Full Name"
                                     pattern="[A-Za-zÀ-ÿ .'-]+"
+                                    oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                     title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
                                 >
                             </div>
@@ -192,6 +201,7 @@ if ($_SESSION['role'] === 'Clinic Staff') {
                                     placeholder="Spouse's Full Name"
                                     pattern="[A-Za-zÀ-ÿ .'-]+"
                                     title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
+                                    oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 >
                             </div>
                             <div class="input-group">
@@ -269,7 +279,7 @@ if ($_SESSION['role'] === 'Clinic Staff') {
                 <div class="form-actions">
                     <button type="reset" class="btn-ghost">Discard Draft</button>
                     <button type="submit" class="btn-primary">
-                        <i class="fas fa-print"></i> Save & Print Referral
+                         Save & Print Referral
                     </button>
                 </div>
             </form>

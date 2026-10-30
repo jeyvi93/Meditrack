@@ -11,7 +11,28 @@ if (($_SESSION['role'] ?? '') === 'Clinic Staff') {
     exit();
 }
 
+$role = $_SESSION['role'] ?? '';
+
+if (in_array($role, [
+    'Student',
+    'Teaching Staff',
+    'Non-Teaching Staff'
+], true)) {
+
+    header("Location: ../patient/view_consultation.php");
+    exit();
+
+}
+
+if ($role === 'Administrator') {
+
+    header("Location: ../admin/accounts.php");
+    exit();
+
+}
+
 require_once "../config/database.php";
+require_once "../includes/clinic_activity_logger.php";
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: ../clinic/staffs.php");
@@ -24,6 +45,31 @@ if ($staff_id === '') {
     $_SESSION['error'] = "Failed to archive staff profile.";
     header("Location: ../clinic/staffs.php");
     exit();
+}
+
+/* Get staff name for the activity log */
+$nameStmt = mysqli_prepare(
+    $conn,
+    "SELECT first_name, last_name
+     FROM staffs
+     WHERE staff_id_number = ?
+       AND is_archived = 0"
+);
+
+$staffName = "Unknown staff";
+
+if ($nameStmt) {
+    mysqli_stmt_bind_param($nameStmt, "s", $staff_id);
+    mysqli_stmt_execute($nameStmt);
+
+    $nameResult = mysqli_stmt_get_result($nameStmt);
+    $staff = mysqli_fetch_assoc($nameResult);
+
+    if ($staff) {
+        $staffName = trim($staff['first_name'] . ' ' . $staff['last_name']);
+    }
+
+    mysqli_stmt_close($nameStmt);
 }
 
 $stmt = mysqli_prepare(
@@ -40,6 +86,13 @@ if (!$stmt) {
     mysqli_stmt_bind_param($stmt, "s", $staff_id);
 
     if (mysqli_stmt_execute($stmt) && mysqli_stmt_affected_rows($stmt) === 1) {
+
+        logClinicActivity(
+            $conn,
+            'Archived',
+            'Staffs',
+            "Archived staff profile for {$staffName}. Staff ID: {$staff_id}."
+        );
         $_SESSION['success'] = "Staff Profile Archived!";
         $_SESSION['success_message'] =
             "The staff profile has been archived successfully. Its records and linked account have been preserved.";

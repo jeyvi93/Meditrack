@@ -7,6 +7,11 @@
         header("Location: ../index.php");
         exit();
     }
+    
+    if (($_SESSION['role'] ?? '') === 'Administrator') {
+        header("Location: ../admin/accounts.php");
+        exit();
+    }
 
     $medicineQuery = mysqli_query($conn, "
         SELECT DISTINCT medicine_name
@@ -153,6 +158,7 @@
                                 id="lastName"
                                 name="last_name"
                                 placeholder="Enter Last Name"
+                                oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 required
                             >
                         </div>
@@ -164,6 +170,7 @@
                                 id="firstName"
                                 name="first_name"
                                 placeholder="Enter First Name"
+                                oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 required
                             >
                         </div>

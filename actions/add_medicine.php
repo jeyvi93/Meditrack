@@ -2,6 +2,7 @@
 
 session_start();
 require_once "../config/database.php";
+require_once "../includes/clinic_activity_logger.php";
 
 header("Content-Type: application/json");
 
@@ -32,6 +33,26 @@ if ($_SESSION['role'] === 'Clinic Staff') {
     ]);
 
     exit();
+}
+
+$role = $_SESSION['role'] ?? '';
+
+if (in_array($role, [
+    'Student',
+    'Teaching Staff',
+    'Non-Teaching Staff'
+], true)) {
+
+    header("Location: ../patient/view_consultation.php");
+    exit();
+
+}
+
+if ($role === 'Administrator') {
+
+    header("Location: ../admin/accounts.php");
+    exit();
+
 }
 
 // ==========================
@@ -176,7 +197,6 @@ $existing_batch = mysqli_fetch_assoc($result);
 
 mysqli_stmt_close($stmt);
 
-
 if ($existing_batch) {
 
     echo json_encode([
@@ -230,6 +250,7 @@ mysqli_stmt_bind_param(
 if (!mysqli_stmt_execute($stmt)) {
 
     mysqli_stmt_close($stmt);
+    mysqli_close($conn);
 
     echo json_encode([
         "success" => false,
@@ -241,33 +262,16 @@ if (!mysqli_stmt_execute($stmt)) {
 
 mysqli_stmt_close($stmt);
 
-
 // ==========================
-// ACTIVITY LOG
+// CLINIC ACTIVITY LOG
 // ==========================
 
-$activity_type = "Medicine";
-$action = "Added";
-$description = "Added {$medicine_name} to inventory. Batch: {$batch_number}, Quantity: {$quantity}.";
-
-$logStmt = mysqli_prepare(
+logClinicActivity(
     $conn,
-    "INSERT INTO activity_logs
-    (user_id, activity_type, action, description)
-    VALUES (?, ?, ?, ?)"
+    'Added',
+    'Medicine',
+    "Added {$medicine_name} to inventory. Batch: {$batch_number}, Quantity: {$quantity}."
 );
-
-mysqli_stmt_bind_param(
-    $logStmt,
-    "isss",
-    $_SESSION['user_id'],
-    $activity_type,
-    $action,
-    $description
-);
-
-mysqli_stmt_execute($logStmt);
-mysqli_stmt_close($logStmt);
 
 mysqli_close($conn);
 

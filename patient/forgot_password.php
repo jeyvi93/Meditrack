@@ -75,9 +75,16 @@
                     </div>
                 </div>
 
+                <?php if (($_GET['error'] ?? '') === 'not_found'): ?>
+                    <div class="email-error-message">
+                        <i class='bx bx-error-circle'></i>
+                        <span>Email address not found. Please enter your registered email.</span>
+                    </div>
+                <?php endif; ?>
+
                 <div class="actions">
                     <button type="submit" class="btn-submit">
-                        Send Reset Link <i class='bx bx-paper-plane'></i>
+                        Send Reset Link
                     </button>
                     <a href="../index.php" class="back-link-mobile">Back to Login</a>
                 </div>
@@ -90,7 +97,9 @@
 <div id="forgotModal" class="modal-overlay hidden">
     <div class="modal-box">
         
-        <i class='bx bxs-envelope-open success-icon'></i>
+        <div class="success-icon">
+            <i class="bx bxs-envelope"></i>
+        </div>
 
         <h3>Check Your Email</h3>
 

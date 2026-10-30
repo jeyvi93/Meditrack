@@ -1,4 +1,3 @@
-
 <?php
 
 session_start();
@@ -11,6 +10,19 @@ if (!isset($_SESSION['user_id'])) {
     echo json_encode([
         "success" => false,
         "message" => "Unauthorized"
+    ]);
+
+    exit();
+}
+
+$role = $_SESSION['role'] ?? '';
+
+if (!in_array($role, ['School Nurse', 'Clinic Staff'], true)) {
+    http_response_code(403);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "You are not authorized to view clinic activities."
     ]);
 
     exit();
@@ -64,10 +76,14 @@ function renderActivityItem($activity, $isRecent = false)
         ));
     }
 
-    $timestamp = date(
-        "M d, Y • h:i A",
-        strtotime($activity['created_at'])
-    );
+    $isMedicineAlert = !empty($activity['is_medicine_alert']);
+
+    $timestamp = $isMedicineAlert
+        ? 'Current inventory status'
+        : date(
+            "M d, Y • h:i A",
+            strtotime($activity['created_at'])
+        );
 
     return '
         <div class="activity-item">
@@ -83,36 +99,17 @@ function renderActivityItem($activity, $isRecent = false)
     ';
 }
 
-$recentActivities = [];
-$allActivities = [];
+$appointmentActivities = [];
+$medicineAlerts = [];
 
-$recentActivitySql = "
-    SELECT activity_type, action, description, created_at
-    FROM activity_logs
-    ORDER BY created_at DESC
-    LIMIT 5
-";
-
-$recentActivityResult = mysqli_query($conn, $recentActivitySql);
-
-if (!$recentActivityResult) {
-    http_response_code(500);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Failed to fetch recent activities"
-    ]);
-
-    exit();
-}
-
-while ($row = mysqli_fetch_assoc($recentActivityResult)) {
-    $recentActivities[] = $row;
-}
+// ==========================
+// FETCH APPOINTMENT ACTIVITIES
+// ==========================
 
 $allActivitySql = "
     SELECT activity_type, action, description, created_at
     FROM activity_logs
+    WHERE activity_type = 'Appointment'
     ORDER BY created_at DESC
     LIMIT 50
 ";
@@ -124,15 +121,119 @@ if (!$allActivityResult) {
 
     echo json_encode([
         "success" => false,
-        "message" => "Failed to fetch all activities"
+        "message" => "Failed to fetch appointment activities"
     ]);
 
     exit();
 }
 
 while ($row = mysqli_fetch_assoc($allActivityResult)) {
-    $allActivities[] = $row;
+    $appointmentActivities[] = $row;
 }
+
+
+// ==========================
+// FETCH MEDICINE STATUS ALERTS
+// ==========================
+
+$medicineAlertSql = "
+    SELECT
+        medicine_name,
+        batch_number,
+        quantity,
+        low_stock_threshold,
+        expiry_date,
+        CASE
+            WHEN expiry_date < CURDATE()
+                THEN 'Expired'
+            WHEN quantity <= low_stock_threshold
+                THEN 'Low Stock'
+            ELSE 'Near Expiry'
+        END AS alert_status
+    FROM medicines
+    WHERE
+        (
+            expiry_date < CURDATE()
+            AND status != 'Disposed'
+        )
+        OR
+        (
+            status = 'Active'
+            AND is_quarantined = 0
+            AND expiry_date >= CURDATE()
+            AND (
+                quantity <= low_stock_threshold
+                OR expiry_date <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)
+            )
+        )
+";
+
+$medicineAlertResult = mysqli_query($conn, $medicineAlertSql);
+
+if (!$medicineAlertResult) {
+    http_response_code(500);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Failed to fetch medicine alerts"
+    ]);
+
+    exit();
+}
+
+
+while ($row = mysqli_fetch_assoc($medicineAlertResult)) {
+
+    $medicineName = $row['medicine_name'];
+    $batchNumber = $row['batch_number'];
+    $quantity = $row['quantity'];
+    $threshold = $row['low_stock_threshold'];
+    $expiryDate = date("M d, Y", strtotime($row['expiry_date']));
+    $alertStatus = $row['alert_status'];
+
+    if ($alertStatus === 'Expired') {
+        $description = "$medicineName (Batch: $batchNumber) expired on $expiryDate.";
+    } elseif ($alertStatus === 'Low Stock') {
+        $description = "$medicineName (Batch: $batchNumber) has low stock. Remaining: $quantity; threshold: $threshold.";
+    } else {
+        $description = "$medicineName (Batch: $batchNumber) will expire on $expiryDate.";
+    }
+
+    $medicineAlerts[] = [
+        'activity_type' => 'Medicine',
+        'action' => $alertStatus,
+        'description' => $description,
+        'is_medicine_alert' => true
+    ];
+}
+
+
+// ==========================
+// COMBINE ACTIVITIES
+// ==========================
+
+$allActivities = [];
+
+$maxItems = max(
+    count($medicineAlerts),
+    count($appointmentActivities)
+);
+
+for ($i = 0; $i < $maxItems; $i++) {
+
+    // Medicine alerts first
+    if (isset($medicineAlerts[$i])) {
+        $allActivities[] = $medicineAlerts[$i];
+    }
+
+    // Appointment actions next
+    if (isset($appointmentActivities[$i])) {
+        $allActivities[] = $appointmentActivities[$i];
+    }
+}
+
+$recentActivities = array_slice($allActivities, 0, 5);
+$allActivities = array_slice($allActivities, 0, 50);
 
 $recentHtml = '';
 

@@ -3,9 +3,10 @@
 
 .main-content {
     margin-left: 260px;
-    padding: 32px;
+    padding: clamp(22px, 2.5vw, 40px);
     min-height: 100vh;
     background: #f5f6fa;
+    box-sizing: border-box;
 }
 
 .page-header {
@@ -25,8 +26,12 @@
 }
 
 .personnel-card {
-    max-width: 1050px;
-    padding: 36px;
+    width: 100%;
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: clamp(26px, 2.8vw, 40px);
+    box-sizing: border-box;
+
     background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 16px;
@@ -108,7 +113,19 @@
 
 .form-row {
     display: flex;
+    align-items: flex-start;
     gap: 20px;
+    width: 100%;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 0;
+}
+
+.form-group input,
+.form-group select {
+    box-sizing: border-box;
 }
 
 .form-actions {
@@ -155,6 +172,94 @@
 
 .btn-secondary:hover {
     background: #f8fafc;
+}
+
+/* =====================================
+   LARGE DESKTOP SCREENS
+===================================== */
+
+@media (min-width: 1600px) {
+
+    .main-content {
+        padding: 40px 48px;
+    }
+
+    .personnel-card {
+        max-width: 1300px;
+    }
+
+    .form-row {
+        gap: 24px;
+    }
+
+}
+
+/* =====================================
+   STANDARD LAPTOPS
+===================================== */
+
+@media (max-width: 1366px) {
+
+    .main-content {
+        padding: 28px;
+    }
+
+    .personnel-card {
+        max-width: 1150px;
+        padding: 30px;
+    }
+
+    .form-row {
+        gap: 16px;
+    }
+
+}
+
+/* =====================================
+   SMALLER LAPTOP SCREENS
+===================================== */
+
+@media (max-width: 1050px) {
+
+    .main-content {
+        padding: 24px;
+    }
+
+    .personnel-card {
+        padding: 26px;
+    }
+
+    /* Give the three name fields more room */
+    .name-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .name-row .form-group:last-child {
+        grid-column: 1 / -1;
+    }
+
+}
+
+/* =====================================
+   COMPACT PC WORKSPACE
+===================================== */
+
+@media (max-width: 850px) {
+
+    .main-content {
+        padding: 20px;
+    }
+
+    .personnel-card {
+        padding: 22px;
+    }
+
+    .form-row {
+        gap: 14px;
+    }
+
 }
 
 @media (max-width: 768px) {
@@ -218,9 +323,22 @@
 }
 
 .personnel-success-icon {
-    color: #16a34a;
-    font-size: 64px;
-    margin-bottom: 16px;
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: #dcfce7;
+}
+
+.personnel-success-icon i {
+    font-size: 42px;
+    color: #22c55e;
+    line-height: 1;
 }
 
 .personnel-success-modal h2 {

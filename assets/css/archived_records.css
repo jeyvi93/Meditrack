@@ -57,3 +57,41 @@
         width: 100%;
     }
 }
+
+/* =========================
+   ARCHIVED STUDENT VIEW HEADER
+========================= */
+
+#studentModal .student-summary {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: var(--light-blue, #eff6ff);
+    padding: 18px 20px;
+    border-radius: 12px;
+    border-left: 5px solid var(--primary-blue);
+    position: relative;
+}
+
+#studentModal .profile-avatar {
+    width: 62px;
+    height: 62px;
+    background: var(--primary-blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+#studentModal .p-avatar i {
+    font-size: 1.8rem;
+}
+
+#studentModal .summary-info {
+    display: flex;
+    flex-direction: column;
+}

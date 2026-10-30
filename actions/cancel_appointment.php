@@ -10,6 +10,11 @@ if (!isset($_SESSION['user_id'])) {
 require_once "../config/database.php";
 require_once __DIR__ . '/../config/firebase_messaging.php';
 
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $appointment_id = $_POST['appointment_id'];

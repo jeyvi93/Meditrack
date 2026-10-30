@@ -3,6 +3,7 @@
 session_start();
 
 require_once "../config/database.php";
+require_once "../includes/clinic_activity_logger.php";
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
@@ -12,6 +13,26 @@ if (!isset($_SESSION['user_id'])) {
 if ($_SESSION['role'] === 'Clinic Staff') {
     header("Location: ../clinic/dashboard.php");
     exit();
+}
+
+$role = $_SESSION['role'] ?? '';
+
+if (in_array($role, [
+    'Student',
+    'Teaching Staff',
+    'Non-Teaching Staff'
+], true)) {
+
+    header("Location: ../patient/view_consultation.php");
+    exit();
+
+}
+
+if ($role === 'Administrator') {
+
+    header("Location: ../admin/accounts.php");
+    exit();
+
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -111,10 +132,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $referral_id = mysqli_insert_id($conn);
 
+        /* Clinic Activity Log */
+        logClinicActivity(
+            $conn,
+            'Created',
+            'Referrals',
+            "Created referral for {$full_name}. Referred to: {$doctor_name}."
+        );
+
         mysqli_stmt_close($stmt);
         mysqli_close($conn);
 
         header("Location: generate_referral_pdf.php?id=" . $referral_id);
+        
         exit();
 
     } else {

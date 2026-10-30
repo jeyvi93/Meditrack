@@ -3,10 +3,31 @@ session_start();
 
 require_once "../config/database.php";
 require_once __DIR__ . '/../config/firebase_messaging.php';
+require_once "../includes/clinic_activity_logger.php";
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
     exit();
+}
+
+$role = $_SESSION['role'] ?? '';
+
+if (in_array($role, [
+    'Student',
+    'Teaching Staff',
+    'Non-Teaching Staff'
+], true)) {
+
+    header("Location: ../patient/view_consultation.php");
+    exit();
+
+}
+
+if ($role === 'Administrator') {
+
+    header("Location: ../admin/accounts.php");
+    exit();
+
 }
 
 $id = $_POST['appointment_id'];
@@ -99,7 +120,15 @@ if (mysqli_stmt_execute($stmt)) {
     );
 
     mysqli_stmt_execute($activityStmt);
-    mysqli_stmt_close($activityStmt);
+    
+    
+    /* Clinic Activity Log */
+    logClinicActivity(
+        $conn,
+        'Approved',
+        'Appointments',
+        "{$patientName}'s appointment request was approved."
+    );
 
     $_SESSION['success'] = "Appointment Approved!";
     $_SESSION['success_message'] = "The patient has been notified.";

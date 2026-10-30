@@ -8,6 +8,11 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
+
 // ==========================
 // MONTH & YEAR FILTER
 // ==========================
@@ -350,7 +355,7 @@ $summaryResult = $stmt->get_result();
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <!-- Icons & Charts -->
-     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="../assets/css/reports.css">
@@ -580,7 +585,7 @@ $summaryResult = $stmt->get_result();
                 <div class="data-card full-width">
                     <div class="card-title-btn">
                         <h3>Summary of Consultations</h3>
-                        <a href="view_consultation.php">View All Logs <i class="fas fa-external-link-alt"></i></a>
+                        <a href="view_consultation.php">View All Logs <i class="bx bx-link-external"></i></a>
                     </div>
                     <table class="summary-table">
                         <thead>

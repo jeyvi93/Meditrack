@@ -8,6 +8,27 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once "../config/database.php";
 require_once __DIR__ . '/../config/firebase_messaging.php';
+require_once "../includes/clinic_activity_logger.php";
+
+$role = $_SESSION['role'] ?? '';
+
+if (in_array($role, [
+    'Student',
+    'Teaching Staff',
+    'Non-Teaching Staff'
+], true)) {
+
+    header("Location: ../patient/view_consultation.php");
+    exit();
+
+}
+
+if ($role === 'Administrator') {
+
+    header("Location: ../admin/accounts.php");
+    exit();
+
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -116,6 +137,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         mysqli_stmt_execute($activityStmt);
         mysqli_stmt_close($activityStmt);
+
+        /* Clinic Activity Log */
+        logClinicActivity(
+            $conn,
+            'Rejected',
+            'Appointments',
+            "{$patientName}'s appointment request was rejected."
+        );
 
         $_SESSION['success'] = "Appointment Rejected!";
         $_SESSION['success_message'] = "The patient has been notified.";

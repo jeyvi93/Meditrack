@@ -8,6 +8,11 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once "../config/database.php";
 
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
+
 // ==========================
 // DASHBOARD STATISTICS
 // ==========================
@@ -186,50 +191,23 @@ while ($row = mysqli_fetch_assoc($appointmentDeptResult)) {
 }
 
 // ==========================
-// RECENT ACTIVITY
+// CLINIC ACTIVITY LOG
 // ==========================
 
-$recentActivitySql = "
-    SELECT 
-        activity_type,
-        action,
+$clinicActivitySql = "
+    SELECT
+        user_name,
+        user_role,
+        action_type,
+        module,
         description,
         created_at
-    FROM activity_logs
+    FROM clinic_activity_logs
     ORDER BY created_at DESC
-    LIMIT 5
+    LIMIT 3
 ";
 
-$recentActivityResult = mysqli_query($conn, $recentActivitySql);
-
-$recentActivities = [];
-
-while ($row = mysqli_fetch_assoc($recentActivityResult)) {
-    $recentActivities[] = $row;
-}
-
-// ==========================
-// ALL ACTIVITY
-// ==========================
-
-$allActivitySql = "
-    SELECT 
-        activity_type,
-        action,
-        description,
-        created_at
-    FROM activity_logs
-    ORDER BY created_at DESC
-    LIMIT 50
-";
-
-$allActivityResult = mysqli_query($conn, $allActivitySql);
-
-$allActivities = [];
-
-while ($row = mysqli_fetch_assoc($allActivityResult)) {
-    $allActivities[] = $row;
-}
+$clinicActivityResult = mysqli_query($conn, $clinicActivitySql);
 ?>
 
 <!DOCTYPE html>
@@ -244,7 +222,7 @@ while ($row = mysqli_fetch_assoc($allActivityResult)) {
     <link rel="stylesheet" href="../assets/css/dashboard.css">
 
     <!-- Boxicons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -330,82 +308,7 @@ while ($row = mysqli_fetch_assoc($allActivityResult)) {
 
 
     <div class="activity-list" id="recentActivityList">
-        <?php foreach ($recentActivities as $activity): ?>
-
-            <?php
-                if ($activity['activity_type'] === 'Appointment') {
-
-                    $iconClass = 'approved';
-                    $icon = 'bx-calendar';
-
-                    if ($activity['action'] === 'Approved') {
-                        $iconClass = 'approved';
-                        $icon = 'bx-check-circle';
-                    }
-                    elseif ($activity['action'] === 'Completed') {
-                        $iconClass = 'approved';
-                        $icon = 'bx-check-circle';
-                    }
-                    elseif ($activity['action'] === 'Cancelled') {
-                        $iconClass = 'cancel';
-                        $icon = 'bx-x-circle';
-                    }
-                    elseif ($activity['action'] === 'Rejected') {
-                        $iconClass = 'cancel';
-                        $icon = 'bx-x-circle';
-                    }
-                    elseif ($activity['action'] === 'Rescheduled') {
-                        $iconClass = 'pending';
-                        $icon = 'bx-calendar';
-                    }
-                    elseif ($activity['action'] === 'Created') {
-                        $iconClass = 'pending';
-                        $icon = 'bx-calendar-plus';
-                    }
-
-                }
-                elseif ($activity['activity_type'] === 'Medicine') {
-
-                    $iconClass = 'medicine';
-                    $icon = 'bx-capsule';
-
-                }
-                else {
-
-                    $iconClass = 'pending';
-                    $icon = 'bx-info-circle';
-
-                }
-            ?>
-
-            <div class="activity-item">
-
-                <div class="activity-icon <?= $iconClass ?>">
-                    <i class='bx <?= $icon ?>'></i>
-                </div>
-
-                <div class="activity-details">
-
-                    <h4>
-                        <?= htmlspecialchars($activity['action']) ?>
-                        <?= htmlspecialchars($activity['activity_type']) ?>
-                    </h4>
-
-                    <p>
-                        <?= nl2br(htmlspecialchars(trim($activity['description']))) ?>
-                    </p>
-
-                    <span>
-                        <?= date("M d, Y • h:i A", strtotime($activity['created_at'])) ?>
-                    </span>
-
-                </div>
-
-            </div>
-
-        <?php endforeach; ?>
-
-
+        <p>Loading activity...</p>
     </div>
 
 </div>
@@ -458,6 +361,101 @@ while ($row = mysqli_fetch_assoc($allActivityResult)) {
         </div>
 
     </div>
+
+    <!-- CLINIC ACTIVITY LOG -->
+    <section class="data-grid" style="margin-top:20px;">
+
+        <div class="data-card full-width">
+
+            <div class="card-title-btn">
+                <h3>Clinic Activity Log</h3>
+
+                <a href="clinic_activity_logs.php">
+                    View All Activity Logs
+                    <i class="bx bx-link-external"></i>
+                </a>
+            </div>
+
+            <div style="overflow-x:auto;">
+
+                <table class="summary-table">
+
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Personnel</th>
+                            <th>Role</th>
+                            <th>Module</th>
+                            <th>Action</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <?php if (
+                            $clinicActivityResult &&
+                            mysqli_num_rows($clinicActivityResult) > 0
+                        ): ?>
+
+                            <?php while (
+                                $activity = mysqli_fetch_assoc($clinicActivityResult)
+                            ): ?>
+
+                                <tr>
+
+                                    <td>
+                                        <?= date(
+                                            "M d, Y • h:i A",
+                                            strtotime($activity['created_at'])
+                                        ) ?>
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            <?= htmlspecialchars($activity['user_name'], ENT_QUOTES, 'UTF-8') ?>
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <?= htmlspecialchars($activity['user_role'], ENT_QUOTES, 'UTF-8') ?>
+                                    </td>
+
+                                    <td>
+                                        <?= htmlspecialchars($activity['module'], ENT_QUOTES, 'UTF-8') ?>
+                                    </td>
+
+                                    <td>
+                                        <?= htmlspecialchars($activity['action_type'], ENT_QUOTES, 'UTF-8') ?>
+                                    </td>
+
+                                    <td>
+                                        <?= htmlspecialchars($activity['description'], ENT_QUOTES, 'UTF-8') ?>
+                                    </td>
+
+                                </tr>
+
+                            <?php endwhile; ?>
+
+                        <?php else: ?>
+
+                            <tr>
+                                <td colspan="6" style="text-align:center;">
+                                    No clinic activities recorded yet.
+                                </td>
+                            </tr>
+
+                        <?php endif; ?>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
 
 </div>
 
@@ -523,74 +521,7 @@ while ($row = mysqli_fetch_assoc($allActivityResult)) {
         </div>
 
         <div class="activity-modal-list" id="allActivityList">
-
-            <?php foreach ($allActivities as $activity): ?>
-
-                <?php
-                    if ($activity['activity_type'] === 'Appointment') {
-
-                        $iconClass = 'approved';
-                        $icon = 'bx-calendar';
-
-                        if ($activity['action'] === 'Approved' || $activity['action'] === 'Completed') {
-                            $iconClass = 'approved';
-                            $icon = 'bx-check-circle';
-                        }
-                        elseif ($activity['action'] === 'Cancelled' || $activity['action'] === 'Rejected') {
-                            $iconClass = 'cancel';
-                            $icon = 'bx-x-circle';
-                        }
-                        elseif ($activity['action'] === 'Rescheduled') {
-                            $iconClass = 'pending';
-                            $icon = 'bx-calendar';
-                        }
-                        elseif ($activity['action'] === 'Created') {
-                            $iconClass = 'pending';
-                            $icon = 'bx-calendar-plus';
-                        }
-
-                    }
-                    elseif ($activity['activity_type'] === 'Medicine') {
-
-                        $iconClass = 'medicine';
-                        $icon = 'bx-capsule';
-
-                    }
-                    else {
-
-                        $iconClass = 'pending';
-                        $icon = 'bx-info-circle';
-
-                    }
-                ?>
-
-                <div class="activity-item">
-
-                    <div class="activity-icon <?= $iconClass ?>">
-                        <i class='bx <?= $icon ?>'></i>
-                    </div>
-
-                    <div class="activity-details">
-
-                        <h4>
-                            <?= htmlspecialchars($activity['action']) ?>
-                            <?= htmlspecialchars($activity['activity_type']) ?>
-                        </h4>
-
-                        <p>
-                            <?= htmlspecialchars($activity['description']) ?>
-                        </p>
-
-                        <span>
-                            <?= date("M d, Y • h:i A", strtotime($activity['created_at'])) ?>
-                        </span>
-
-                    </div>
-
-                </div>
-
-            <?php endforeach; ?>
-
+            <p>Loading activity...</p>
         </div>
 
     </div>

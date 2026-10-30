@@ -7,6 +7,21 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
+
+if (($_SESSION['role'] ?? '') === 'Clinic Staff') {
+    header("Location: ../clinic/dashboard.php");
+    exit();
+}
+
+if (($_SESSION['role'] ?? '') === 'School Nurse') {
+    header("Location: ../clinic/dashboard.php");
+    exit();
+}
+
 $successMessage = $_SESSION['success'] ?? '';
 $errorMessage = $_SESSION['error'] ?? '';
 

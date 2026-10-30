@@ -8,6 +8,11 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once "../config/database.php";
 
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
+
 $role = $_SESSION['role'] ?? '';
 
 // Only authorized clinic management users may access Archived Records.
@@ -238,6 +243,7 @@ function archivedPageUrl($page, $tab, $search) {
                         <th>Sex</th>
                         <th>Course</th>
                         <th>Year Level</th>
+                        <th>Department</th>
                         <th>Actions</th>
                     </tr>
                 <?php else: ?>
@@ -270,7 +276,25 @@ function archivedPageUrl($page, $tab, $search) {
                                 <td><?= htmlspecialchars($fullName) ?></td>
                                 <td><?= htmlspecialchars($record['sex'] ?? '') ?></td>
                                 <td><?= htmlspecialchars($record['course'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($record['year_level'] ?? '') ?></td>
+                                <td>
+                                    <?php
+                                    $year = (int) ($record['year_level'] ?? 0);
+
+                                    if ($year > 0) {
+                                        echo $year;
+
+                                        if ($year == 1)
+                                            echo "st Year";
+                                        elseif ($year == 2)
+                                            echo "nd Year";
+                                        elseif ($year == 3)
+                                            echo "rd Year";
+                                        else
+                                            echo "th Year";
+                                    }
+                                    ?>
+                                </td>
+                                <td><?= htmlspecialchars($record['department'] ?? '') ?></td>
                             <?php else: ?>
                                 <td><?= htmlspecialchars($record['staff_id_number'] ?? '') ?></td>
                                 <td><?= htmlspecialchars($fullName) ?></td>
@@ -281,6 +305,110 @@ function archivedPageUrl($page, $tab, $search) {
                             <?php endif; ?>
 
                             <td>
+
+                                <?php if ($tab === 'students'): ?>
+
+                                    <button
+                                        type="button"
+                                        class="icon-btn view"
+                                        title="View"
+                                        onclick='openStudentModal({
+                                            id: <?= json_encode($record["student_id_number"]) ?>,
+                                            first_name: <?= json_encode($record["first_name"] ?? "") ?>,
+                                            middle_name: <?= json_encode($record["middle_name"] ?? "") ?>,
+                                            last_name: <?= json_encode($record["last_name"] ?? "") ?>,
+                                            dob: <?= json_encode($record["date_of_birth"] ?? "") ?>,
+                                            age: <?= json_encode(
+                                                !empty($record["date_of_birth"])
+                                                    ? date_diff(
+                                                        date_create($record["date_of_birth"]),
+                                                        date_create("today")
+                                                    )->y
+                                                    : ""
+                                            ) ?>,
+                                            sex: <?= json_encode($record["sex"] ?? "") ?>,
+                                            course: <?= json_encode($record["course"] ?? "") ?>,
+                                            year: <?= json_encode(
+                                                $record["year_level"] == 1 ? "1st Year" :
+                                                ($record["year_level"] == 2 ? "2nd Year" :
+                                                ($record["year_level"] == 3 ? "3rd Year" :
+                                                $record["year_level"] . "th Year"))
+                                            ) ?>,
+                                            department: <?= json_encode($record["department"] ?? "") ?>,
+                                            contact: <?= json_encode($record["contact_number"] ?? "") ?>,
+                                            address: <?= json_encode($record["address"] ?? "") ?>,
+                                            blood: <?= json_encode($record["blood_type"] ?? "") ?>,
+                                            height: <?= json_encode($record["height"] ?? null) ?>,
+                                            weight: <?= json_encode($record["weight"] ?? null) ?>,
+                                            allergies: <?= json_encode($record["allergies"] ?? null) ?>,
+                                            history: <?= json_encode($record["medical_history"] ?? null) ?>,
+                                            medications: <?= json_encode($record["current_medications"] ?? null) ?>,
+                                            vaccines: <?= json_encode($record["vaccines"] ?? null) ?>,
+                                            emergencyName: <?= json_encode($record["emergency_name"] ?? "") ?>,
+                                            relationship: <?= json_encode($record["emergency_relationship"] ?? "") ?>,
+                                            emergencyNumber: <?= json_encode($record["emergency_contact"] ?? "") ?>,
+                                            philhealth: <?= json_encode($record["philhealth_number"] ?? null) ?>,
+                                            insuranceNumber: <?= json_encode($record["insurance_number"] ?? null) ?>,
+                                            insuranceCompany: <?= json_encode($record["insurance_company"] ?? null) ?>
+                                        })'>
+
+                                        <i class="bx bx-show"></i>
+                                    </button>
+
+                                <?php else: ?>
+
+                                    <!-- ARCHIVED STAFF VIEW BUTTON -->
+                                    <button
+                                        type="button"
+                                        class="icon-btn view"
+                                        title="View"
+                                        onclick='openArchivedStaffModal({
+
+                                            id: <?= json_encode($record["staff_id_number"] ?? "") ?>,
+                                            first_name: <?= json_encode($record["first_name"] ?? "") ?>,
+                                            middle_name: <?= json_encode($record["middle_name"] ?? "") ?>,
+                                            last_name: <?= json_encode($record["last_name"] ?? "") ?>,
+                                            dob: <?= json_encode($record["date_of_birth"] ?? "") ?>,
+
+                                            age: <?= json_encode(
+                                                !empty($record["date_of_birth"])
+                                                    ? date_diff(
+                                                        date_create($record["date_of_birth"]),
+                                                        date_create("today")
+                                                    )->y
+                                                    : ""
+                                            ) ?>,
+
+                                            sex: <?= json_encode($record["sex"] ?? "") ?>,
+                                            position: <?= json_encode($record["position"] ?? "") ?>,
+                                            designation: <?= json_encode($record["designation"] ?? "") ?>,
+                                            department: <?= json_encode($record["department"] ?? "") ?>,
+
+                                            contact: <?= json_encode($record["contact_number"] ?? "") ?>,
+                                            address: <?= json_encode($record["address"] ?? "") ?>,
+
+                                            blood: <?= json_encode($record["blood_type"] ?? "") ?>,
+                                            height: <?= json_encode($record["height"] ?? null) ?>,
+                                            weight: <?= json_encode($record["weight"] ?? null) ?>,
+                                            allergies: <?= json_encode($record["allergies"] ?? null) ?>,
+                                            history: <?= json_encode($record["medical_history"] ?? null) ?>,
+                                            medications: <?= json_encode($record["current_medications"] ?? null) ?>,
+                                            vaccines: <?= json_encode($record["vaccines"] ?? null) ?>,
+
+                                            philhealth: <?= json_encode($record["philhealth_number"] ?? null) ?>,
+                                            insuranceNumber: <?= json_encode($record["insurance_number"] ?? null) ?>,
+                                            insuranceCompany: <?= json_encode($record["insurance_company"] ?? null) ?>,
+
+                                            emergencyName: <?= json_encode($record["emergency_name"] ?? "") ?>,
+                                            relationship: <?= json_encode($record["emergency_relationship"] ?? "") ?>,
+                                            emergencyNumber: <?= json_encode($record["emergency_contact"] ?? "") ?>
+
+                                        })'>
+
+                                        <i class="bx bx-show"></i>
+                                    </button>
+
+                            <?php endif; ?>
                                 <form
                                     action="../actions/restore_record.php"
                                     method="POST"
@@ -300,7 +428,7 @@ function archivedPageUrl($page, $tab, $search) {
                     <?php endwhile; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="<?= $tab === 'students' ? 6 : 7 ?>"
+                        <td colspan="<?= $tab === 'students' ? 7 : 7 ?>"
                             style="text-align:center; padding:25px;">
                             No archived <?= $tab === 'students' ? 'students' : 'staff records' ?> found.
                         </td>
@@ -395,6 +523,340 @@ function archivedPageUrl($page, $tab, $search) {
         </div>
 
     </section>
+
+    <!-- VIEW STUDENT MODAL -->
+    <div id="studentModal" class="modal">
+        <div class="modal-content modal-container view-mode">
+
+            <span class="close" onclick="closeStudentModal()">&times;</span>
+
+            <!-- HEADER SUMMARY -->
+            <div class="student-summary">
+
+                <div class="profile-avatar p-avatar">
+                    <i class='bx bx-user'></i>
+                </div>
+
+                <div class="summary-info">
+                    <h1 id="m_fullName">Full Name</h1>
+                    <p id="m_studentId">Student ID</p>
+                </div>
+
+            </div>
+            
+
+            <!-- PERSONAL INFO -->
+            <div class="info-section">
+                <div class="info-title">Personal Information</div>
+
+                <div class="info-grid">
+
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <p id="m_dob">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Age</label>
+                        <p id="m_age">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sex</label>
+                        <p id="m_sex">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Course</label>
+                        <p id="m_course">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Year Level</label>
+                        <p id="m_year">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Department</label>
+                        <p id="m_department">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <p id="m_contact">--</p>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Address</label>
+                        <p id="m_address">--</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- HEALTH INFO -->
+            <div class="info-section">
+                <div class="info-title">Health Information</div>
+
+                <div class="info-grid">
+
+                    <div class="form-group">
+                        <label>Blood Type</label>
+                        <p id="m_blood">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Height</label>
+                        <p id="m_height">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Weight</label>
+                        <p id="m_weight">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Allergies</label>
+                        <p id="m_allergies">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Medical History</label>
+                        <p id="m_history">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Medications</label>
+                        <p id="m_medications">--</p>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Vaccines</label>
+                        <p id="m_vaccines">--</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- INSURANCE INFORMATION -->
+            <div class="info-section">
+
+                <div class="info-title">Insurance Information</div>
+
+                <div class="info-grid">
+
+                    <div class="form-group">
+                        <label>PhilHealth Number</label>
+                        <p id="m_philhealth">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Insurance Number</label>
+                        <p id="m_insuranceNumber">--</p>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Insurance Company</label>
+                        <p id="m_insuranceCompany">--</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- EMERGENCY INFO -->
+            <div class="info-section">
+                <div class="info-title">Emergency Contact</div>
+
+                <div class="info-grid">
+
+                    <div class="form-group">
+                        <label>Name</label>
+                        <p id="m_emergencyName">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Relationship</label>
+                        <p id="m_relationship">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <p id="m_emergencyNumber">--</p>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <!-- VIEW ARCHIVED STAFF MODAL -->
+    <div id="archivedStaffModal" class="modal">
+        <div class="modal-content modal-container view-mode">
+
+            <span class="close" onclick="closeArchivedStaffModal()">&times;</span>
+
+            <!-- HEADER SUMMARY -->
+            <div class="staff-summary">
+
+                <div class="profile-avatar p-avatar">
+                    <i class='bx bx-user'></i>
+                </div>
+
+                <div class="summary-info">
+                    <h1 id="as_fullName">Full Name</h1>
+                    <p id="as_staffId">Staff ID</p>
+                </div>
+
+            </div>
+
+            <!-- PERSONAL INFORMATION -->
+            <div class="info-section">
+                <div class="info-title">Personal Information</div>
+
+                <div class="info-grid">
+
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <p id="as_dob">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Age</label>
+                        <p id="as_age">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sex</label>
+                        <p id="as_sex">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Position</label>
+                        <p id="as_position">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Designation</label>
+                        <p id="as_designation">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Department</label>
+                        <p id="as_department">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <p id="as_contact">--</p>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Address</label>
+                        <p id="as_address">--</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- HEALTH INFORMATION -->
+            <div class="info-section">
+                <div class="info-title">Health Information</div>
+
+                <div class="info-grid">
+
+                    <div class="form-group">
+                        <label>Blood Type</label>
+                        <p id="as_blood">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Height</label>
+                        <p id="as_height">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Weight</label>
+                        <p id="as_weight">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Allergies</label>
+                        <p id="as_allergies">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Medical History</label>
+                        <p id="as_history">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Medications</label>
+                        <p id="as_medications">--</p>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Vaccines</label>
+                        <p id="as_vaccines">--</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- INSURANCE INFORMATION -->
+            <div class="info-section">
+
+                <div class="info-title">Insurance Information</div>
+
+                <div class="info-grid">
+
+                    <div class="form-group">
+                        <label>PhilHealth Number</label>
+                        <p id="as_philhealth">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Insurance Number</label>
+                        <p id="as_insuranceNumber">--</p>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Insurance Company</label>
+                        <p id="as_insuranceCompany">--</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- EMERGENCY CONTACT -->
+            <div class="info-section">
+                <div class="info-title">Emergency Contact</div>
+
+                <div class="info-grid">
+
+                    <div class="form-group">
+                        <label>Name</label>
+                        <p id="as_emergencyName">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Relationship</label>
+                        <p id="as_relationship">--</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <p id="as_emergencyNumber">--</p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 <?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
 
 <div id="messageModal" class="modal active">
@@ -440,92 +902,7 @@ unset($_SESSION['error']);
 <?php endif; ?>
 </main>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.getElementById("archiveSearch");
-
-    if (!searchInput) return;
-
-    let searchTimeout;
-    let searchController;
-
-    searchInput.addEventListener("input", function () {
-        clearTimeout(searchTimeout);
-
-        searchTimeout = setTimeout(async function () {
-            const search = searchInput.value.trim();
-
-            if (searchController) {
-                searchController.abort();
-            }
-
-            searchController = new AbortController();
-
-            const params = new URLSearchParams();
-
-            params.set(
-                "tab",
-                new URLSearchParams(window.location.search).get("tab") || "students"
-            );
-
-            params.set("search", search);
-            params.set("page", "1");
-
-            try {
-                const response = await fetch(
-                    "archived_records.php?" + params.toString(),
-                    { signal: searchController.signal }
-                );
-
-                if (!response.ok) {
-                    throw new Error("Search request failed.");
-                }
-
-                const html = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, "text/html");
-
-                const newTable = doc.querySelector(".table-wrapper table");
-                const currentTable = document.querySelector(".table-wrapper table");
-
-                const newFooter = doc.querySelector(".table-footer");
-                const currentFooter = document.querySelector(".table-footer");
-
-                if (newTable && currentTable) {
-                    currentTable.innerHTML = newTable.innerHTML;
-                }
-
-                if (newFooter && currentFooter) {
-                    currentFooter.innerHTML = newFooter.innerHTML;
-                }
-
-                const newUrl = new URL(window.location.href);
-                newUrl.searchParams.set(
-                    "tab",
-                    params.get("tab")
-                );
-                newUrl.searchParams.set("search", search);
-                newUrl.searchParams.set("page", "1");
-
-                window.history.replaceState({}, "", newUrl);
-
-            } catch (error) {
-                if (error.name !== "AbortError") {
-                    console.error("Archived records search error:", error);
-                }
-            }
-        }, 300);
-    });
-});
-
-function closeMessageModal() {
-    const modal = document.getElementById("messageModal");
-
-    if (modal) {
-        modal.classList.remove("active");
-    }
-}
-</script>
+<script src="../assets/js/archived_records.js"></script>
 <script src="../includes/includes.js"></script>
 </body>
 </html>

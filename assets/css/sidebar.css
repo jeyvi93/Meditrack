@@ -297,6 +297,62 @@ table tbody td {
     display: block;
 }
 
+/* =========================
+   DROPDOWN MENU ITEMS
+========================= */
+
+.logout-menu a,
+.logout-menu button {
+    width: 100%;
+    padding: 12px 14px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    border: none;
+    background: transparent;
+
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+
+    text-align: left;
+    text-decoration: none;
+
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+/* CHANGE PASSWORD */
+.logout-menu a {
+    color: var(--primary-blue);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logout-menu a i {
+    font-size: 1.1rem;
+    color: var(--primary-blue);
+}
+
+.logout-menu a:hover {
+    background: var(--light-blue);
+}
+
+/* LOGOUT */
+.logout-menu button {
+    color: #ef4444;
+}
+
+.logout-menu button i {
+    font-size: 1.1rem;
+    color: #ef4444;
+}
+
+.logout-menu button:hover {
+    background: #fef2f2;
+}
+
 /* LOGOUT BUTTON */
 .logout-menu button {
     width: 100%;

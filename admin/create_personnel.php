@@ -58,61 +58,7 @@ unset(
 <body>
 
 <!-- Admin Sidebar -->
-<aside class="sidebar">
-
-    <div class="logo">
-        <img src="../assets/images/med.png" alt="Logo">
-    </div>
-
-    <nav class="nav-menu">
-        <p class="menu-label">Main Menu</p>
-
-        <ul>
-            <li>
-                <a href="accounts.php">
-                    <i class='bx bxs-user-detail'></i>
-                    Account List
-                </a>
-            </li>
-
-            <li>
-                <a href="create_personnel.php" class="active">
-                    <i class='bx bxs-user-plus'></i>
-                    Create Personnel Account
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-    <div class="sidebar-footer">
-
-        <div class="admin-card" onclick="toggleLogoutMenu()">
-            <img
-                src="https://cdn-icons-png.flaticon.com/512/9131/9131590.png"
-                alt="Administrator"
-            >
-
-            <div class="admin-info">
-                <strong>
-                    <?= htmlspecialchars($_SESSION['full_name'] ?? 'Admin') ?>
-                </strong>
-
-                <small>Administrator</small>
-            </div>
-
-            <i class='bx bx-chevron-up-down'></i>
-        </div>
-
-        <div id="logoutMenu" class="logout-menu">
-            <button type="button" onclick="openLogoutModal()">
-                <i class='bx bx-log-out'></i>
-                Logout
-            </button>
-        </div>
-
-    </div>
-
-</aside>
+<?php include "../includes/admin_sidebar.php"; ?>
 
 <!-- Logout Confirmation Modal -->
 <div id="logoutModal" class="modal-overlay">
@@ -158,7 +104,7 @@ unset(
     >
         <div class="personnel-success-modal">
             <div class="personnel-success-icon">
-                <i class='bx bx-check-circle'></i>
+                <i class='bx bx-check'></i>
             </div>
 
             <h2>Account Created Successfully!</h2>
@@ -314,14 +260,14 @@ unset(
             <div class="form-row">
 
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password">Temporary Password</label>
 
                     <div class="password-box">
                         <input
                             type="password"
                             id="password"
                             name="password"
-                            placeholder="Create password"
+                            placeholder="Create temporary password"
                             required
                         >
                         <i
@@ -342,7 +288,7 @@ unset(
                             type="password"
                             id="confirm_password"
                             name="confirm_password"
-                            placeholder="Re-enter password"
+                            placeholder="Re-enter temporary password"
                             required
                         >
                         <i
