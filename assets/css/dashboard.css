@@ -517,7 +517,7 @@
 }
 
 .data-card .card-title-btn a {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--accent-blue);
     text-decoration: none;
     font-weight: 600;
@@ -619,7 +619,7 @@
 /* Date & Time */
 .data-card .summary-table th:first-child,
 .data-card .summary-table td:first-child {
-    width: 13%;
+    width: 15%;
 }
 
 /* Personnel */
@@ -631,7 +631,7 @@
 /* Role */
 .data-card .summary-table th:nth-child(3),
 .data-card .summary-table td:nth-child(3) {
-    width: 12%;
+    width: 11%;
 }
 
 /* Module */
@@ -643,14 +643,14 @@
 /* Action */
 .data-card .summary-table th:nth-child(5),
 .data-card .summary-table td:nth-child(5) {
-    width: 11%;
+    width: 14%;
     white-space: nowrap;
 }
 
 /* Description */
 .data-card .summary-table th:last-child,
 .data-card .summary-table td:last-child {
-    width: 37%;
+    width: 33%;
     overflow-wrap: anywhere;
     line-height: 1.5;
 }

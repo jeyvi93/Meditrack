@@ -158,6 +158,7 @@
                                 id="lastName"
                                 name="last_name"
                                 placeholder="Enter Last Name"
+                                pattern="[A-Za-zÀ-ÿ\s.'-]+"
                                 oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 required
                             >
@@ -170,6 +171,8 @@
                                 id="firstName"
                                 name="first_name"
                                 placeholder="Enter First Name"
+                                pattern="[A-Za-zÀ-ÿ\s.'-]+"
+                                title="First name should contain letters and common name punctuation only."
                                 oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 required
                             >
@@ -182,6 +185,9 @@
                                 id="middleName"
                                 name="middle_name"
                                 placeholder="Enter Middle Name"
+                                pattern="[A-Za-zÀ-ÿ\s.'-]*"
+                                title="Middle name should contain letters and common name punctuation only."
+                                oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                             >
                         </div>
                     </div>
@@ -197,7 +203,9 @@
                                 id="age"
                                 name="age"
                                 min="1"
-                                placeholder="0"
+                                step="1"
+                                inputmode="numeric"
+                                placeholder="Enter Age"
                             >
                         </div>
 
@@ -230,6 +238,12 @@
                                 id="contactNumber"
                                 name="contact_number"
                                 placeholder="09XXXXXXXXX"
+                                maxlength="11"
+                                minlength="11"
+                                pattern="09[0-9]{9}"
+                                inputmode="numeric"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                title="Contact number must contain exactly 11 digits and start with 09."
                             >
                         </div>
                     </div>
@@ -247,9 +261,18 @@
 
                             <select id="department" name="department" required>
                                 <option value="">Select Department</option>
-                                <option value="Education">Education</option>
-                                <option value="Technology">Technology</option>
-                                <option value="Business">Business</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Clinic">Clinic</option>
+                                    <option value="Library">Library</option>
+                                    <option value="Guidance Office">Guidance Office</option>
+                                    <option value="Cashier">Cashier</option>
+                                    <option value="Registrar">Registrar</option>
+                                    <option value="Utility">Utility</option>
+                                    <option value="Admin Office">Admin Office</option>
+                                    <option value="SASO">SASO</option>
+                                    <option value="CSU">CSU</option>
                             </select>
                     </div>
 
@@ -268,6 +291,8 @@
                                 id="course"
                                 name="course"
                                 placeholder="e.g. BS Information Technology"
+                                pattern="[A-Za-z0-9 .&-]+"
+                                title="Course should contain valid letters, numbers, spaces, periods, or hyphens."
                             >
                         </div>
 
@@ -316,6 +341,8 @@
                                 id="position"
                                 name="position"
                                 placeholder="e.g. Instructor I / Admin Assistant"
+                                pattern="[A-Za-zÀ-ÿ0-9\s.,&'()/-]+"
+                                title="Position should contain valid letters, numbers, spaces, and common punctuation."
                             >
                         </div>
                     </div>
@@ -402,7 +429,9 @@
                         <input
                             type="text"
                             id="otherComplaint"
-                            placeholder="Enter complaint / symptoms"
+                            placeholder="Enter Complaint / Symptoms"
+                            pattern="[A-Za-zÀ-ÿ0-9\s.,&'()/+-]+"
+                            title="Complaint should contain valid letters, numbers, spaces, and common punctuation."
                         >
                     </div>
 
@@ -507,7 +536,9 @@
                                     type="number"
                                     name="medicine_quantities[]"
                                     min="1"
+                                    step="1"
                                     value="1"
+                                    inputmode="numeric"
                                     required
                                 >
                             </div>

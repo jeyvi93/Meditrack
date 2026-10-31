@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once "../config/database.php";
+require_once "../includes/clinic_activity_logger.php";
 
 $role = $_SESSION['role'] ?? '';
 
@@ -52,6 +53,37 @@ if (!$id || !in_array($type, ['students', 'staffs'], true)) {
 
 $table = $type === 'students' ? 'students' : 'staffs';
 
+/* Get archived record details for the activity log */
+$identifierColumn = $type === 'students'
+    ? 'student_id_number'
+    : 'staff_id_number';
+
+$recordSql = "
+    SELECT first_name, last_name, {$identifierColumn} AS record_number
+    FROM {$table}
+    WHERE id = ? AND is_archived = 1
+";
+
+$recordStmt = mysqli_prepare($conn, $recordSql);
+
+$recordName = "Unknown record";
+$recordNumber = "Unknown";
+
+if ($recordStmt) {
+    mysqli_stmt_bind_param($recordStmt, "i", $id);
+    mysqli_stmt_execute($recordStmt);
+
+    $recordResult = mysqli_stmt_get_result($recordStmt);
+    $record = mysqli_fetch_assoc($recordResult);
+
+    if ($record) {
+        $recordName = trim($record['first_name'] . ' ' . $record['last_name']);
+        $recordNumber = $record['record_number'];
+    }
+
+    mysqli_stmt_close($recordStmt);
+}
+
 $sql = "UPDATE $table SET is_archived = 0 WHERE id = ? AND is_archived = 1";
 $stmt = mysqli_prepare($conn, $sql);
 
@@ -63,9 +95,27 @@ if (!$stmt) {
     mysqli_stmt_execute($stmt);
 
     if (mysqli_stmt_affected_rows($stmt) === 1) {
+
+        $module = $type === 'students' ? 'Students' : 'Staffs';
+
+        logClinicActivity(
+            $conn,
+            'Restored',
+            $module,
+            "Restored {$type} profile for {$recordName}. ID: {$recordNumber}."
+        );
+
         $_SESSION['success'] = "Record Restored Successfully!";
         $_SESSION['success_message'] = "The archived record has been restored successfully.";
+
+    } elseif (mysqli_stmt_errno($stmt) !== 0) {
+
+        error_log("Restore Record Error: " . mysqli_stmt_error($stmt));
+
+        $_SESSION['error'] = "Unable to restore the record.";
+
     } else {
+
         $_SESSION['error'] = "Record was not found or is already restored.";
     }
 

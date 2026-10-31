@@ -84,25 +84,29 @@ new Chart(document.getElementById('appointmentChart'), {
     }
 });
 
-/* DEPARTMENT DISTRIBUTION */
+/* DEPARTMENT COLOR MAPPING */
 
-const departmentColors = departmentLabels.map(department => {
-    const dept = department.toLowerCase();
+const departmentColorMap = {
+    'Technology': '#800000',
+    'Education': '#3b82f6',
+    'Business': '#f59e0b',
+    'Clinic': '#0d9488',
+    'Library': '#8b5cf6',
+    'Guidance Office': '#ec4899',
+    'Cashier': '#14b8a6',
+    'Registrar': '#6366f1',
+    'Utility': '#64748b',
+    'Admin Office': '#334155',
+    'SASO': '#f97316',
+    'CSU': '#84cc16'
+};
 
-    if (dept.includes('technology')) {
-        return '#800000'; // Maroon
-    }
 
-    if (dept.includes('education')) {
-        return '#3b82f6'; // Blue
-    }
+/* CONSULTATION DEPARTMENT DISTRIBUTION */
 
-    if (dept.includes('business')) {
-        return '#f59e0b'; // Orange
-    }
-
-    return '#64748b'; // Gray fallback
-});
+const departmentColors = departmentLabels.map(department =>
+    departmentColorMap[department] || '#64748b'
+);
 
 new Chart(document.getElementById('departmentChart'), {
     type: 'pie',
@@ -115,29 +119,21 @@ new Chart(document.getElementById('departmentChart'), {
     },
     options: {
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
     }
 });
 
-//* APPOINTMENT DEPARTMENT DISTRIBUTION */
 
-const appointmentDepartmentColors = appointmentDeptLabels.map(department => {
-    const dept = department.toLowerCase();
+/* APPOINTMENT DEPARTMENT DISTRIBUTION */
 
-    if (dept.includes('technology')) {
-        return '#800000'; // Maroon
-    }
-
-    if (dept.includes('education')) {
-        return '#3b82f6'; // Blue
-    }
-
-    if (dept.includes('business')) {
-        return '#f59e0b'; // Orange
-    }
-
-    return '#64748b'; // Gray fallback
-});
+const appointmentDepartmentColors = appointmentDeptLabels.map(department =>
+    departmentColorMap[department] || '#64748b'
+);
 
 new Chart(document.getElementById('appointmentDeptChart'), {
     type: 'pie',
@@ -150,7 +146,12 @@ new Chart(document.getElementById('appointmentDeptChart'), {
     },
     options: {
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
     }
 });
 

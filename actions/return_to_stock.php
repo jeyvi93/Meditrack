@@ -2,6 +2,7 @@
 
     session_start();
     require_once "../config/database.php";
+    require_once "../includes/clinic_activity_logger.php";
 
     header("Content-Type: application/json");
 
@@ -79,7 +80,7 @@
 
     $stmt = mysqli_prepare(
         $conn,
-        "SELECT id, medicine_name, is_quarantined, status
+        "SELECT id, medicine_name, batch_number, is_quarantined, status
         FROM medicines
         WHERE id = ?"
     );
@@ -135,6 +136,14 @@
 
 
     if (mysqli_stmt_execute($stmt)) {
+
+        /* Clinic Activity Log */
+        logClinicActivity(
+            $conn,
+            'Returned to Stock',
+            'Medicine',
+            "Returned {$medicine['medicine_name']} to stock. Batch: {$medicine['batch_number']}."
+        );
 
         echo json_encode([
             "success" => true,

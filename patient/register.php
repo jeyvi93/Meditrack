@@ -89,6 +89,7 @@ unset($_SESSION['error_field']);
                                         placeholder="Enter last name"
                                         value="<?php echo htmlspecialchars($oldLastName); ?>"
                                         pattern="[A-Za-zÀ-ÿ .'-]+"
+                                        oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                         title="Name must contain letters only"
                                         required>
                                 </div>
@@ -108,6 +109,7 @@ unset($_SESSION['error_field']);
                                         placeholder="Enter first name"
                                         value="<?php echo htmlspecialchars($oldFirstName); ?>"
                                         pattern="[A-Za-zÀ-ÿ .'-]+"
+                                        oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                         title="Name must contain letters only"
                                         required>
                                 </div>
@@ -127,6 +129,7 @@ unset($_SESSION['error_field']);
                                         placeholder="Enter middle name"
                                         value="<?php echo htmlspecialchars($oldMiddleName); ?>"
                                         pattern="[A-Za-zÀ-ÿ .'-]*"
+                                        oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                         title="Name must contain letters only">
                                 </div>
                                 <?php if ($errorField === 'middle_name'): ?>

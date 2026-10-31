@@ -187,14 +187,13 @@ while ($row = mysqli_fetch_assoc($medicineAlertResult)) {
     $medicineName = $row['medicine_name'];
     $batchNumber = $row['batch_number'];
     $quantity = $row['quantity'];
-    $threshold = $row['low_stock_threshold'];
     $expiryDate = date("M d, Y", strtotime($row['expiry_date']));
     $alertStatus = $row['alert_status'];
 
     if ($alertStatus === 'Expired') {
         $description = "$medicineName (Batch: $batchNumber) expired on $expiryDate.";
     } elseif ($alertStatus === 'Low Stock') {
-        $description = "$medicineName (Batch: $batchNumber) has low stock. Remaining: $quantity; threshold: $threshold.";
+        $description = "$medicineName (Batch: $batchNumber) has low stock. Remaining: $quantity";
     } else {
         $description = "$medicineName (Batch: $batchNumber) will expire on $expiryDate.";
     }

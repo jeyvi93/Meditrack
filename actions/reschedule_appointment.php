@@ -2,8 +2,14 @@
 
 session_start();
 
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
 require_once "../config/database.php";
 require_once __DIR__ . '/../config/firebase_messaging.php';
+require_once "../includes/clinic_activity_logger.php";
 
 $role = $_SESSION['role'] ?? '';
 
@@ -149,6 +155,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             mysqli_stmt_close($activityStmt);
         }
 
+        /* Clinic Activity Log */
+        logClinicActivity(
+            $conn,
+            'Rescheduled',
+            'Appointments',
+            "{$patientName}'s appointment was rescheduled to "
+                . date("F j, Y", strtotime($date))
+                . " at "
+                . date("g:i A", strtotime($time))
+                . "."
+        );
 
         $_SESSION['success'] = "Appointment Rescheduled!";
         $_SESSION['success_message'] = "The patient has been notified.";

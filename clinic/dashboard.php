@@ -117,6 +117,21 @@ while ($row = mysqli_fetch_assoc($consultationTrendResult)) {
 // CONSULTATION DEPARTMENT DISTRIBUTION
 // ==========================
 
+$allDepartments = [
+    'Technology',
+    'Education',
+    'Business',
+    'Clinic',
+    'Library',
+    'Guidance Office',
+    'Cashier',
+    'Registrar',
+    'Utility',
+    'Admin Office',
+    'SASO',
+    'CSU'
+];
+
 $departmentSql = "
     SELECT department, COUNT(*) AS total
     FROM consultations
@@ -129,13 +144,19 @@ $departmentSql = "
 
 $departmentResult = mysqli_query($conn, $departmentSql);
 
-$departmentLabels = [];
-$departmentCounts = [];
+$departmentCountMap = array_fill_keys($allDepartments, 0);
 
 while ($row = mysqli_fetch_assoc($departmentResult)) {
-    $departmentLabels[] = $row['department'];
-    $departmentCounts[] = (int)$row['total'];
+
+    $department = trim($row['department']);
+
+    if (isset($departmentCountMap[$department])) {
+        $departmentCountMap[$department] = (int) $row['total'];
+    }
 }
+
+$departmentLabels = $allDepartments;
+$departmentCounts = array_values($departmentCountMap);
 
 // ==========================
 // ANNUAL APPOINTMENT TRENDS
@@ -182,13 +203,19 @@ $appointmentDeptSql = "
 
 $appointmentDeptResult = mysqli_query($conn, $appointmentDeptSql);
 
-$appointmentDeptLabels = [];
-$appointmentDeptCounts = [];
+$appointmentDeptCountMap = array_fill_keys($allDepartments, 0);
 
 while ($row = mysqli_fetch_assoc($appointmentDeptResult)) {
-    $appointmentDeptLabels[] = $row['department'];
-    $appointmentDeptCounts[] = (int)$row['total'];
+
+    $department = trim($row['department']);
+
+    if (isset($appointmentDeptCountMap[$department])) {
+        $appointmentDeptCountMap[$department] = (int) $row['total'];
+    }
 }
+
+$appointmentDeptLabels = $allDepartments;
+$appointmentDeptCounts = array_values($appointmentDeptCountMap);
 
 // ==========================
 // CLINIC ACTIVITY LOG

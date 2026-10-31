@@ -2,6 +2,7 @@
 
 session_start();
 require_once "../config/database.php";
+require_once "../includes/clinic_activity_logger.php";
 
 header("Content-Type: application/json");
 
@@ -74,6 +75,40 @@ if (
     exit();
 }
 
+/* Get original medicine details before updating */
+$oldSql = "
+    SELECT medicine_name, batch_number, quantity,
+           supplier, date_acquired, expiry_date
+    FROM medicines
+    WHERE id = ?
+";
+
+$oldStmt = mysqli_prepare($conn, $oldSql);
+
+if (!$oldStmt) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Failed to retrieve original medicine information."
+    ]);
+    exit();
+}
+
+mysqli_stmt_bind_param($oldStmt, "i", $id);
+mysqli_stmt_execute($oldStmt);
+
+$oldResult = mysqli_stmt_get_result($oldStmt);
+$oldMedicine = mysqli_fetch_assoc($oldResult);
+
+mysqli_stmt_close($oldStmt);
+
+if (!$oldMedicine) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Medicine record not found."
+    ]);
+    exit();
+}
+
 $stmt = mysqli_prepare(
     $conn,
     "UPDATE medicines
@@ -107,6 +142,52 @@ mysqli_stmt_bind_param(
 );
 
 if (mysqli_stmt_execute($stmt)) {
+
+    /* Identify the actual fields changed */
+    $fieldLabels = [
+        'medicine_name' => 'medicine name',
+        'batch_number'  => 'batch number',
+        'quantity'      => 'quantity',
+        'supplier'      => 'supplier',
+        'date_acquired' => 'date acquired',
+        'expiry_date'   => 'expiry date'
+    ];
+
+    $newValues = [
+        'medicine_name' => $medicine_name,
+        'batch_number'  => $batch_number,
+        'quantity'      => $quantity,
+        'supplier'      => $supplier,
+        'date_acquired' => $date_acquired,
+        'expiry_date'   => $expiry_date
+    ];
+
+    $changes = [];
+
+    foreach ($fieldLabels as $field => $label) {
+
+        $oldValue = (string) ($oldMedicine[$field] ?? '');
+        $newValue = (string) ($newValues[$field] ?? '');
+
+        if ($oldValue !== $newValue) {
+            $changes[] = "{$label} {$oldValue} --> {$newValue}";
+        }
+    }
+
+    /* Record only actual changes */
+    if (!empty($changes)) {
+
+        $description = "Updated medicine information for {$medicine_name}. "
+                    . "Batch: {$batch_number}. "
+                    . "Edited the " . implode('; ', $changes) . ".";
+
+        logClinicActivity(
+            $conn,
+            'Updated',
+            'Medicine',
+            $description
+        );
+    }
 
     echo json_encode([
         "success" => true,

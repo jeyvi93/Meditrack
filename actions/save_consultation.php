@@ -2,6 +2,7 @@
 
 session_start();
 require_once "../config/database.php";
+require_once "../includes/clinic_activity_logger.php";
 
 header("Content-Type: application/json");
 
@@ -190,6 +191,8 @@ try {
     // PROCESS MEDICINES
     // ==========================
 
+    $dispensedMedicines = [];
+
     for ($i = 0; $i < count($medicines); $i++) {
 
         $medicine_id = (int) $medicines[$i];
@@ -220,7 +223,7 @@ try {
         // ==========================
 
         $inventorySql = "
-            SELECT id, quantity
+            SELECT id, medicine_name, quantity
             FROM medicines
             WHERE id = ?
               AND status = 'Active'
@@ -264,7 +267,10 @@ try {
 
         $currentQuantity = (int) $inventory['quantity'];
 
-        $inventoryStmt->close();
+        $dispensedMedicines[] =
+        $inventory['medicine_name'] . " (Quantity: {$quantity})";
+
+            $inventoryStmt->close();
 
 
 
@@ -377,6 +383,20 @@ try {
         $updateStmt->close();
     }
 
+    // ==========================
+    // CLINIC ACTIVITY LOG
+    // ==========================
+
+    $medicineDetails = !empty($dispensedMedicines)
+        ? implode(', ', $dispensedMedicines)
+        : 'No medicines dispensed';
+
+    logClinicActivity(
+        $conn,
+        'Created',
+        'Consultations',
+        "Recorded consultation for {$full_name}. Medicines dispensed: {$medicineDetails}."
+    );
 
     // ==========================
     // COMMIT

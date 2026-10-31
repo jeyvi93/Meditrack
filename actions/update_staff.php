@@ -12,6 +12,7 @@ if ($_SESSION['role'] === 'Clinic Staff') {
 }
 
 require_once "../config/database.php";
+require_once "../includes/clinic_activity_logger.php";
 
 $role = $_SESSION['role'] ?? '';
 
@@ -151,7 +152,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // HEALTH INFORMATION
     // ==========================
 
-    $blood_type = trim($_POST['blood_type'] ?? '') ?: 'Unknown';
+    $blood_type = trim($_POST['blood_type'] ?? '') !== ''
+    ? trim($_POST['blood_type'])
+    : null;
 
     $height = trim($_POST['height'] ?? '') !== ''
         ? trim($_POST['height'])
@@ -216,6 +219,148 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
+    // ==========================
+    // GET ORIGINAL STAFF INFORMATION
+    // ==========================
+
+    $oldSql = "
+        SELECT
+            last_name,
+            first_name, 
+            middle_name,
+            date_of_birth,
+            sex,
+            position,
+            designation,
+            department,
+            contact_number,
+            address,
+            blood_type,
+            height,
+            weight,
+            allergies,
+            medical_history,
+            current_medications,
+            vaccines,
+            philhealth_number,
+            insurance_number,
+            insurance_company,
+            emergency_name,
+            emergency_relationship,
+            emergency_contact
+        FROM staffs
+        WHERE staff_id_number = ?
+    ";
+
+    $oldStmt = mysqli_prepare($conn, $oldSql);
+
+    if (!$oldStmt) {
+        $_SESSION['error'] = "Failed to retrieve original staff information.";
+        mysqli_close($conn);
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($oldStmt, "s", $staff_id);
+    mysqli_stmt_execute($oldStmt);
+
+    $oldResult = mysqli_stmt_get_result($oldStmt);
+    $oldStaff = mysqli_fetch_assoc($oldResult);
+
+    mysqli_stmt_close($oldStmt);
+
+    if (!$oldStaff) {
+        $_SESSION['error'] = "Staff record not found.";
+        mysqli_close($conn);
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
+    // ==========================
+    // COMPARE OLD AND NEW VALUES
+    // ==========================
+
+    $fieldLabels = [
+        'last_name'              => 'last name',
+        'first_name'             => 'first name',
+        'middle_name'            => 'middle name',
+        'date_of_birth'          => 'date of birth',
+        'sex'                    => 'sex',
+        'position'               => 'position',
+        'designation'            => 'designation',
+        'department'             => 'department',
+        'contact_number'         => 'contact number',
+        'address'                => 'address',
+        'blood_type'             => 'blood type',
+        'height'                 => 'height',
+        'weight'                 => 'weight',
+        'allergies'              => 'allergies',
+        'medical_history'        => 'medical history',
+        'current_medications'    => 'current medications',
+        'vaccines'               => 'vaccines',
+        'philhealth_number'      => 'PhilHealth number',
+        'insurance_number'       => 'insurance number',
+        'insurance_company'     => 'insurance company',
+        'emergency_name'         => 'emergency contact name',
+        'emergency_relationship' => 'emergency relationship',
+        'emergency_contact'      => 'emergency contact number'
+    ];
+
+    $newValues = [
+        'last_name'              => $last_name,
+        'first_name'             => $first_name,
+        'middle_name'            => $middle_name,
+        'date_of_birth'          => $date_of_birth,
+        'sex'                    => $sex,
+        'position'               => $position,
+        'designation'            => $designation,
+        'department'             => $department,
+        'contact_number'         => $contact_number,
+        'address'                => $address,
+        'blood_type'             => $blood_type,
+        'height'                 => $height,
+        'weight'                 => $weight,
+        'allergies'              => $allergies,
+        'medical_history'        => $medical_history,
+        'current_medications'    => $current_medications,
+        'vaccines'               => $vaccines,
+        'philhealth_number'      => $philhealth_number,
+        'insurance_number'       => $insurance_number,
+        'insurance_company'      => $insurance_company,
+        'emergency_name'         => $emergency_name,
+        'emergency_relationship' => $emergency_relationship,
+        'emergency_contact'      => $emergency_contact
+    ];
+
+    $changes = [];
+
+    foreach ($fieldLabels as $field => $label) {
+
+        $oldValue = $oldStaff[$field] ?? '';
+        $newValue = $newValues[$field] ?? '';
+
+        // Normalize decimal values to avoid false changes
+        if (in_array($field, ['height', 'weight'], true)) {
+
+            $oldValue = ($oldValue === '' || $oldValue === null)
+                ? ''
+                : rtrim(rtrim(number_format((float)$oldValue, 2, '.', ''), '0'), '.');
+
+            $newValue = ($newValue === '' || $newValue === null)
+                ? ''
+                : rtrim(rtrim(number_format((float)$newValue, 2, '.', ''), '0'), '.');
+
+        } else {
+
+            $oldValue = trim((string)$oldValue);
+            $newValue = trim((string)$newValue);
+
+        }
+
+        if ($oldValue !== $newValue) {
+            $changes[] = "{$label} {$oldValue} --> {$newValue}";
+        }
+    }
 
     // ==========================
     // UPDATE STAFF RECORD
@@ -298,6 +443,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ==========================
 
     if (mysqli_stmt_execute($stmt)) {
+
+        /* Clinic Activity Log */
+        if (!empty($changes)) {
+
+            $staffName = trim($last_name . ', ' . $first_name);
+
+            $description = "Updated staff profile for {$staffName}. "
+                        . "Staff ID: {$staff_id}. "
+                        . "Edited the " . implode('; ', $changes) . ".";
+
+            logClinicActivity(
+                $conn,
+                'Updated',
+                'Staffs',
+                $description
+            );
+        }
 
         $_SESSION['success'] = "Staff Profile Updated!";
         $_SESSION['success_message'] = "The staff record has been updated successfully.";

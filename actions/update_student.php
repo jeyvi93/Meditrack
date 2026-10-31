@@ -12,6 +12,7 @@ if ($_SESSION['role'] === 'Clinic Staff') {
 }
 
 require_once "../config/database.php";
+require_once "../includes/clinic_activity_logger.php";
 
 $role = $_SESSION['role'] ?? '';
 
@@ -54,7 +55,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = $_POST['address'];
 
     // Health Information
-    $blood_type = trim($_POST['blood_type'] ?? '') ?: 'Unknown';
+    $blood_type = trim($_POST['blood_type'] ?? '') !== ''
+    ? trim($_POST['blood_type'])
+    : null;
 
     $height = trim($_POST['height'] ?? '') !== ''
         ? trim($_POST['height'])
@@ -98,6 +101,150 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $emergency_relationship = $_POST['emergency_relationship'];
     $emergency_contact = $_POST['emergency_contact'];
 
+    // ==========================
+    // GET ORIGINAL STUDENT INFORMATION
+    // ==========================
+
+    $oldSql = "
+        SELECT
+            last_name, first_name, middle_name,
+            date_of_birth, sex, course, year_level,
+            department, contact_number, address,
+            blood_type, height, weight, allergies,
+            medical_history, current_medications, vaccines,
+            philhealth_number, insurance_number,
+            insurance_company, emergency_name,
+            emergency_relationship, emergency_contact
+        FROM students
+        WHERE student_id_number = ?
+    ";
+
+    $oldStmt = mysqli_prepare($conn, $oldSql);
+
+    if (!$oldStmt) {
+        $_SESSION['error'] = "Failed to retrieve original student information.";
+        mysqli_close($conn);
+        header("Location: ../clinic/students.php");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($oldStmt, "s", $student_id);
+    mysqli_stmt_execute($oldStmt);
+
+    $oldResult = mysqli_stmt_get_result($oldStmt);
+    $oldStudent = mysqli_fetch_assoc($oldResult);
+
+    mysqli_stmt_close($oldStmt);
+
+    if (!$oldStudent) {
+        $_SESSION['error'] = "Student record not found.";
+        mysqli_close($conn);
+        header("Location: ../clinic/students.php");
+        exit();
+    }
+    // ==========================
+    // COMPARE OLD AND NEW VALUES
+    // ==========================
+
+    $fieldLabels = [
+        'last_name' => 'last name',
+        'first_name' => 'first name',
+        'middle_name' => 'middle name',
+        'date_of_birth' => 'date of birth',
+        'sex' => 'sex',
+        'course' => 'course',
+        'year_level' => 'year level',
+        'department' => 'department',
+        'contact_number' => 'contact number',
+        'address' => 'address',
+        'blood_type' => 'blood type',
+        'height' => 'height',
+        'weight' => 'weight',
+        'allergies' => 'allergies',
+        'medical_history' => 'medical history',
+        'current_medications' => 'current medications',
+        'vaccines' => 'vaccines',
+        'philhealth_number' => 'PhilHealth number',
+        'insurance_number' => 'insurance number',
+        'insurance_company' => 'insurance company',
+        'emergency_name' => 'emergency contact name',
+        'emergency_relationship' => 'emergency relationship',
+        'emergency_contact' => 'emergency contact number'
+    ];
+
+    $newValues = [
+        'last_name' => $last_name,
+        'first_name' => $first_name,
+        'middle_name' => $middle_name,
+        'date_of_birth' => $date_of_birth,
+        'sex' => $sex,
+        'course' => $course,
+        'year_level' => $year_level,
+        'department' => $department,
+        'contact_number' => $contact_number,
+        'address' => $address,
+        'blood_type' => $blood_type,
+        'height' => $height,
+        'weight' => $weight,
+        'allergies' => $allergies,
+        'medical_history' => $medical_history,
+        'current_medications' => $current_medications,
+        'vaccines' => $vaccines,
+        'philhealth_number' => $philhealth_number,
+        'insurance_number' => $insurance_number,
+        'insurance_company' => $insurance_company,
+        'emergency_name' => $emergency_name,
+        'emergency_relationship' => $emergency_relationship,
+        'emergency_contact' => $emergency_contact
+    ];
+
+    $changes = [];
+
+    /* Sensitive fields: record the field changed without exposing its values */
+    $sensitiveFields = [
+        'contact_number',
+        'address',
+        'blood_type',
+        'height',
+        'weight',
+        'allergies',
+        'medical_history',
+        'current_medications',
+        'vaccines',
+        'philhealth_number',
+        'insurance_number',
+        'insurance_company',
+        'emergency_name',
+        'emergency_relationship',
+        'emergency_contact'
+    ];
+
+    foreach ($fieldLabels as $field => $label) {
+
+        $oldValue = trim((string) ($oldStudent[$field] ?? ''));
+        $newValue = trim((string) ($newValues[$field] ?? ''));
+
+        // Normalize decimal values
+        if (in_array($field, ['height', 'weight'], true)) {
+
+            $oldValue = $oldValue !== ''
+                ? rtrim(rtrim(number_format((float)$oldValue, 2, '.', ''), '0'), '.')
+                : '';
+
+            $newValue = $newValue !== ''
+                ? rtrim(rtrim(number_format((float)$newValue, 2, '.', ''), '0'), '.')
+                : '';
+        }
+
+        if ($oldValue !== $newValue) {
+
+            if (in_array($field, $sensitiveFields, true)) {
+                $changes[] = "Edited the {$label}";
+            } else {
+                $changes[] = "{$label} {$oldValue} --> {$newValue}";
+            }
+        }
+    }
 
     $sql = "UPDATE students SET
 
@@ -164,6 +311,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     );
 
     if (mysqli_stmt_execute($stmt)) {
+
+        /* Clinic Activity Log */
+        if (!empty($changes)) {
+
+            $studentName = trim(
+                $last_name . ', ' . $first_name . ' ' . $middle_name
+            );
+
+            $description = "Updated student profile for {$studentName}. "
+                        . "Student ID: {$student_id}. "
+                        . implode('; ', $changes) . ".";
+
+            logClinicActivity(
+                $conn,
+                'Updated',
+                'Students',
+                $description
+            );
+        }
 
         $_SESSION['success'] = "Student Profile Updated!";
         $_SESSION['success_message'] = "The student record has been updated successfully.";
