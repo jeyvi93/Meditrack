@@ -43,7 +43,7 @@ unset($_SESSION['login_email']);
 
             <div class="nav-auth">
                 <a href="index.php" class="home-link">Home</a>
-                <a href="patient/register.php" class="btn-login">Register</a>
+                <a href="patient/register.php" class="btn-login">Create Account</a>
             </div>
         </nav>
 

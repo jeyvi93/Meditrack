@@ -47,55 +47,245 @@ if (isset($_SESSION['user_id'])) {
                 <img src="assets/images/med.png" alt="MediTrack Logo">
             </div>
             <div class="nav-auth">
-                <a href="patient/register.php" class="home-link">Register</a>
+                <a href="patient/register.php" class="home-link">Create Account</a>
                 <a href="login.php" class="btn-login">Login</a>
             </div>
         </nav>
     </header>
 
-    <main class="main-wrapper">
-        <section class="hero">
-            <!-- Left Side: Content -->
-            <div class="hero-text">
-                <div class="uni-tag">
-                    <span class="pulse"></span> Mandaue City College
+    
+    <main class="landing-main">
+
+        <!-- HERO SECTION -->
+        <section class="landing-hero">
+            <div class="hero-content">
+                <span class="hero-label">
+                    MANDAUE CITY COLLEGE
+                </span>
+
+                <h1>
+                    Appointments
+                    <span>made easier.</span>
+                </h1>
+
+                <p class="hero-description">
+                    MediTrack makes scheduling appointments with the Mandaue City College
+                    clinic easier. Request a clinic visit, keep track of your appointments,
+                    and receive updates about your schedule.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="patient/register.php" class="hero-primary-btn">
+                        Get Started
+                        <i class='bx bx-right-arrow-alt'></i>
+                    </a>
+
+                    <a href="#how-it-works" class="hero-secondary-btn">
+                        How It Works
+                    </a>
                 </div>
-                <h1>Integrated Campus <span class="text-accent">Clinic Management System.</span></h1>
-                <p>A centralized platform designed to streamline clinic services, health records, consultations, appointments, and other healthcare needs within the academic institution.</p>
-                
-                <div class="trust-indicators">
-                    <div class="indicator">
-                        <i class='bx bxs-check-shield'></i>
-                        <span>Secure Records</span>
-                    </div>
-                    <div class="indicator">
-                        <i class='bx bxs-time-five'></i>
-                        <span>Efficient Clinic Services</span>
+
+                <!-- MOBILE INSTALL BUTTON -->
+                <div class="mobile-install-area">
+                    <button
+                        id="installAppButton"
+                        class="mobile-install-btn"
+                        onclick="openInstallModal()"
+                    >
+                        <i class='bx bx-download'></i>
+                        Install MediTrack App
+                    </button>
+
+                    <div id="installStatusBadge" class="status-badge">
+                        <i class='bx bx-check-circle'></i>
+                        App installation available
                     </div>
                 </div>
 
-                <div class="cta-group">
-                    <button id="installAppButton" class="btn-lg" onclick="openInstallModal()">
-                         Get MediTrack App <i class='bx bx-download'></i>
-                    </button>
-                    <div id="installStatusBadge" class="status-badge">
-                        <span class="dot"></span> Available on Mobile
-                    </div>
+                <div class="hero-note">
+                    <i class='bx bx-check-circle'></i>
+                    Connecting the MCC community and clinic personnel
                 </div>
             </div>
 
-            <!-- Right Side: Image (Hidden on Mobile) -->
-            <div class="hero-image">
-                <div class="image-container">
-                    <!-- Replace the src with your actual image path -->
-                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=1000" alt="Medical Professional">
-                    <div class="floating-card">
-                        <i class='bx bxs-heart-circle'></i>
-                        <span>Prioritizing Campus-Wide Wellness</span>
+            <!-- APPOINTMENT PREVIEW -->
+            <div class="appointment-preview">
+                <div class="preview-top">
+                    <div>
+                        <span class="preview-caption">MEDITRACK</span>
+                        <h3>Appointment Overview</h3>
+                        <p>Your clinic appointments at a glance.</p>
+                    </div>
+
+                    <div class="preview-icon">
+                        <i class='bx bx-calendar-check'></i>
+                    </div>
+                </div>
+
+                <div class="preview-highlight">
+                    <div class="preview-highlight-icon">
+                        <i class='bx bx-calendar-plus'></i>
+                    </div>
+
+                    <div>
+                        <small>APPOINTMENT ACCESS</small>
+                        <h4>Plan your clinic visit</h4>
+                        <span>Request an appointment conveniently.</span>
+                    </div>
+                </div>
+
+                <div class="preview-list">
+                    <div class="preview-row">
+                        <div class="preview-row-icon blue-icon">
+                            <i class='bx bx-calendar'></i>
+                        </div>
+                        <div>
+                            <strong>Appointment Scheduling</strong>
+                            <small>Submit your appointment request.</small>
+                        </div>
+                        <i class='bx bx-chevron-right'></i>
+                    </div>
+
+                    <div class="preview-row">
+                        <div class="preview-row-icon teal-icon">
+                            <i class='bx bx-time-five'></i>
+                        </div>
+                        <div>
+                            <strong>Appointment Tracking</strong>
+                            <small>Check your appointment status.</small>
+                        </div>
+                        <i class='bx bx-chevron-right'></i>
+                    </div>
+
+                    <div class="preview-row">
+                        <div class="preview-row-icon purple-icon">
+                            <i class='bx bx-bell'></i>
+                        </div>
+                        <div>
+                            <strong>Status Updates</strong>
+                            <small>Stay informed about your requests.</small>
+                        </div>
+                        <i class='bx bx-chevron-right'></i>
+                    </div>
+                </div>
+
+                <div class="preview-footer">
+                    <i class='bx bx-shield-check'></i>
+                    Making clinic appointments easier for the MCC community.
+                </div>
+            </div>
+        </section>
+
+
+        <!-- APPOINTMENT FEATURES -->
+        <section class="appointment-features" id="how-it-works">
+
+            <div class="section-heading">
+                <span>MADE FOR YOUR CONVENIENCE</span>
+                <h2>Clinic appointments made simpler.</h2>
+                <p>
+                    Spend less time figuring out your clinic visit and more time
+                    focusing on what matters.
+                </p>
+            </div>
+
+            <div class="appointment-card-grid">
+
+                <article class="appointment-card">
+                    <div class="feature-icon feature-blue">
+                        <i class='bx bx-calendar-plus'></i>
+                    </div>
+                    <h3>Request Appointments</h3>
+                    <p>
+                        Submit your preferred clinic appointment schedule
+                        through MediTrack.
+                    </p>
+                </article>
+
+                <article class="appointment-card">
+                    <div class="feature-icon feature-teal">
+                        <i class='bx bx-calendar-check'></i>
+                    </div>
+                    <h3>Track Your Schedule</h3>
+                    <p>
+                        View your appointments and check their current status
+                        whenever you need to.
+                    </p>
+                </article>
+
+                <article class="appointment-card">
+                    <div class="feature-icon feature-purple">
+                        <i class='bx bx-bell'></i>
+                    </div>
+                    <h3>Stay Updated</h3>
+                    <p>
+                        Receive updates about your appointment requests
+                        and changes to their status.
+                    </p>
+                </article>
+
+            </div>
+        </section>
+
+
+        <!-- HOW IT WORKS -->
+        <section class="how-section">
+            <div class="how-content">
+                <span class="how-label">GET STARTED IN THREE STEPS</span>
+                <h2>Your next clinic appointment starts here.</h2>
+                <p>
+                    MediTrack provides a convenient way for students and school
+                    personnel to request and manage their clinic appointments.
+                </p>
+            </div>
+
+            <div class="steps-container">
+                <div class="step-item">
+                    <span class="step-number">01</span>
+                    <div>
+                        <h3>Access Your Account</h3>
+                        <p>Register or log in to your MediTrack account.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">02</span>
+                    <div>
+                        <h3>Request a Schedule</h3>
+                        <p>Choose your preferred appointment date and time.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">03</span>
+                    <div>
+                        <h3>Track Your Appointment</h3>
+                        <p>Check the status of your appointment request.</p>
                     </div>
                 </div>
             </div>
         </section>
+
+
+        <!-- FINAL CTA -->
+        <section class="landing-bottom-cta">
+            <div>
+                <span>APPOINTMENTS MADE EASIER AT MCC</span>
+                <h2>Ready to schedule your clinic visit?</h2>
+                <p>Access MediTrack and manage your clinic appointments conveniently.</p>
+            </div>
+
+            <a href="patient/register.php" class="bottom-cta-btn">
+                Get Started
+                <i class='bx bx-right-arrow-alt'></i>
+            </a>
+        </section>
+
+        <footer class="landing-footer">
+            <p>© 2026 MediTrack. All rights reserved.</p>
+            <span>MediTrack | Appointments Made Easier</span>
+        </footer>
+
     </main>
 
     <!-- Install App Modal -->
