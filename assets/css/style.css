@@ -893,6 +893,7 @@ body {
 
     .hero-note {
         margin-bottom: 35px;
+        display: none;
     }
     /* Appointment preview */
 
