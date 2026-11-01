@@ -192,7 +192,7 @@ unset($_SESSION['error']);
 
                 <div class="profile-actions">
                     <button type="submit" class="btn-save-profile">
-                        <i class='bx bx-check-circle'></i> Save Changes
+                         Save Changes
                     </button>
                 </div>
             </form>

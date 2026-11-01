@@ -1,3 +1,52 @@
+/* ========================================
+   PATIENT DESKTOP NAVBAR
+======================================== */
+
+.navbar.main-wrapper {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1px 24px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    box-sizing: border-box;
+}
+
+/* LOGO */
+
+.navbar.main-wrapper .logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.navbar.main-wrapper .logo img {
+    height: 35px;
+    width: auto;
+    object-fit: contain;
+    margin-top: 15px;
+}
+
+/* NAVIGATION */
+
+.navbar.main-wrapper .desktop-menu {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-left: auto;
+}
+
+/* PROFILE DROPDOWN */
+
+.navbar.main-wrapper .profile-dropdown {
+    position: relative;
+    margin-left: 12px;
+}
+
 /* ================================
    PATIENT DESKTOP NAVBAR
 ================================ */
@@ -228,6 +277,10 @@
 }
 
 @media (max-width: 768px) {
+
+    .navbar.main-wrapper {
+        display: none;
+    }
 
     .bottom-nav {
         display: flex;

@@ -174,14 +174,6 @@ error_log(
     ", SQL error=" . $sqlError
 );
 
-
-error_log(
-    "MediTrack email verification: executed=" .
-    (int)$executed .
-    ", affected_rows=" . $affectedRows .
-    ", SQL error=" . $sqlError
-);
-
 $success = $executed && $affectedRows === 1;
 
 mysqli_stmt_close($updateStmt);

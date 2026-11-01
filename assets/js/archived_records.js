@@ -1,101 +1,113 @@
+
+// ==========================
+// ARCHIVED RECORDS SEARCH
+// ==========================
+
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("archiveSearch");
 
-    if (!searchInput) return;
+    if (searchInput) {
+        let searchTimeout;
+        let searchController;
 
-    let searchTimeout;
-    let searchController;
+        searchInput.addEventListener("input", function () {
+            clearTimeout(searchTimeout);
 
-    searchInput.addEventListener("input", function () {
-        clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async function () {
+                const search = searchInput.value.trim();
 
-        searchTimeout = setTimeout(async function () {
-            const search = searchInput.value.trim();
-
-            if (searchController) {
-                searchController.abort();
-            }
-
-            searchController = new AbortController();
-
-            const params = new URLSearchParams();
-
-            params.set(
-                "tab",
-                new URLSearchParams(window.location.search).get("tab") || "students"
-            );
-
-            params.set("search", search);
-            params.set("page", "1");
-
-            try {
-                const response = await fetch(
-                    "archived_records.php?" + params.toString(),
-                    { signal: searchController.signal }
-                );
-
-                if (!response.ok) {
-                    throw new Error("Search request failed.");
+                if (searchController) {
+                    searchController.abort();
                 }
 
-                const html = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, "text/html");
+                searchController = new AbortController();
 
-                const newTable = doc.querySelector(".table-wrapper table");
-                const currentTable = document.querySelector(".table-wrapper table");
-
-                const newFooter = doc.querySelector(".table-footer");
-                const currentFooter = document.querySelector(".table-footer");
-
-                if (newTable && currentTable) {
-                    currentTable.innerHTML = newTable.innerHTML;
-                }
-
-                if (newFooter && currentFooter) {
-                    currentFooter.innerHTML = newFooter.innerHTML;
-                }
-
-                const newUrl = new URL(window.location.href);
-                newUrl.searchParams.set(
+                const params = new URLSearchParams();
+                params.set(
                     "tab",
-                    params.get("tab")
+                    new URLSearchParams(window.location.search).get("tab") || "students"
                 );
-                newUrl.searchParams.set("search", search);
-                newUrl.searchParams.set("page", "1");
+                params.set("search", search);
+                params.set("page", "1");
 
-                window.history.replaceState({}, "", newUrl);
+                try {
+                    const response = await fetch(
+                        "archived_records.php?" + params.toString(),
+                        { signal: searchController.signal }
+                    );
 
-            } catch (error) {
-                if (error.name !== "AbortError") {
-                    console.error("Archived records search error:", error);
+                    if (!response.ok) {
+                        throw new Error("Search request failed.");
+                    }
+
+                    const html = await response.text();
+                    const doc = new DOMParser().parseFromString(html, "text/html");
+
+                    const newTable = doc.querySelector(".table-wrapper table");
+                    const currentTable = document.querySelector(".table-wrapper table");
+
+                    const newFooter = doc.querySelector(".table-footer");
+                    const currentFooter = document.querySelector(".table-footer");
+
+                    if (newTable && currentTable) {
+                        currentTable.innerHTML = newTable.innerHTML;
+                    }
+
+                    if (newFooter && currentFooter) {
+                        currentFooter.innerHTML = newFooter.innerHTML;
+                    }
+
+                    const newUrl = new URL(window.location.href);
+                    newUrl.searchParams.set("tab", params.get("tab"));
+                    newUrl.searchParams.set("search", search);
+                    newUrl.searchParams.set("page", "1");
+
+                    window.history.replaceState({}, "", newUrl);
+
+                } catch (error) {
+                    if (error.name !== "AbortError") {
+                        console.error("Archived records search error:", error);
+                    }
                 }
-            }
-        }, 300);
-    });
+            }, 300);
+        });
+    }
 });
+
 
 // ==========================
 // RESTORE CONFIRMATION MODAL
 // ==========================
 
 function openRestoreModal(id, type, fullName) {
-
     const modal = document.getElementById("restoreConfirmModal");
 
-    document.getElementById("restoreRecordId").value = id;
-    document.getElementById("restoreRecordTypeInput").value = type;
+    if (!modal) {
+        console.error("Restore confirmation modal was not found.");
+        return;
+    }
 
-    document.getElementById("restoreRecordName").textContent = fullName;
+    const recordId = document.getElementById("restoreRecordId");
+    const recordType = document.getElementById("restoreRecordTypeInput");
+    const recordName = document.getElementById("restoreRecordName");
+    const title = document.getElementById("restoreConfirmTitle");
 
-    document.getElementById("restoreConfirmTitle").textContent =
+    if (!recordId || !recordType || !recordName || !title) {
+        console.error("One or more restore modal elements are missing.");
+        return;
+    }
+
+    recordId.value = id;
+    recordType.value = type;
+    recordName.textContent = fullName;
+
+    title.textContent =
         type === "students" ? "Restore Student?" : "Restore Staff?";
 
     modal.style.display = "flex";
 }
 
 function closeRestoreModal() {
-
     const modal = document.getElementById("restoreConfirmModal");
 
     if (modal) {
@@ -103,91 +115,98 @@ function closeRestoreModal() {
     }
 }
 
-// Close when clicking outside the modal
-document.addEventListener("click", function (event) {
 
-    const modal = document.getElementById("restoreConfirmModal");
-
-    if (modal && event.target === modal) {
-        closeRestoreModal();
-    }
-
-});
-
-// =====================
+// ==========================
 // VIEW ARCHIVED STUDENT MODAL
-// =====================
+// ==========================
 
 function openStudentModal(data) {
+    const modal = document.getElementById("studentModal");
 
-    document.getElementById("studentModal").style.display = "flex";
+    if (!modal) return;
 
-    document.getElementById("m_studentId").textContent = data.id;
+    modal.style.display = "flex";
+
+    const setText = (id, value, fallback = "Not Recorded") => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent =
+                value !== null && value !== undefined && String(value).trim() !== ""
+                    ? value
+                    : fallback;
+        }
+    };
 
     const fullName = [
         data.last_name,
-        [
-            data.first_name,
-            data.middle_name
-        ].filter(name => name && name.trim() !== "").join(" ")
+        [data.first_name, data.middle_name]
+            .filter(name => name && name.trim() !== "")
+            .join(" ")
     ].filter(name => name && name.trim() !== "").join(", ");
 
-    document.getElementById("m_fullName").textContent = fullName;
-    document.getElementById("m_dob").textContent = data.dob || "Not Recorded";
-    document.getElementById("m_age").textContent = data.age || "Not Recorded";
-    document.getElementById("m_sex").textContent = data.sex || "Not Recorded";
-    document.getElementById("m_course").textContent = data.course || "Not Recorded";
-    document.getElementById("m_year").textContent = data.year || "Not Recorded";
-    document.getElementById("m_department").textContent = data.department || "Not Recorded";
-    document.getElementById("m_contact").textContent = data.contact || "Not Provided";
-    document.getElementById("m_address").textContent = data.address || "Not Provided";
+    setText("m_studentId", data.id);
+    setText("m_fullName", fullName);
+    setText("m_dob", data.dob);
+    setText("m_age", data.age);
+    setText("m_sex", data.sex);
+    setText("m_course", data.course);
+    setText("m_year", data.year);
+    setText("m_department", data.department);
+    setText("m_contact", data.contact, "Not Provided");
+    setText("m_address", data.address, "Not Provided");
 
-    // HEALTH INFORMATION
-    document.getElementById("m_blood").textContent = data.blood || "Not Specified";
-    document.getElementById("m_height").textContent = data.height ?? "Not Recorded";
-    document.getElementById("m_weight").textContent = data.weight ?? "Not Recorded";
-    document.getElementById("m_allergies").textContent = data.allergies || "Not Recorded";
-    document.getElementById("m_history").textContent = data.history || "Not Recorded";
-    document.getElementById("m_medications").textContent = data.medications || "Not Recorded";
-    document.getElementById("m_vaccines").textContent = data.vaccines || "No Records Available";
+    setText("m_blood", data.blood, "Not Specified");
+    setText("m_height", data.height);
+    setText("m_weight", data.weight);
+    setText("m_allergies", data.allergies);
+    setText("m_history", data.history);
+    setText("m_medications", data.medications);
+    setText("m_vaccines", data.vaccines, "No Records Available");
 
-    // INSURANCE INFORMATION
-    document.getElementById("m_philhealth").textContent = data.philhealth || "Not Provided";
-    document.getElementById("m_insuranceNumber").textContent = data.insuranceNumber || "Not Provided";
-    document.getElementById("m_insuranceCompany").textContent = data.insuranceCompany || "Not Provided";
+    setText("m_philhealth", data.philhealth, "Not Provided");
+    setText("m_insuranceNumber", data.insuranceNumber, "Not Provided");
+    setText("m_insuranceCompany", data.insuranceCompany, "Not Provided");
 
-    // EMERGENCY CONTACT
-    document.getElementById("m_emergencyName").textContent = data.emergencyName || "Not Provided";
-    document.getElementById("m_relationship").textContent = data.relationship || "Not Provided";
-    document.getElementById("m_emergencyNumber").textContent = data.emergencyNumber || "Not Provided";
+    setText("m_emergencyName", data.emergencyName, "Not Provided");
+    setText("m_relationship", data.relationship, "Not Provided");
+    setText("m_emergencyNumber", data.emergencyNumber, "Not Provided");
 }
 
 function closeStudentModal() {
-    document.getElementById("studentModal").style.display = "none";
+    const modal = document.getElementById("studentModal");
+
+    if (modal) {
+        modal.style.display = "none";
+    }
 }
 
-// =====================
+
+// ==========================
 // VIEW ARCHIVED STAFF MODAL
-// =====================
+// ==========================
 
 function openArchivedStaffModal(data) {
-
     const modal = document.getElementById("archivedStaffModal");
+
+    if (!modal) return;
+
+    const setText = (id, value, fallback = "Not Recorded") => {
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.textContent =
+                value !== null && value !== undefined && String(value).trim() !== ""
+                    ? value
+                    : fallback;
+        }
+    };
 
     const fullName = [
         data.last_name,
-        [
-            data.first_name,
-            data.middle_name
-        ].filter(name => name && name.trim() !== "").join(" ")
+        [data.first_name, data.middle_name]
+            .filter(name => name && name.trim() !== "")
+            .join(" ")
     ].filter(name => name && name.trim() !== "").join(", ");
-
-    const setText = (id, value, fallback = "Not Recorded") => {
-        document.getElementById(id).textContent =
-            value !== null && value !== undefined && String(value).trim() !== ""
-                ? value
-                : fallback;
-    };
 
     setText("as_fullName", fullName);
     setText("as_staffId", data.id);
@@ -200,7 +219,6 @@ function openArchivedStaffModal(data) {
     setText("as_contact", data.contact, "Not Provided");
     setText("as_address", data.address, "Not Provided");
 
-    // HEALTH INFORMATION
     setText("as_blood", data.blood, "Not Specified");
 
     setText(
@@ -224,12 +242,10 @@ function openArchivedStaffModal(data) {
     setText("as_medications", data.medications);
     setText("as_vaccines", data.vaccines, "No Records Available");
 
-    // INSURANCE INFORMATION
     setText("as_philhealth", data.philhealth, "Not Provided");
     setText("as_insuranceNumber", data.insuranceNumber, "Not Provided");
     setText("as_insuranceCompany", data.insuranceCompany, "Not Provided");
 
-    // EMERGENCY CONTACT
     setText("as_emergencyName", data.emergencyName, "Not Provided");
     setText("as_relationship", data.relationship, "Not Provided");
     setText("as_emergencyNumber", data.emergencyNumber, "Not Provided");
@@ -238,30 +254,51 @@ function openArchivedStaffModal(data) {
 }
 
 function closeArchivedStaffModal() {
-    document.getElementById("archivedStaffModal").style.display = "none";
-}
-
-// CLOSE WHEN CLICKING OUTSIDE
-window.addEventListener("click", function (e) {
-
     const modal = document.getElementById("archivedStaffModal");
 
-    if (modal && e.target === modal) {
-        closeArchivedStaffModal();
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+
+// ==========================
+// CLOSE SUCCESS / ERROR MODAL
+// ==========================
+
+function closeMessageModal() {
+    const modal = document.getElementById("messageModal");
+
+    if (modal) {
+        modal.classList.remove("active");
+        modal.style.display = "none";
+    }
+}
+
+
+// ==========================
+// CLOSE MODALS WHEN CLICKING OUTSIDE
+// ==========================
+
+window.addEventListener("click", function (event) {
+    const restoreModal = document.getElementById("restoreConfirmModal");
+    const studentModal = document.getElementById("studentModal");
+    const staffModal = document.getElementById("archivedStaffModal");
+    const messageModal = document.getElementById("messageModal");
+
+    if (event.target === restoreModal) {
+        closeRestoreModal();
     }
 
-});
-
-// =====================
-// CLOSE VIEW MODAL WHEN CLICKING OUTSIDE
-// =====================
-
-window.addEventListener("click", function (e) {
-
-    const studentModal = document.getElementById("studentModal");
-
-    if (studentModal && e.target === studentModal) {
+    if (event.target === studentModal) {
         closeStudentModal();
     }
 
+    if (event.target === staffModal) {
+        closeArchivedStaffModal();
+    }
+
+    if (event.target === messageModal) {
+        closeMessageModal();
+    }
 });

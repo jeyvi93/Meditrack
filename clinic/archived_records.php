@@ -560,7 +560,6 @@ function archivedPageUrl($page, $tab, $search) {
                     </button>
 
                     <button type="submit" class="btn-restore">
-                        <i class="bx bx-undo"></i>
                         Restore Record
                     </button>
 
