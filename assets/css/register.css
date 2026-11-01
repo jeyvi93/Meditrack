@@ -592,3 +592,84 @@
         font-size: 0.72rem;
     }
 }
+
+/* REGISTRATION PROCESSING SPINNER */
+.processing-spinner {
+    width: 55px;
+    height: 55px;
+    border: 5px solid #e2e8f0;
+    border-top-color: var(--primary-blue);
+    border-radius: 50%;
+    margin: 0 auto 22px;
+    animation: registerSpin 0.8s linear infinite;
+}
+
+@keyframes registerSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==========================
+   REGISTRATION PROCESSING MODAL
+   RESPONSIVE
+========================== */
+
+#registerProcessingModal .success-modal {
+    width: 100%;
+    max-width: 380px;
+    padding: 35px 30px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+
+    #registerProcessingModal {
+        padding: 16px;
+    }
+
+    #registerProcessingModal .success-modal {
+        max-width: 100%;
+        padding: 28px 22px;
+        border-radius: 16px;
+    }
+
+    #registerProcessingModal .processing-spinner {
+        width: 48px;
+        height: 48px;
+        border-width: 4px;
+        margin-bottom: 18px;
+    }
+
+    #registerProcessingModal .success-modal h2 {
+        font-size: 1.2rem;
+    }
+
+    #registerProcessingModal .success-modal p {
+        font-size: 0.82rem;
+        line-height: 1.5;
+    }
+}
+
+/* VERY SMALL PHONES */
+@media (max-width: 360px) {
+
+    #registerProcessingModal .success-modal {
+        padding: 24px 18px;
+    }
+
+    #registerProcessingModal .processing-spinner {
+        width: 44px;
+        height: 44px;
+    }
+
+    #registerProcessingModal .success-modal h2 {
+        font-size: 1.1rem;
+    }
+
+    #registerProcessingModal .success-modal p {
+        font-size: 0.78rem;
+    }
+}

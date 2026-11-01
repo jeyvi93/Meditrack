@@ -212,6 +212,21 @@
         </div>
     </div>
 
+    <!-- APPOINTMENT PROCESSING MODAL -->
+    <div id="processingAppointmentModal" class="modal-overlay hidden">
+        <div class="modal-box processing-modal">
+
+            <div class="processing-spinner"></div>
+
+            <h3>Submitting Appointment...</h3>
+
+            <p>
+                Please wait while we process your appointment request.
+            </p>
+
+        </div>
+    </div>
+
     <!-- SUCCESS MODAL -->
     <div id="successAppointmentModal" class="modal-overlay hidden">
         <div class="modal-box success-modal">

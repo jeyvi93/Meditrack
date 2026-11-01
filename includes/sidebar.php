@@ -211,6 +211,15 @@ if ($sidebarUserId) {
 
 </div>
 
+<!-- LOGOUT PROCESSING MODAL -->
+<div id="logoutProcessingModal" class="modal-overlay">
+    <div class="logout-modal">
+        <div class="processing-spinner"></div>
+        <h2>Signing Out...</h2>
+        <p>Please wait while we securely sign you out.</p>
+    </div>
+</div>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     async function updateAppointmentBadge() {

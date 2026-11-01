@@ -787,3 +787,93 @@
         font-size: 2.8rem;
     }
 }
+
+/* ==========================
+   PROFILE UPDATE PROCESSING
+========================== */
+
+.processing-modal h3 {
+    margin-top: 15px;
+}
+
+.processing-modal p {
+    margin-bottom: 0;
+}
+
+.processing-spinner {
+    width: 55px;
+    height: 55px;
+    border: 5px solid #e2e8f0;
+    border-top-color: var(--primary-blue);
+    border-radius: 50%;
+    margin: 0 auto 22px;
+    animation: profileSpin 0.8s linear infinite;
+}
+
+@keyframes profileSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==========================
+   PROFILE UPDATE PROCESSING
+   RESPONSIVE
+========================== */
+
+.processing-modal {
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+
+    .processing-modal {
+        max-width: 360px;
+        padding: 25px 20px;
+        border-radius: 17px;
+    }
+
+    .processing-modal .processing-spinner {
+        width: 48px;
+        height: 48px;
+        border-width: 4px;
+        margin-bottom: 18px;
+    }
+
+    .processing-modal h3 {
+        font-size: 1.1rem;
+        margin: 10px 0 8px;
+    }
+
+    .processing-modal p {
+        font-size: 0.8rem;
+        line-height: 1.45;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .processing-modal {
+        max-width: 340px;
+        padding: 22px 18px;
+        border-radius: 15px;
+    }
+
+    .processing-modal .processing-spinner {
+        width: 44px;
+        height: 44px;
+    }
+
+    .processing-modal h3 {
+        font-size: 1rem;
+        margin: 9px 0 7px;
+    }
+
+    .processing-modal p {
+        font-size: 0.76rem;
+        line-height: 1.4;
+    }
+}

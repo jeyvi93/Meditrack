@@ -135,9 +135,11 @@ document.addEventListener("DOMContentLoaded", function () {
 function toggleLogoutMenu() {
     const menu = document.getElementById("logoutMenu");
 
-    if (menu) {
-        menu.classList.toggle("show");
-    }
+    if (!menu) return;
+
+    const isVisible = window.getComputedStyle(menu).display !== "none";
+
+    menu.style.display = isVisible ? "none" : "block";
 }
 
 document.addEventListener("click", function (event) {
@@ -150,7 +152,7 @@ document.addEventListener("click", function (event) {
         !menu.contains(event.target) &&
         !adminCard.contains(event.target)
     ) {
-        menu.classList.remove("show");
+        menu.style.display = "none";
     }
 });
 
@@ -160,15 +162,40 @@ document.addEventListener("click", function (event) {
 // =========================
 
 function openLogoutModal() {
-    document.getElementById("logoutModal").style.display = "flex";
+    const modal = document.getElementById("logoutModal");
+
+    if (modal) {
+        modal.classList.add("active");
+    }
 }
 
 function closeLogoutModal() {
-    document.getElementById("logoutModal").style.display = "none";
+    const modal = document.getElementById("logoutModal");
+
+    if (modal) {
+        modal.classList.remove("active");
+    }
 }
 
 function confirmLogout() {
-    window.location.href = "../auth/logout.php  ";
+    const confirmationModal = document.getElementById("logoutModal");
+    const processingModal = document.getElementById("logoutProcessingModal");
+    const logoutButton = document.querySelector(".logout-confirm");
+
+    if (confirmationModal) {
+        confirmationModal.classList.remove("active");
+    }
+
+    if (processingModal) {
+        processingModal.classList.add("active");
+    }
+
+    if (logoutButton) {
+        logoutButton.disabled = true;
+        logoutButton.innerHTML = '<i class="bx bx-log-out"></i> Signing Out...';
+    }
+
+    window.location.href = "../auth/logout.php";
 }
 
 document.addEventListener("click", function (event) {
@@ -208,3 +235,4 @@ function togglePassword(inputId, icon) {
         icon.classList.add("bx-show");
     }
 }
+

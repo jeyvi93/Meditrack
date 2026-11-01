@@ -881,3 +881,112 @@
     }
 }
 
+/* ==========================
+   LOGIN PROCESSING MODAL
+========================== */
+
+#loginProcessingModal {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#loginProcessingModal.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* ==========================
+   LOGIN PROCESSING MODAL
+   RESPONSIVE
+========================== */
+
+#loginProcessingModal .success-modal {
+    width: 100%;
+    max-width: 380px;
+    padding: 35px 30px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+#loginProcessingModal .success-modal h2 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+}
+
+#loginProcessingModal .success-modal p {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+
+    #loginProcessingModal {
+        padding: 16px;
+    }
+
+    #loginProcessingModal .success-modal {
+        max-width: 100%;
+        padding: 28px 22px;
+        border-radius: 16px;
+    }
+
+    #loginProcessingModal .processing-spinner {
+        width: 48px;
+        height: 48px;
+        border-width: 4px;
+        margin-bottom: 18px;
+    }
+
+    #loginProcessingModal .success-modal h2 {
+        font-size: 1.2rem;
+    }
+
+    #loginProcessingModal .success-modal p {
+        font-size: 0.82rem;
+    }
+}
+
+/* VERY SMALL PHONES */
+@media (max-width: 360px) {
+
+    #loginProcessingModal .success-modal {
+        padding: 24px 18px;
+    }
+
+    #loginProcessingModal .processing-spinner {
+        width: 44px;
+        height: 44px;
+    }
+
+    #loginProcessingModal .success-modal h2 {
+        font-size: 1.1rem;
+    }
+
+    #loginProcessingModal .success-modal p {
+        font-size: 0.78rem;
+    }
+}
+
+.processing-spinner {
+    width: 55px;
+    height: 55px;
+
+    border: 5px solid #e2e8f0;
+    border-top-color: var(--primary-blue);
+
+    border-radius: 50%;
+
+    margin: 0 auto 22px;
+
+    animation: loginSpin 0.8s linear infinite;
+}
+
+@keyframes loginSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}

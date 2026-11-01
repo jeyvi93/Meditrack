@@ -608,6 +608,21 @@ usort($cancelledAppointments, function ($a, $b) {
     </div>
 </div>
 
+<!-- CANCEL PROCESSING MODAL -->
+<div id="cancelProcessingModal" class="modal-overlay hidden">
+    <div class="modal-box processing-modal">
+
+        <div class="processing-spinner"></div>
+
+        <h3>Canceling Appointment...</h3>
+
+        <p>
+            Please wait while we process your cancellation request.
+        </p>
+
+    </div>
+</div>
+
 <!-- SUCCESS MODAL -->
 <div id="successModal" class="modal-overlay hidden">
     <div class="modal-box success-modal">
@@ -768,7 +783,25 @@ usort($cancelledAppointments, function ($a, $b) {
         document.getElementById('cancelAppointmentReason').value =
             reason;
 
-        // Submit to student_cancel_appointment.php
+        // Close cancellation confirmation modal
+        document.getElementById('cancelModal')
+            .classList.add('hidden');
+
+        // Show processing modal
+        document.getElementById('cancelProcessingModal')
+            .classList.remove('hidden');
+
+        // Prevent duplicate submissions
+        const cancelButton = document.querySelector(
+            '#cancelModal .btn-logout-confirm'
+        );
+
+        if (cancelButton) {
+            cancelButton.disabled = true;
+            cancelButton.textContent = 'Canceling...';
+        }
+
+        // Submit the original form
         document.getElementById('cancelAppointmentForm').submit();
     }
 

@@ -521,3 +521,82 @@
     margin-top: 5px;
     line-height: 1.4;
 }
+
+/* APPOINTMENT PROCESSING SPINNER */
+.processing-spinner {
+    width: 55px;
+    height: 55px;
+    border: 5px solid #e2e8f0;
+    border-top-color: var(--primary-blue);
+    border-radius: 50%;
+    margin: 0 auto 22px;
+    animation: appointmentSpin 0.8s linear infinite;
+}
+
+@keyframes appointmentSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==========================
+   APPOINTMENT PROCESSING - RESPONSIVE
+========================== */
+
+.appointment-processing-box {
+    box-sizing: border-box;
+    max-width: 400px;
+    width: 100%;
+    padding: 32px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+
+    .appointment-processing-box {
+        max-width: 360px;
+        padding: 26px 22px;
+        border-radius: 17px;
+    }
+
+    .appointment-processing-box .processing-spinner {
+        width: 48px;
+        height: 48px;
+        border-width: 4px;
+        margin-bottom: 18px;
+    }
+
+    .appointment-processing-box h3 {
+        font-size: 1.1rem;
+        margin: 10px 0 8px;
+    }
+
+    .appointment-processing-box p {
+        font-size: 0.8rem;
+        line-height: 1.45;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .appointment-processing-box {
+        max-width: 340px;
+        padding: 23px 18px;
+        border-radius: 15px;
+    }
+
+    .appointment-processing-box .processing-spinner {
+        width: 44px;
+        height: 44px;
+    }
+
+    .appointment-processing-box h3 {
+        font-size: 1rem;
+    }
+
+    .appointment-processing-box p {
+        font-size: 0.76rem;
+        line-height: 1.4;
+    }
+}

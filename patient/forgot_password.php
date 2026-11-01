@@ -118,6 +118,21 @@
     </div>
 </div>
 
+<!-- FORGOT PASSWORD PROCESSING MODAL -->
+<div id="forgotProcessingModal" class="modal-overlay hidden">
+    <div class="modal-box processing-modal">
+
+        <div class="processing-spinner"></div>
+
+        <h3>Sending Reset Link...</h3>
+
+        <p>
+            Please wait while we process your password recovery request.
+        </p>
+
+    </div>
+</div>
+
 <script>
     const urlParams = new URLSearchParams(window.location.search);
 
@@ -133,6 +148,32 @@
             }, 50);
         }
     }
+
+    // FORGOT PASSWORD PROCESSING
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const forgotForm = document.querySelector(".forgot-form");
+
+        if (!forgotForm) return;
+
+        forgotForm.addEventListener("submit", function () {
+
+            const processingModal = document.getElementById("forgotProcessingModal");
+            const submitButton = forgotForm.querySelector(".btn-submit");
+
+            if (!processingModal) return;
+
+            processingModal.classList.remove("hidden");
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = "Sending...";
+            }
+
+        });
+
+    });
 </script>
 
 </body>

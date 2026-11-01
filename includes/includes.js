@@ -63,7 +63,24 @@ function closeLogoutModal() {
 }
 
 function confirmLogout() {
+    const confirmationModal = document.getElementById("logoutModal");
+    const processingModal = document.getElementById("logoutProcessingModal");
+    const logoutButton = document.querySelector(".logout-confirm");
+
+    // Hide confirmation modal
+    if (confirmationModal) {
+        confirmationModal.classList.remove("active");
+    }
+
+    // Show processing modal
+    if (processingModal) {
+        processingModal.classList.add("active");
+    }
+
+    if (logoutButton) {
+        logoutButton.disabled = true;
+        logoutButton.innerHTML = '<i class="bx bx-log-out"></i> Signing Out...';
+    }
 
     window.location.href = "../auth/logout.php";
-
 }

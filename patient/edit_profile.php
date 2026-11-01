@@ -245,6 +245,15 @@ unset($_SESSION['error']);
     </div>
 </div>
 
+<!-- PROFILE UPDATE PROCESSING MODAL -->
+<div id="processingModal" class="modal-overlay hidden">
+    <div class="modal-box processing-modal">
+        <div class="processing-spinner"></div>
+        <h3>Saving Changes...</h3>
+        <p>Please wait while we update your profile information.</p>
+    </div>
+</div>
+
 <script>
 <?php if ($successMessage): ?>
     document.getElementById('successModal').classList.remove('hidden');

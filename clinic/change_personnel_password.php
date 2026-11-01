@@ -186,6 +186,15 @@ $backUrl = $role === 'Administrator'
 
             </form>
 
+            <!-- PASSWORD PROCESSING MODAL -->
+            <div id="passwordProcessingModal" class="modal-overlay">
+                <div class="logout-modal">
+                    <div class="processing-spinner"></div>
+                    <h2>Updating Password...</h2>
+                    <p>Please wait while we securely update your password.</p>
+                </div>
+            </div>
+
         </section>
 
 
@@ -291,6 +300,28 @@ $backUrl = $role === 'Administrator'
 
 
 <script src="../assets/js/accounts.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const passwordForm = document.querySelector(".personnel-password-form");
+
+    if (!passwordForm) return;
+
+    passwordForm.addEventListener("submit", function () {
+
+        const processingModal = document.getElementById("passwordProcessingModal");
+        const saveButton = passwordForm.querySelector(".password-save");
+
+        if (processingModal && saveButton) {
+            processingModal.style.display = "flex";
+            saveButton.disabled = true;
+            saveButton.textContent = "Updating Password...";
+        }
+
+    });
+
+});
+</script>
 
 </body>
 </html>

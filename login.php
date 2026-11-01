@@ -191,6 +191,22 @@ unset($_SESSION['login_email']);
 
                     </form>
 
+                    <!-- LOGIN PROCESSING MODAL -->
+                    <div id="loginProcessingModal" class="modal-overlay">
+
+                        <div class="success-modal">
+
+                            <div class="processing-spinner"></div>
+
+                            <h2>Signing In...</h2>
+
+                            <p>
+                                Please wait while we verify your account.
+                            </p>
+
+                        </div>
+
+                    </div>
 
                     <!-- REGISTER LINK -->
                     <p class="register-hint">
@@ -343,6 +359,31 @@ unset($_SESSION['login_email']);
 
         // Remove ?reset=success from the URL
         window.history.replaceState({}, document.title, "login.php");
+    }
+
+    // ==========================
+    // LOGIN PROCESSING
+    // ==========================
+
+    const loginForm = document.querySelector(".login-form");
+
+    if (loginForm) {
+
+        loginForm.addEventListener("submit", function (event) {
+
+            if (!loginForm.checkValidity()) {
+                return;
+            }
+
+            const modal = document.getElementById("loginProcessingModal");
+            const loginButton = loginForm.querySelector(".btn-submit");
+
+            modal.classList.add("show");
+
+            loginButton.disabled = true;
+            loginButton.textContent = "Signing In...";
+        });
+
     }
     </script>
 

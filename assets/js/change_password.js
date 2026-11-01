@@ -53,3 +53,31 @@ function togglePassword(inputId, icon) {
     }
 
 }
+
+// ==========================
+// PASSWORD PROCESSING MODAL
+// ==========================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const passwordForm = document.querySelector(".password-form");
+
+    if (!passwordForm) return;
+
+    passwordForm.addEventListener("submit", function () {
+
+        const processingModal = document.getElementById("passwordProcessingModal");
+        const saveButton = passwordForm.querySelector(".btn-save-profile");
+
+        if (!processingModal) return;
+
+        processingModal.classList.remove("hidden");
+
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.textContent = "Updating Password...";
+        }
+
+    });
+
+});

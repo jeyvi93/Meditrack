@@ -11,9 +11,32 @@ function closeAppointmentModal() {
 }
 
 function confirmAppointment() {
-    closeAppointmentModal();
+    const confirmationModal = document.getElementById('confirmAppointmentModal');
+    const processingModal = document.getElementById('processingAppointmentModal');
+    const bookingForm = document.querySelector('.appointment-card');
 
-    document.querySelector('.appointment-card').submit();
+    if (!bookingForm || !processingModal) return;
+
+    // Close confirmation modal
+    confirmationModal.classList.add('hidden');
+
+    // Show processing modal
+    processingModal.classList.remove('hidden');
+
+    // Prevent duplicate submissions
+    const confirmButton = confirmationModal.querySelector('.btn-yes');
+    const submitButton = bookingForm.querySelector('.btn-submit-booking');
+
+    if (confirmButton) {
+        confirmButton.disabled = true;
+    }
+
+    if (submitButton) {
+        submitButton.disabled = true;
+    }
+
+    // Submit the original form
+    bookingForm.submit();
 }
 
 function closeSuccessModal() {

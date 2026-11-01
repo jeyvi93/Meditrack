@@ -610,3 +610,85 @@ html, body {
     opacity: 0.65;
     cursor: not-allowed;
 }
+
+/* CANCELLATION PROCESSING SPINNER */
+.processing-spinner {
+    width: 55px;
+    height: 55px;
+    border: 5px solid #e2e8f0;
+    border-top-color: var(--primary-blue);
+    border-radius: 50%;
+    margin: 0 auto 22px;
+    animation: appointmentSpin 0.8s linear infinite;
+}
+
+@keyframes appointmentSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==========================
+   CANCELLATION PROCESSING MODAL
+   RESPONSIVE
+========================== */
+
+#cancelProcessingModal .modal-box {
+    max-width: 380px;
+    padding: 32px 28px;
+    border-radius: 18px;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+
+    #cancelProcessingModal {
+        padding: 16px;
+    }
+
+    #cancelProcessingModal .modal-box {
+        max-width: 100%;
+        padding: 26px 22px;
+        border-radius: 16px;
+    }
+
+    #cancelProcessingModal .processing-spinner {
+        width: 48px;
+        height: 48px;
+        border-width: 4px;
+        margin-bottom: 18px;
+    }
+
+    #cancelProcessingModal .modal-box h3 {
+        font-size: 1.1rem;
+        margin-top: 12px;
+        margin-bottom: 8px;
+    }
+
+    #cancelProcessingModal .modal-box p {
+        font-size: 0.82rem;
+        line-height: 1.5;
+        padding: 0;
+    }
+}
+
+/* VERY SMALL PHONES */
+@media (max-width: 360px) {
+
+    #cancelProcessingModal .modal-box {
+        padding: 23px 18px;
+    }
+
+    #cancelProcessingModal .processing-spinner {
+        width: 44px;
+        height: 44px;
+    }
+
+    #cancelProcessingModal .modal-box h3 {
+        font-size: 1rem;
+    }
+
+    #cancelProcessingModal .modal-box p {
+        font-size: 0.78rem;
+    }
+}

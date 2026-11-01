@@ -243,11 +243,26 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 
             <button type="button"
                     class="btn-logout-confirm"
-                    onclick="confirmLogout()">
+                    onclick="confirmNavbarLogout()">
                 Logout
             </button>
 
         </div>
+
+    </div>
+
+</div>
+
+<!-- LOGOUT PROCESSING MODAL -->
+<div id="logoutProcessingModal" class="modal-overlay hidden">
+
+    <div class="modal-box logout-modal processing-modal">
+
+        <div class="processing-spinner"></div>
+
+        <h3>Signing Out...</h3>
+
+        <p>Please wait while we securely sign you out.</p>
 
     </div>
 
@@ -294,10 +309,19 @@ function closeLogoutModal() {
 }
 
 
-function confirmLogout() {
+function confirmNavbarLogout() {
+    const confirmationModal = document.getElementById("logoutModal");
+    const processingModal = document.getElementById("logoutProcessingModal");
 
-    window.location.href = "../auth/logout.php";
+    if (!confirmationModal || !processingModal) return;
 
+    confirmationModal.classList.add("hidden");
+    processingModal.classList.remove("hidden");
+    processingModal.style.display = "flex";
+
+    setTimeout(function () {
+        window.location.href = "../auth/logout.php";
+    }, 800);
 }
 
 

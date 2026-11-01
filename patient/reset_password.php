@@ -391,6 +391,17 @@ $error = $_GET["error"] ?? "";
 
 </main>
 
+<!-- PASSWORD PROCESSING MODAL -->
+<div id="passwordProcessingModal" class="modal-overlay hidden">
+    <div class="modal-box password-processing-box">
+        <div class="processing-spinner"></div>
+
+        <h3>Resetting Password...</h3>
+
+        <p>Please wait while we securely update your password.</p>
+    </div>
+</div>
+
 <script>
 
 function togglePassword(inputId, icon) {
@@ -414,6 +425,32 @@ function togglePassword(inputId, icon) {
     }
 
 }
+
+// PASSWORD PROCESSING MODAL
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const passwordForm = document.querySelector(".password-form");
+
+    if (!passwordForm) return;
+
+    passwordForm.addEventListener("submit", function () {
+
+        const processingModal = document.getElementById("passwordProcessingModal");
+        const submitButton = passwordForm.querySelector(".btn-save-profile");
+
+        if (!processingModal) return;
+
+        processingModal.classList.remove("hidden");
+
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Resetting Password...";
+        }
+
+    });
+
+});
 
 </script>
 </body>

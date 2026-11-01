@@ -203,6 +203,17 @@ unset($_SESSION['error']);
     </div>
 </div>
 
+<!-- PASSWORD PROCESSING MODAL -->
+<div id="passwordProcessingModal" class="modal-overlay hidden">
+    <div class="modal-box password-processing-box">
+        <div class="processing-spinner"></div>
+
+        <h3>Updating Password...</h3>
+
+        <p>Please wait while we securely update your password.</p>
+    </div>
+</div>
+
 <script>
 <?php if ($successMessage): ?>
     document.getElementById('passwordSuccessModal').classList.remove('hidden');

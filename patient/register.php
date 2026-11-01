@@ -215,6 +215,15 @@ unset($_SESSION['error_field']);
                         <button type="submit" class="btn-submit">Complete Registration</button>
                     </form>
 
+                    <!-- REGISTRATION PROCESSING MODAL -->
+                    <div id="registerProcessingModal" class="modal-overlay">
+                        <div class="success-modal">
+                            <div class="processing-spinner"></div>
+                            <h2>Creating Account...</h2>
+                            <p>Please wait while we process your registration.</p>
+                        </div>
+                    </div>
+
                     <p class="mobile-login-hint">Already have an account? <a href="../login.php">Login here</a></p>
                 </div>
             </div>
@@ -277,6 +286,27 @@ unset($_SESSION['error_field']);
                 icon.classList.remove("bx-hide");
                 icon.classList.add("bx-show");
             }
+        }
+
+        // REGISTRATION PROCESSING
+        const registrationForm = document.querySelector(".registration-form");
+
+        if (registrationForm) {
+            registrationForm.addEventListener("submit", function () {
+
+                if (!registrationForm.checkValidity()) {
+                    return;
+                }
+
+                const modal = document.getElementById("registerProcessingModal");
+                const registerButton = registrationForm.querySelector(".btn-submit");
+
+                if (modal && registerButton) {
+                    modal.classList.add("show");
+                    registerButton.disabled = true;
+                    registerButton.textContent = "Creating Account...";
+                }
+            });
         }
 
     </script>
