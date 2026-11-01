@@ -58,10 +58,30 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 // GET CURRENT USER
 // ==========================
 
-$sql = "SELECT full_name, email
-        FROM users
-        WHERE id = ?
-        LIMIT 1";
+$sql = "
+    SELECT
+        COALESCE(
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(s.first_name), ''),
+                NULLIF(TRIM(s.last_name), '')
+            )), ''),
+
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(st.first_name), ''),
+                NULLIF(TRIM(st.last_name), '')
+            )), ''),
+
+            'User'
+        ) AS full_name,
+
+        u.email
+
+    FROM users u
+    LEFT JOIN students s ON u.student_id = s.id
+    LEFT JOIN staffs st ON u.staff_id = st.id
+    WHERE u.id = ?
+    LIMIT 1
+";
 
 $stmt = mysqli_prepare($conn, $sql);
 

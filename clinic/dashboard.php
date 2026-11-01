@@ -8,6 +8,51 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once "../config/database.php";
 
+// ==========================
+// GET LOGGED-IN USER NAME
+// ==========================
+
+$dashboardUserName = 'User';
+$userId = (int) $_SESSION['user_id'];
+
+$nameSql = "
+    SELECT
+        COALESCE(
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(s.first_name), ''),
+                NULLIF(TRIM(s.last_name), '')
+            )), ''),
+
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(st.first_name), ''),
+                NULLIF(TRIM(st.last_name), '')
+            )), ''),
+
+            'User'
+        ) AS display_name
+    FROM users u
+    LEFT JOIN students s ON u.student_id = s.id
+    LEFT JOIN staffs st ON u.staff_id = st.id
+    WHERE u.id = ?
+    LIMIT 1
+";
+
+$nameStmt = mysqli_prepare($conn, $nameSql);
+
+if ($nameStmt) {
+    mysqli_stmt_bind_param($nameStmt, "i", $userId);
+    mysqli_stmt_execute($nameStmt);
+
+    $nameResult = mysqli_stmt_get_result($nameStmt);
+    $nameData = mysqli_fetch_assoc($nameResult);
+
+    if (!empty($nameData['display_name'])) {
+        $dashboardUserName = $nameData['display_name'];
+    }
+
+    mysqli_stmt_close($nameStmt);
+}
+
 if (($_SESSION['role'] ?? '') === 'Administrator') {
     header("Location: ../admin/accounts.php");
     exit();
@@ -272,7 +317,9 @@ $clinicActivityResult = mysqli_query($conn, $clinicActivitySql);
         <h1>Clinic Overview</h1>
         <p>Annual health analytics and system overview.</p>
 
-        <p>Welcome, <strong><?php echo $_SESSION['full_name']; ?></strong>!</p>
+        <p>
+            Welcome, <strong><?= htmlspecialchars($dashboardUserName, ENT_QUOTES, 'UTF-8') ?></strong>!
+        </p>
     </div>
 
     <!-- KPI -->

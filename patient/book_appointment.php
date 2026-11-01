@@ -23,8 +23,47 @@
         exit();
     }
 
-    $user_id = $_SESSION['user_id'];
-    $full_name = $_SESSION['full_name'] ?? '';
+    $user_id = (int) $_SESSION['user_id'];
+
+    $full_name = 'Unknown patient';
+
+    $nameSql = "
+        SELECT
+            COALESCE(
+                NULLIF(TRIM(CONCAT_WS(' ',
+                    NULLIF(TRIM(s.first_name), ''),
+                    NULLIF(TRIM(s.last_name), '')
+                )), ''),
+
+                NULLIF(TRIM(CONCAT_WS(' ',
+                    NULLIF(TRIM(st.first_name), ''),
+                    NULLIF(TRIM(st.last_name), '')
+                )), ''),
+
+                'Unknown patient'
+            ) AS full_name
+        FROM users u
+        LEFT JOIN students s ON u.student_id = s.id
+        LEFT JOIN staffs st ON u.staff_id = st.id
+        WHERE u.id = ?
+        LIMIT 1
+    ";
+
+    $nameStmt = mysqli_prepare($conn, $nameSql);
+
+    if ($nameStmt) {
+        mysqli_stmt_bind_param($nameStmt, "i", $user_id);
+        mysqli_stmt_execute($nameStmt);
+
+        $nameResult = mysqli_stmt_get_result($nameStmt);
+        $nameData = mysqli_fetch_assoc($nameResult);
+
+        if (!empty($nameData['full_name'])) {
+            $full_name = $nameData['full_name'];
+        }
+
+        mysqli_stmt_close($nameStmt);
+    }
 
     $successMessage = $_SESSION['success'] ?? '';
     $errorMessage = $_SESSION['error'] ?? '';

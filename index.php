@@ -33,7 +33,8 @@ if (isset($_SESSION['user_id'])) {
     <meta name="theme-color" content="#800000">
     <link rel="apple-touch-icon" href="assets/images/icon-192.png">
     <title>MediTrack | Clinic Management System</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/index.css">
+    <link rel="stylesheet" href="assets/css/guest_navbar.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
@@ -41,17 +42,17 @@ if (isset($_SESSION['user_id'])) {
 
     <div class="bg-gradient"></div>
 
-    <header class="navbar-wrapper">
-        <nav class="navbar">
-            <div class="logo">
-                <img src="assets/images/med.png" alt="MediTrack Logo">
-            </div>
-            <div class="nav-auth">
-                <a href="patient/register.php" class="home-link">Create Account</a>
-                <a href="login.php" class="btn-login">Login</a>
-            </div>
-        </nav>
-    </header>
+    <?php
+    $guestNav = [
+        'secondary_label' => 'Create Account',
+        'secondary_href' => 'patient/register.php',
+        'primary_label' => 'Login',
+        'primary_href' => 'login.php',
+        'logo_src' => 'assets/images/med.png'
+    ];
+
+    include 'includes/guest_navbar.php';
+    ?>
 
     
     <main class="landing-main">
@@ -347,8 +348,3 @@ if (isset($_SESSION['user_id'])) {
 
 </body>
 </html>
-
-
-
-
-

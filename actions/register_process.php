@@ -311,14 +311,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $verification_token = bin2hex(random_bytes(32));
     $verification_expires = date("Y-m-d H:i:s", time() + 900);
 
-
     // Insert user account
     if ($role === 'Student') {
 
         $sql = "INSERT INTO users (
             student_id,
             staff_id,
-            full_name,
             email,
             password,
             role,
@@ -326,16 +324,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             verification_token,
             verification_expires
         ) VALUES (
-            ?, NULL, ?, ?, ?, ?, 0, ?, ?
+            ?, NULL, ?, ?, ?, 0, ?, ?
         )";
 
         $stmt = mysqli_prepare($conn, $sql);
 
         mysqli_stmt_bind_param(
             $stmt,
-            "issssss",
+            "isssss",
             $profile_id,
-            $full_name,
             $email,
             $hashed_password,
             $role,
@@ -347,7 +344,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql = "INSERT INTO users (
             student_id,
             staff_id,
-            full_name,
             email,
             password,
             role,
@@ -355,16 +351,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             verification_token,
             verification_expires
         ) VALUES (
-            NULL, ?, ?, ?, ?, ?, 0, ?, ?
+            NULL, ?, ?, ?, ?, 0, ?, ?
         )";
 
         $stmt = mysqli_prepare($conn, $sql);
 
         mysqli_stmt_bind_param(
             $stmt,
-            "issssss",
+            "isssss",
             $profile_id,
-            $full_name,
             $email,
             $hashed_password,
             $role,
@@ -375,7 +370,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
         // Execute registration
-    if (mysqli_stmt_execute($stmt)) {
+        if (mysqli_stmt_execute($stmt)) {
 
         
         // Create verification link dynamically

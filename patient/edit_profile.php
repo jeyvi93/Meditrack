@@ -27,7 +27,10 @@ if ($userId) {
 
     $sql = "
         SELECT 
-            u.full_name,
+            TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(COALESCE(s.first_name, st.first_name)), ''),
+                NULLIF(TRIM(COALESCE(s.last_name, st.last_name)), '')
+            )) AS full_name,
             u.email,
             u.role,
             s.student_id_number,
@@ -200,9 +203,11 @@ unset($_SESSION['error']);
 
 <!-- PROFILE UPDATE SUCCESS MODAL -->
 <div id="successModal" class="modal-overlay hidden">
-    <div class="modal-box success-modal-box">
+    <div class="modal-box success-modal">
 
-        <i class='bx bx-check-circle success-icon'></i>
+        <div class="message-icon success">
+            <i class='bx bx-check'></i>
+        </div>
 
         <h3>Profile Updated!</h3>
 
@@ -210,9 +215,12 @@ unset($_SESSION['error']);
             <?= htmlspecialchars($successMessage) ?>
         </p>
 
-        <button type="button" class="btn-success" onclick="window.location.href='view_profile.php'">
-            Done
-        </button>
+        <div class="modal-btns single-btn">
+            <button class="btn-success" 
+                    onclick="window.location.href='view_profile.php'">
+                Done
+            </button>
+        </div>
 
     </div>
 </div>

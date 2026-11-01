@@ -255,11 +255,6 @@ if (mysqli_stmt_num_rows($check_account) > 0) {
 
 mysqli_stmt_close($check_account);
 
-
-// Build the account name using first and last name, like registration
-$full_name = $first_name . ' ' . $last_name;
-
-
 // Hash the password before storing it
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
@@ -268,7 +263,6 @@ $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 $sql = "INSERT INTO users (
             student_id,
             staff_id,
-            full_name,
             email,
             password,
             role,
@@ -276,16 +270,25 @@ $sql = "INSERT INTO users (
             verification_token,
             verification_expires
         ) VALUES (
-            NULL, ?, ?, ?, ?, ?, 1, NULL, NULL
+            NULL, ?, ?, ?, ?, 1, NULL, NULL
         )";
 
 $stmt = mysqli_prepare($conn, $sql);
 
+if (!$stmt) {
+    mysqli_close($conn);
+
+    personnelFormError(
+        "Unable to prepare the account creation request.",
+        '',
+        $redirect
+    );
+}
+
 mysqli_stmt_bind_param(
     $stmt,
-    "issss",
+    "isss",
     $profile_id,
-    $full_name,
     $email,
     $hashed_password,
     $role

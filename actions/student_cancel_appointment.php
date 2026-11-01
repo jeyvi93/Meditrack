@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once "../config/database.php";
+$role = $_SESSION['role'] ?? '';
 
 if ($role === 'Administrator') {
 
@@ -66,11 +67,29 @@ $sql = "
         a.appointment_date,
         a.appointment_time,
         a.purpose,
-        u.full_name
+
+        COALESCE(
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(s.first_name), ''),
+                NULLIF(TRIM(s.last_name), '')
+            )), ''),
+
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(st.first_name), ''),
+                NULLIF(TRIM(st.last_name), '')
+            )), ''),
+
+            'Unknown patient'
+        ) AS patient_name
+
     FROM appointments a
     JOIN users u ON a.user_id = u.id
+    LEFT JOIN students s ON u.student_id = s.id
+    LEFT JOIN staffs st ON u.staff_id = st.id
+
     WHERE a.id = ?
       AND a.user_id = ?
+
     LIMIT 1
 ";
 
@@ -186,7 +205,7 @@ if ($success && $affectedRows > 0) {
     ";
 
     $description =
-        $appointment['full_name'] .
+        $appointment['patient_name'] .
         " cancelled their appointment.\n" .
         "Reason: " .
         $reason;

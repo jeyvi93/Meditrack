@@ -36,9 +36,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     /* Get patient ID, name, and current status */
     $patientSql = "
-        SELECT a.user_id, u.full_name, a.status
+        SELECT
+            a.user_id,
+
+            COALESCE(
+                NULLIF(TRIM(CONCAT_WS(' ',
+                    NULLIF(TRIM(s.first_name), ''),
+                    NULLIF(TRIM(s.last_name), '')
+                )), ''),
+
+                NULLIF(TRIM(CONCAT_WS(' ',
+                    NULLIF(TRIM(st.first_name), ''),
+                    NULLIF(TRIM(st.last_name), '')
+                )), ''),
+
+                'Unknown patient'
+            ) AS patient_name,
+
+            a.status
+
         FROM appointments a
         JOIN users u ON a.user_id = u.id
+        LEFT JOIN students s ON u.student_id = s.id
+        LEFT JOIN staffs st ON u.staff_id = st.id
         WHERE a.id = ?
     ";
 
@@ -65,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $patientId = $appointment['user_id'];
-    $patientName = $appointment['full_name'];
+    $patientName = $appointment['patient_name'] ?? 'Unknown patient';
     $currentStatus = $appointment['status'];
 
     if ($currentStatus === 'Completed') {

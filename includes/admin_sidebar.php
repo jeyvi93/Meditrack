@@ -9,6 +9,40 @@ $passwordPageUrl = $isAdminPage
     ? '../clinic/change_personnel_password.php'
     : 'change_personnel_password.php';
 
+    /* GET SIDEBAR USER NAME FROM PROFILE */
+    $sidebarUserName = 'Admin';
+    $sidebarUserId = $_SESSION['user_id'] ?? 0;
+
+    if ($sidebarUserId) {
+
+        $nameSql = "
+            SELECT
+                TRIM(CONCAT_WS(' ',
+                    NULLIF(TRIM(COALESCE(s.first_name, st.first_name)), ''),
+                    NULLIF(TRIM(COALESCE(s.last_name, st.last_name)), '')
+                )) AS full_name
+            FROM users u
+            LEFT JOIN students s ON u.student_id = s.id
+            LEFT JOIN staffs st ON u.staff_id = st.id
+            WHERE u.id = ?
+        ";
+
+        $nameStmt = mysqli_prepare($conn, $nameSql);
+
+        if ($nameStmt) {
+            mysqli_stmt_bind_param($nameStmt, "i", $sidebarUserId);
+            mysqli_stmt_execute($nameStmt);
+
+            $nameResult = mysqli_stmt_get_result($nameStmt);
+            $nameData = mysqli_fetch_assoc($nameResult);
+
+            if (!empty($nameData['full_name'])) {
+                $sidebarUserName = $nameData['full_name'];
+            }
+
+            mysqli_stmt_close($nameStmt);
+        }
+    }
 ?>
 
 <aside class="sidebar">
@@ -53,7 +87,7 @@ $passwordPageUrl = $isAdminPage
 
             <div class="admin-info">
                 <strong>
-                    <?= htmlspecialchars($_SESSION['full_name'] ?? 'Admin', ENT_QUOTES, 'UTF-8') ?>
+                    <?= htmlspecialchars($sidebarUserName, ENT_QUOTES, 'UTF-8') ?>
                 </strong>
 
                 <small>Administrator</small>

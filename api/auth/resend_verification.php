@@ -18,16 +18,39 @@ if (empty($email)) {
     exit();
 }
 
-
 /*
 |--------------------------------------------------------------------------
 | Find User
 |--------------------------------------------------------------------------
 */
 
-$sql = "SELECT id, full_name, email, email_verified
-        FROM users
-        WHERE email = ?";
+$sql = "
+    SELECT
+        u.id,
+
+        COALESCE(
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(s.first_name), ''),
+                NULLIF(TRIM(s.last_name), '')
+            )), ''),
+
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(st.first_name), ''),
+                NULLIF(TRIM(st.last_name), '')
+            )), ''),
+
+            'User'
+        ) AS full_name,
+
+        u.email,
+        u.email_verified
+
+    FROM users u
+    LEFT JOIN students s ON u.student_id = s.id
+    LEFT JOIN staffs st ON u.staff_id = st.id
+    WHERE u.email = ?
+    LIMIT 1
+";
 
 $stmt = mysqli_prepare($conn, $sql);
 
@@ -37,11 +60,13 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
 if (mysqli_num_rows($result) !== 1) {
+    mysqli_stmt_close($stmt);
     header("Location: ../../login.php?error=resend_failed");
     exit();
 }
 
 $user = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
 
 
 /*

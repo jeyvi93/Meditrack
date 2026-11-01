@@ -17,6 +17,7 @@ unset($_SESSION['login_email']);
 
     <!-- Shared Styles -->
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/guest_navbar.css">
 
     <!-- Login Page Styles -->
     <link rel="stylesheet" href="assets/css/login.css">
@@ -33,20 +34,20 @@ unset($_SESSION['login_email']);
 
     <div class="bg-gradient"></div>
 
+    <!-- NAVBAR -->
+        <?php
+        $guestNav = [
+            'secondary_label' => 'Home',
+            'secondary_href' => 'index.php',
+            'primary_label' => 'Create Account',
+            'primary_href' => 'patient/register.php',
+            'logo_src' => 'assets/images/med.png'
+        ];
+
+        include 'includes/guest_navbar.php';
+        ?>
+
     <div class="main-wrapper">
-
-        <!-- NAVBAR -->
-        <nav class="navbar">
-            <div class="logo">
-                <img src="assets/images/med.png" alt="MediTrack Logo">
-            </div>
-
-            <div class="nav-auth">
-                <a href="index.php" class="home-link">Home</a>
-                <a href="patient/register.php" class="btn-login">Create Account</a>
-            </div>
-        </nav>
-
 
         <!-- LOGIN SECTION -->
         <section class="login-section">

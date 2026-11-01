@@ -20,14 +20,31 @@ require_once "../config/database.php";
 $sql = "
     SELECT
         a.*,
-        u.full_name,
+
+        COALESCE(
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(s.first_name), ''),
+                NULLIF(TRIM(s.last_name), '')
+            )), ''),
+
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(st.first_name), ''),
+                NULLIF(TRIM(st.last_name), '')
+            )), ''),
+
+            'N/A'
+        ) AS full_name,
+
         s.student_id_number,
         st.staff_id_number
+
     FROM appointments a
     INNER JOIN users u ON a.user_id = u.id
     LEFT JOIN students s ON u.student_id = s.id
     LEFT JOIN staffs st ON u.staff_id = st.id
+
     WHERE a.status = 'Pending'
+
     ORDER BY a.appointment_date, a.appointment_time
 ";
 

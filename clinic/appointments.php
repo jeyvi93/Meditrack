@@ -15,10 +15,28 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
 ?>
 
 <?php
+
+/* PATIENT NAME FROM STUDENT OR STAFF PROFILE */
+$patientNameSelect = "
+    COALESCE(
+        NULLIF(TRIM(CONCAT_WS(' ',
+            NULLIF(TRIM(s.first_name), ''),
+            NULLIF(TRIM(s.last_name), '')
+        )), ''),
+
+        NULLIF(TRIM(CONCAT_WS(' ',
+            NULLIF(TRIM(st.first_name), ''),
+            NULLIF(TRIM(st.last_name), '')
+        )), ''),
+
+        'Unknown patient'
+    ) AS full_name
+";
+
 $pending = mysqli_query($conn, "
     SELECT
         a.*,
-        u.full_name,
+        $patientNameSelect,
         s.student_id_number,
         st.staff_id_number
     FROM appointments a
@@ -34,7 +52,7 @@ $today = date("Y-m-d");
 $approved_today = mysqli_query($conn, "
     SELECT
         a.*,
-        u.full_name,
+        $patientNameSelect,
         s.student_id_number,
         st.staff_id_number
     FROM appointments a
@@ -49,7 +67,7 @@ $approved_today = mysqli_query($conn, "
 $approved_upcoming = mysqli_query($conn, "
     SELECT
         a.*,
-        u.full_name,
+        $patientNameSelect,
         s.student_id_number,
         st.staff_id_number
     FROM appointments a
@@ -88,7 +106,16 @@ if ($completedSearch !== '') {
 
     $completedWhere .= "
         AND (
-            u.full_name LIKE ?
+            CONCAT_WS(' ',
+                NULLIF(TRIM(s.first_name), ''),
+                NULLIF(TRIM(s.last_name), '')
+            ) LIKE ?
+
+            OR CONCAT_WS(' ',
+                NULLIF(TRIM(st.first_name), ''),
+                NULLIF(TRIM(st.last_name), '')
+            ) LIKE ?
+
             OR s.student_id_number LIKE ?
             OR st.staff_id_number LIKE ?
             OR a.appointment_date LIKE ?
@@ -105,8 +132,9 @@ if ($completedSearch !== '') {
     $completedParams[] = $searchParam;
     $completedParams[] = $searchParam;
     $completedParams[] = $searchParam;
+    $completedParams[] = $searchParam;
 
-    $completedTypes = "ssssss";
+    $completedTypes = "sssssss";
 }
 
 
@@ -170,7 +198,7 @@ $completedOffset =
 $completedSql = "
     SELECT
         a.*,
-        u.full_name,
+        $patientNameSelect,
         s.student_id_number,
         st.staff_id_number
     FROM appointments a
@@ -227,7 +255,15 @@ if ($rejectedSearch !== '') {
 
     $rejectedWhere .= "
         AND (
-            u.full_name LIKE ?
+            CONCAT_WS(' ',
+                NULLIF(TRIM(s.first_name), ''),
+                NULLIF(TRIM(s.last_name), '')
+            ) LIKE ?
+
+            OR CONCAT_WS(' ',
+                NULLIF(TRIM(st.first_name), ''),
+                NULLIF(TRIM(st.last_name), '')
+            ) LIKE ?
             OR s.student_id_number LIKE ?
             OR st.staff_id_number LIKE ?
             OR a.appointment_date LIKE ?
@@ -244,8 +280,9 @@ if ($rejectedSearch !== '') {
     $rejectedParams[] = $searchParam;
     $rejectedParams[] = $searchParam;
     $rejectedParams[] = $searchParam;
+    $rejectedParams[] = $searchParam;
 
-    $rejectedTypes = "ssssss";
+    $rejectedTypes = "sssssss";
 }
 
 
@@ -309,7 +346,7 @@ $rejectedOffset =
 $rejectedSql = "
     SELECT
         a.*,
-        u.full_name,
+        $patientNameSelect,
         s.student_id_number,
         st.staff_id_number
     FROM appointments a

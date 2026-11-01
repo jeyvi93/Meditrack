@@ -494,6 +494,43 @@
 
  @media (max-width: 480px) {
 
+    .navbar {
+        padding: 12px 14px;
+    }
+
+    .nav-auth {
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    /* HOME LINK */
+
+    .home-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 9px 10px;
+
+        font-size: 0.78rem;
+        white-space: nowrap;
+    }
+
+    /* CREATE ACCOUNT */
+
+    .btn-login {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 9px 13px;
+
+        font-size: 0.76rem;
+        border-radius: 8px;
+
+        white-space: nowrap;
+    }
+
      .login-section {
          padding: 18px 12px 35px;
          min-height: calc(100vh - 70px);
@@ -796,6 +833,26 @@
 ========================== */
 
 @media (max-width: 360px) {
+
+    /* LOGIN NAVBAR - SMALL PHONES */
+
+    .navbar {
+        padding: 10px 12px;
+    }
+
+    .nav-auth {
+        gap: 5px;
+    }
+
+    .home-link {
+        padding: 8px 8px;
+        font-size: 0.72rem;
+    }
+
+    .btn-login {
+        padding: 8px 10px;
+        font-size: 0.70rem;
+    }
 
     .reset-success-icon {
         width: 60px;

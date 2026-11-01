@@ -1,0 +1,146 @@
+/* NAVBAR */
+.navbar-wrapper {
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--navy-dark);
+}
+
+.logo img { height: 35px; }
+
+/* ==========================
+   GUEST NAVBAR ACTIONS
+========================== */
+
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* SECONDARY NAVIGATION LINK */
+
+.home-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 42px;
+    padding: 0 14px;
+
+    color: var(--text-main);
+    background: transparent;
+
+    border-radius: 8px;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+.home-link:hover {
+    color: var(--primary-blue);
+    background: #f1f5f9;
+}
+
+/* PRIMARY NAVIGATION BUTTON */
+
+.btn-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 42px;
+    padding: 0 22px;
+
+    background: var(--primary-blue);
+    color: white;
+
+    border: 1px solid var(--primary-blue);
+    border-radius: 8px;
+
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition: transform 0.2s ease, background 0.25s ease;
+}
+
+.btn-login:hover {
+    background: var(--navy-dark);
+    border-color: var(--navy-dark);
+    transform: translateY(-1px);
+}
+
+/* GUEST NAVBAR RESPONSIVE */
+
+@media (max-width: 480px) {
+
+    .navbar {
+        padding: 12px 14px;
+    }
+
+    .nav-auth {
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .home-link {
+        min-height: 38px;
+        padding: 0 9px;
+        font-size: 0.76rem;
+    }
+
+    .btn-login {
+        min-height: 38px;
+        padding: 0 12px;
+        font-size: 0.76rem;
+    }
+}
+
+@media (max-width: 360px) {
+
+    .navbar {
+        padding: 10px 12px;
+    }
+
+    .nav-auth {
+        gap: 4px;
+    }
+
+    .home-link {
+        padding: 0 7px;
+        font-size: 0.7rem;
+    }
+
+    .btn-login {
+        padding: 0 9px;
+        font-size: 0.7rem;
+    }
+}

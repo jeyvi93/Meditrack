@@ -27,7 +27,10 @@ if ($userId) {
 
     $sql = "
         SELECT 
-            u.full_name,
+            TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(COALESCE(s.first_name, st.first_name)), ''),
+                NULLIF(TRIM(COALESCE(s.last_name, st.last_name)), '')
+            )) AS full_name,
             u.email,
             u.role,
             s.student_id_number,

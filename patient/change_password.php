@@ -170,7 +170,7 @@ unset($_SESSION['error']);
 
                 <div class="profile-actions">
                     <button type="submit" class="btn-save-profile">
-                        <i class='bx bx-save'></i> Save New Password
+                    Save New Password
                     </button>
             
                 </div>

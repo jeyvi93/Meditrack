@@ -38,8 +38,51 @@ if ($userId) {
     }
 }
 
+/* GET PROFILE NAME FOR NAVBAR */
+$navbarFullName = 'User';
+
+if ($userId) {
+
+    $nameSql = "
+        SELECT
+            COALESCE(
+                NULLIF(TRIM(CONCAT_WS(' ',
+                    NULLIF(TRIM(s.first_name), ''),
+                    NULLIF(TRIM(s.last_name), '')
+                )), ''),
+
+                NULLIF(TRIM(CONCAT_WS(' ',
+                    NULLIF(TRIM(st.first_name), ''),
+                    NULLIF(TRIM(st.last_name), '')
+                )), ''),
+
+                'User'
+            ) AS display_name
+        FROM users u
+        LEFT JOIN students s ON u.student_id = s.id
+        LEFT JOIN staffs st ON u.staff_id = st.id
+        WHERE u.id = ?
+        LIMIT 1
+    ";
+
+    $nameStmt = mysqli_prepare($conn, $nameSql);
+
+    if ($nameStmt) {
+        mysqli_stmt_bind_param($nameStmt, "i", $userId);
+        mysqli_stmt_execute($nameStmt);
+
+        $nameResult = mysqli_stmt_get_result($nameStmt);
+        $nameData = mysqli_fetch_assoc($nameResult);
+
+        if (!empty($nameData['display_name'])) {
+            $navbarFullName = $nameData['display_name'];
+        }
+
+        mysqli_stmt_close($nameStmt);
+    }
+}
+
 $currentPage = basename($_SERVER['PHP_SELF']);
-$full_name = $_SESSION['full_name'] ?? 'User';
 ?>
 
 <!-- DESKTOP TOP NAVBAR -->
@@ -93,7 +136,7 @@ $full_name = $_SESSION['full_name'] ?? 'User';
 
                 <i data-lucide="circle-user-round"></i>
 
-                <span><?= htmlspecialchars($full_name) ?></span>
+                <span><?= htmlspecialchars($navbarFullName) ?></span>
 
                 <i data-lucide="chevron-down" class="profile-arrow"></i>
 

@@ -41,9 +41,27 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     
     /* Get patient name and user ID */
     $patientSql = "
-        SELECT a.user_id, u.full_name
+        SELECT
+            a.user_id,
+
+            COALESCE(
+                NULLIF(TRIM(CONCAT_WS(' ',
+                    NULLIF(TRIM(s.first_name), ''),
+                    NULLIF(TRIM(s.last_name), '')
+                )), ''),
+
+                NULLIF(TRIM(CONCAT_WS(' ',
+                    NULLIF(TRIM(st.first_name), ''),
+                    NULLIF(TRIM(st.last_name), '')
+                )), ''),
+
+                'Unknown patient'
+            ) AS patient_name
+
         FROM appointments a
         JOIN users u ON a.user_id = u.id
+        LEFT JOIN students s ON u.student_id = s.id
+        LEFT JOIN staffs st ON u.staff_id = st.id
         WHERE a.id = ?
     ";
 
@@ -61,7 +79,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $appointment = mysqli_fetch_assoc($patientResult);
 
     $patientId = $appointment['user_id'] ?? null;
-    $patientName = $appointment['full_name'] ?? 'Unknown patient';
+    $patientName = $appointment['patient_name'] ?? 'Unknown patient';
 
     mysqli_stmt_close($patientStmt);
 

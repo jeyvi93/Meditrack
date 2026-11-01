@@ -29,7 +29,9 @@ unset($_SESSION['error_field']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register | MediTrack</title>
+    
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/guest_navbar.css">
     <link rel="stylesheet" href="../assets/css/register.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -39,17 +41,19 @@ unset($_SESSION['error_field']);
 
     <div class="bg-gradient"></div>
 
+    <?php
+    $guestNav = [
+        'secondary_label' => 'Home',
+        'secondary_href' => '../index.php',
+        'primary_label' => 'Login',
+        'primary_href' => '../login.php',
+        'logo_src' => '../assets/images/med.png'
+    ];
+
+    include '../includes/guest_navbar.php';
+    ?>
+
     <div class="main-wrapper">
-        <!-- EXACT NAVBAR FROM HOME PAGE -->
-        <nav class="navbar">
-            <div class="logo">
-                <img src="../assets/images/med.png" alt="MediTrack Logo">
-            </div>
-            <div class="nav-auth">
-                <a href="../index.php" class="home-link">Home</a>
-                <a href="../login.php" class="btn-login">Login</a>
-            </div>
-        </nav>
 
         <section class="register-section">
             <div class="register-card">

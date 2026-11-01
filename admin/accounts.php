@@ -17,7 +17,7 @@ $search = trim($_GET['search'] ?? '');
 $roleFilter = trim($_GET['role'] ?? '');
 
 // Pagination
-$recordsPerPage = 2;
+$recordsPerPage = 20;
 $page = max(1, (int) ($_GET['page'] ?? 1));
 $offset = ($page - 1) * $recordsPerPage;
 
@@ -27,8 +27,20 @@ $searchLike = '%' . $search . '%';
 $countSql = "
     SELECT COUNT(*) AS total
     FROM users
-    WHERE (? = '' OR full_name LIKE ? OR email LIKE ?)
-      AND (? = '' OR role = ?)
+    LEFT JOIN students ON users.student_id = students.id
+    LEFT JOIN staffs ON users.staff_id = staffs.id
+    WHERE (
+        ? = ''
+        OR CONCAT_WS(' ',
+            NULLIF(TRIM(students.first_name), ''),
+            NULLIF(TRIM(students.last_name), '')
+        ) LIKE ?
+        OR CONCAT_WS(' ',
+            NULLIF(TRIM(staffs.first_name), ''),
+            NULLIF(TRIM(staffs.last_name), '')
+        ) LIKE ?
+    )
+    AND (? = '' OR users.role = ?)
 ";
 
 $countStmt = mysqli_prepare($conn, $countSql);
@@ -63,21 +75,49 @@ $offset = ($page - 1) * $recordsPerPage;
 $sql = "
     SELECT
         users.id,
-        users.full_name,
+
+        COALESCE(
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(students.first_name), ''),
+                NULLIF(TRIM(students.last_name), '')
+            )), ''),
+
+            NULLIF(TRIM(CONCAT_WS(' ',
+                NULLIF(TRIM(staffs.first_name), ''),
+                NULLIF(TRIM(staffs.last_name), '')
+            )), ''),
+
+            'N/A'
+        ) AS full_name,
+
         users.email,
         users.role,
         users.email_verified,
         students.student_id_number,
         staffs.staff_id_number,
+
         COALESCE(
             students.student_id_number,
             staffs.staff_id_number
         ) AS account_id_number
+
     FROM users
     LEFT JOIN students ON users.student_id = students.id
     LEFT JOIN staffs ON users.staff_id = staffs.id
-    WHERE (? = '' OR users.full_name LIKE ? OR users.email LIKE ?)
-      AND (? = '' OR users.role = ?)
+
+    WHERE (
+        ? = ''
+        OR CONCAT_WS(' ',
+            NULLIF(TRIM(students.first_name), ''),
+            NULLIF(TRIM(students.last_name), '')
+        ) LIKE ?
+        OR CONCAT_WS(' ',
+            NULLIF(TRIM(staffs.first_name), ''),
+            NULLIF(TRIM(staffs.last_name), '')
+        ) LIKE ?
+    )
+    AND (? = '' OR users.role = ?)
+
     ORDER BY users.id DESC
     LIMIT ? OFFSET ?
 ";
@@ -139,6 +179,7 @@ while ($row = mysqli_fetch_assoc($rolesResult)) {
 </head>
 <body>
 
+<!-- Admin Sidebar -->
 <?php include "../includes/admin_sidebar.php"; ?>
 
 <!-- Logout Confirmation Modal -->
