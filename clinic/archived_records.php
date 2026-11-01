@@ -409,20 +409,18 @@ function archivedPageUrl($page, $tab, $search) {
                                     </button>
 
                             <?php endif; ?>
-                                <form
-                                    action="../actions/restore_record.php"
-                                    method="POST"
-                                    style="display:inline;"
+                                <button
+                                    type="button"
+                                    class="icon-btn restore"
+                                    title="Restore"
+                                    onclick='openRestoreModal(
+                                        <?= (int) $record["id"] ?>,
+                                        <?= json_encode($tab) ?>,
+                                        <?= json_encode($fullName, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP) ?>
+                                    )'
                                 >
-                                    <input type="hidden" name="id"
-                                        value="<?= (int) $record['id'] ?>">
-                                    <input type="hidden" name="type"
-                                        value="<?= htmlspecialchars($tab) ?>">
-
-                                    <button type="submit" class="icon-btn restore" title="Restore">
-                                        <i class="bx bx-undo"></i>
-                                    </button>
-                                </form>
+                                    <i class="bx bx-undo"></i>
+                                </button>
                             </td>
                         </tr>
                     <?php endwhile; ?>
@@ -523,6 +521,56 @@ function archivedPageUrl($page, $tab, $search) {
         </div>
 
     </section>
+
+    <!-- RESTORE CONFIRMATION MODAL -->
+    <div id="restoreConfirmModal" class="modal">
+
+        <div class="modal-content modal-container archive-mode restore-mode">
+
+            <form action="../actions/restore_record.php" method="POST">
+
+                <input type="hidden" name="id" id="restoreRecordId">
+                <input type="hidden" name="type" id="restoreRecordTypeInput">
+
+                <div class="restore-icon">
+                    <i class="bx bx-undo"></i>
+                </div>
+
+                <h2 id="restoreConfirmTitle">Restore Record?</h2>
+
+                <p class="restore-description">
+                    Are you sure you want to restore
+                    <strong id="restoreRecordName">this record</strong>?
+                </p>
+
+                <div class="restore-notice">
+                    <i class="bx bx-info-circle"></i>
+                    <p>
+                        This record will become active again and appear in the active records list.
+                    </p>
+                </div>
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                        onclick="closeRestoreModal()">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn-restore">
+                        <i class="bx bx-undo"></i>
+                        Restore Record
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
     <!-- VIEW STUDENT MODAL -->
     <div id="studentModal" class="modal">

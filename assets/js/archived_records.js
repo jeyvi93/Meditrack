@@ -75,13 +75,44 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-function closeMessageModal() {
-    const modal = document.getElementById("messageModal");
+// ==========================
+// RESTORE CONFIRMATION MODAL
+// ==========================
+
+function openRestoreModal(id, type, fullName) {
+
+    const modal = document.getElementById("restoreConfirmModal");
+
+    document.getElementById("restoreRecordId").value = id;
+    document.getElementById("restoreRecordTypeInput").value = type;
+
+    document.getElementById("restoreRecordName").textContent = fullName;
+
+    document.getElementById("restoreConfirmTitle").textContent =
+        type === "students" ? "Restore Student?" : "Restore Staff?";
+
+    modal.style.display = "flex";
+}
+
+function closeRestoreModal() {
+
+    const modal = document.getElementById("restoreConfirmModal");
 
     if (modal) {
-        modal.classList.remove("active");
+        modal.style.display = "none";
     }
 }
+
+// Close when clicking outside the modal
+document.addEventListener("click", function (event) {
+
+    const modal = document.getElementById("restoreConfirmModal");
+
+    if (modal && event.target === modal) {
+        closeRestoreModal();
+    }
+
+});
 
 // =====================
 // VIEW ARCHIVED STUDENT MODAL

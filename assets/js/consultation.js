@@ -176,9 +176,7 @@ consultationForm.addEventListener("submit", function (e) {
 // ==========================
 
 function closeSuccessModal() {
-
-    document.getElementById("successModal").style.display = "none";
-
+    window.location.reload();
 }
 
 

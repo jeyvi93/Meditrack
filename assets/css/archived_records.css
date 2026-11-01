@@ -95,3 +95,127 @@
     display: flex;
     flex-direction: column;
 }
+
+/* ==========================
+   RESTORE CONFIRMATION MODAL
+========================== */
+
+.restore-mode {
+    width: 100%;
+    max-width: 440px;
+    padding: 32px;
+    text-align: center;
+    border-radius: 16px;
+}
+
+.restore-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: #ccfbf1;
+}
+
+.restore-icon i {
+    font-size: 36px;
+    color: #0d9488;
+}
+
+.restore-mode h2 {
+    margin: 0 0 12px;
+    color: var(--navy-dark);
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.restore-description {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.restore-description strong {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+.restore-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    margin-top: 20px;
+    padding: 13px;
+
+    border: 1px solid #99f6e4;
+    border-radius: 10px;
+    background: #f0fdfa;
+
+    text-align: left;
+}
+
+.restore-notice i {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: #0d9488;
+    font-size: 20px;
+}
+
+.restore-notice p {
+    margin: 0;
+    color: #0f766e;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.restore-mode .modal-actions {
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-restore {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 10px 16px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #0d9488;
+    color: #ffffff;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-restore:hover {
+    background: #0f766e;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+    .restore-mode {
+        padding: 24px 20px;
+    }
+
+    .restore-mode .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .restore-mode .modal-actions button {
+        width: 100%;
+    }
+}

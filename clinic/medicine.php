@@ -216,16 +216,16 @@ $disposed_medicines = mysqli_query($conn, "
 
                                 <?php
 
-                                if(strtotime($row['expiry_date']) < strtotime($today)){
+                                if (strtotime($row['expiry_date']) < strtotime($today)) {
                                     $status = "Expired";
                                 }
-                                elseif($row['quantity'] <= $row['low_stock_threshold']){
-                                    $status = "Low Stock";
-                                }
-                                elseif(strtotime($row['expiry_date']) <= strtotime("+30 days")){
+                                elseif (strtotime($row['expiry_date']) <= strtotime("+30 days")) {
                                     $status = "Near Expiry";
                                 }
-                                else{
+                                elseif ($row['quantity'] <= $row['low_stock_threshold']) {
+                                    $status = "Low Stock";
+                                }
+                                else {
                                     $status = "In Stock";
                                 }
 
@@ -273,38 +273,38 @@ $disposed_medicines = mysqli_query($conn, "
                                                 <i class="bx bx-edit" title="Edit Medicine"></i>
                                             </button>
 
-                                            <?php if($status == "Expired"): ?>
+                                            <?php if ($status == "Expired"): ?>
 
-                                            <button
-                                                class="btn-dispose"
-                                                onclick="openExpiredDispose(<?= $row['id']; ?>)">
-                                                <i class="bx bx-trash" title="Dispose Medicine"></i>
-                                            </button>
+                                                <button
+                                                    class="btn-dispose"
+                                                    onclick="openExpiredDispose(<?= $row['id']; ?>)">
+                                                    <i class="bx bx-trash" title="Dispose Medicine"></i>
+                                                </button>
 
-                                            <?php elseif($status == "Low Stock"): ?>
+                                            <?php elseif ($status == "Near Expiry"): ?>
 
-                                            <button
-                                                class="btn-action info"
-                                                onclick="openRestock(<?= $row['id']; ?>, '<?= htmlspecialchars($row['medicine_name'], ENT_QUOTES); ?>')"
-                                                title="Restock Medicine">
-                                                <i class="bx bx-package"></i>
-                                            </button>
+                                                <button
+                                                    class="btn-dispose"
+                                                    onclick="openNearExpiryDispose(<?= $row['id']; ?>)">
+                                                    <i class="bx bx-trash" title="Dispose Near Expiry Medicine"></i>
+                                                </button>
 
-                                            <?php elseif($status == "Near Expiry"): ?>
+                                            <?php elseif ($status == "Low Stock"): ?>
 
-                                            <button
-                                                class="btn-dispose"
-                                                onclick="openNearExpiryDispose(<?= $row['id']; ?>)">
-                                                <i class="bx bx-trash" title="Dispose Medicine"></i>
-                                            </button>
+                                                <button
+                                                    class="btn-action info"
+                                                    onclick="openRestock(<?= $row['id']; ?>, '<?= htmlspecialchars($row['medicine_name'], ENT_QUOTES); ?>')"
+                                                    title="Restock Medicine">
+                                                    <i class="bx bx-package"></i>
+                                                </button>
 
                                             <?php else: ?>
 
-                                            <button
-                                                class="btn-action warning"
-                                                onclick="openQuarantineModal(<?= $row['id']; ?>)">
-                                                <i class="bx bx-shield-quarter" title="Quarantine Medicine"></i>
-                                            </button>
+                                                <button
+                                                    class="btn-action warning"
+                                                    onclick="openQuarantineModal(<?= $row['id']; ?>)">
+                                                    <i class="bx bx-shield-quarter" title="Quarantine Medicine"></i>
+                                                </button>
 
                                             <?php endif; ?>
 

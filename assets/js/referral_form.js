@@ -74,5 +74,29 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // ======================
+    // RESET FORM AFTER SUBMISSION
+    // ======================
+
+    const referralForm = document.getElementById("referralForm");
+
+    if (referralForm) {
+        referralForm.addEventListener("submit", function () {
+
+            // Allow the browser to submit the original form first
+            setTimeout(function () {
+                referralForm.reset();
+
+                // Restore the correct PhilHealth field visibility
+                togglePhilHealth();
+
+                // Clear the calculated age
+                document.getElementById("ageDisplay").value = "";
+
+            }, 0);
+
+        });
+    }
+
 
 });

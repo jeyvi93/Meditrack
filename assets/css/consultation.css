@@ -220,6 +220,17 @@ body { background-color: var(--bg-light); color: var(--text-main); }
     cursor: pointer;
 }
 
+.success-actions .btn-stay-here {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: var(--text-main);
+}
+
+.success-actions .btn-stay-here:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
 @keyframes successModalIn {
 
     from {

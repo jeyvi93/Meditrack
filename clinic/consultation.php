@@ -583,7 +583,7 @@
         </p>
 
         <div class="success-actions">
-            <button type="button" class="btn-secondary" onclick="closeSuccessModal()">
+            <button type="button" class="btn-secondary btn-stay-here" onclick="closeSuccessModal()">
                 Stay Here
             </button>
 

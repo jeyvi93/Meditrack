@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/database.php';
+
 // Detect which folder is currently using this sidebar.
 $isAdminPage = basename(dirname($_SERVER['SCRIPT_NAME'])) === 'admin';
 

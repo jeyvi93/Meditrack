@@ -73,6 +73,7 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                                 name="doctor_name"
                                 placeholder="e.g. Dr. Juan Dela Cruz"
                                 pattern="[A-Za-zÀ-ÿ .'-]+"
+                                oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
                                 required
                             >
