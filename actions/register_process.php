@@ -410,6 +410,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->Password   = $mailConfig['password'];
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = $mailConfig['port'];
+            $mail->Timeout = 15;
 
             $mail->setFrom(
                 $mailConfig['username'],
