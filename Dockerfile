@@ -14,11 +14,11 @@ RUN apt-get update && apt-get install -y \
         mysqli \
         curl \
         gd \
-        dom \
         opcache \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN php -m | grep -i '^dom$'
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
