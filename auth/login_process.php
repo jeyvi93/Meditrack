@@ -10,7 +10,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $_SESSION["login_email"] = $email;
 
-    $sql = "SELECT * FROM users WHERE email = ?";
+    $sql = "
+        SELECT 
+            users.*,
+            COALESCE(
+                CONCAT(students.first_name, ' ', students.last_name),
+                CONCAT(staffs.first_name, ' ', staffs.last_name)
+            ) AS full_name
+        FROM users
+        LEFT JOIN students ON users.student_id = students.id
+        LEFT JOIN staffs ON users.staff_id = staffs.id
+        WHERE users.email = ?
+    ";
 
     $stmt = mysqli_prepare($conn, $sql);
 
