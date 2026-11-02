@@ -37,6 +37,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $date = $_POST['appointment_date'];
     $time = $_POST['appointment_time'];
 
+    error_log("Reschedule submitted time: " . var_export($time, true));
+
     
     
     /* Get patient name and user ID */
