@@ -1,4 +1,5 @@
 FROM php:8.5-apache
+RUN usermod -a -G 1000 www-data
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
