@@ -25,14 +25,34 @@ try {
 
         $caCert = $_ENV['TIDB_CA_CERT_PATH'] ?? (getenv('TIDB_CA_CERT_PATH') ?: '');
 
-        if (
-            $host === '' ||
-            $username === '' ||
-            $password === '' ||
-            $database === '' ||
-            $caCert === '' ||
-            !is_readable($caCert)
-        ) {
+        $missing = [];
+
+        if ($host === '') {
+            $missing[] = 'DB_HOST';
+        }
+
+        if ($username === '') {
+            $missing[] = 'DB_USER';
+        }
+
+        if ($password === '') {
+            $missing[] = 'DB_PASSWORD';
+        }
+
+        if ($database === '') {
+            $missing[] = 'DB_NAME';
+        }
+
+        if ($caCert === '') {
+            $missing[] = 'TIDB_CA_CERT_PATH';
+        } elseif (!is_file($caCert)) {
+            $missing[] = 'CA_CERT_FILE_NOT_FOUND';
+        } elseif (!is_readable($caCert)) {
+            $missing[] = 'CA_CERT_FILE_NOT_READABLE';
+        }
+
+        if (!empty($missing)) {
+            error_log('Database configuration check failed: ' . implode(', ', $missing));
             throw new RuntimeException("Database environment configuration is incomplete.");
         }
 
