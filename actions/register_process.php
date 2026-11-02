@@ -465,13 +465,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ";
 
 
+            error_log("MediTrack: About to send verification email");
+
             $emailStart = microtime(true);
 
             $mail->send();
 
-            $emailDuration = round(microtime(true) - $emailStart, 2);
-            error_log("MediTrack registration email sending time: {$emailDuration} seconds");
+            error_log("MediTrack: Execution continued after mail send");
 
+            $emailDuration = round(microtime(true) - $emailStart, 2);
+
+            error_log("MediTrack: Email sent successfully in {$emailDuration} seconds");
             $_SESSION['success'] =
                 "Registration successful. A verification link has been sent to your email.";
 
