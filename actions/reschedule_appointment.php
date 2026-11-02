@@ -35,9 +35,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     $appointment_id = $_POST['appointment_id'];
     $date = $_POST['appointment_date'];
-    $time = $_POST['appointment_time'];
+    $timeInput = trim($_POST['appointment_time']);
 
-    error_log("Reschedule submitted time: " . var_export($time, true));
+    $timeObject = DateTime::createFromFormat('h:i A', $timeInput);
+
+    if (!$timeObject) {
+        $_SESSION['error'] = "Invalid appointment time.";
+        header("Location: ../clinic/appointments.php");
+        exit();
+    }
+
+    $time = $timeObject->format('H:i:s');
 
     
     
