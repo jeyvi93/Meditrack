@@ -289,10 +289,15 @@ mysqli_stmt_close($unreadStmt);
 
                                 <span class="noti-time">
 
-                                    <?= date(
-                                        "g:i A",
-                                        strtotime($notification['created_at'])
-                                    ) ?>
+                                    <?php
+                                    $notificationTime = new DateTime(
+                                        $notification['created_at'],
+                                        new DateTimeZone('UTC')
+                                    );
+                                    $notificationTime->setTimezone(new DateTimeZone('Asia/Manila'));
+                                    ?>
+
+                                    <?= $notificationTime->format("g:i A") ?>
 
                                 </span>
 
