@@ -23,19 +23,13 @@ try {
         $password = $_ENV['DB_PASSWORD'] ?? (getenv('DB_PASSWORD') ?: '');
         $database = $_ENV['DB_NAME'] ?? (getenv('DB_NAME') ?: '');
 
-        $caCertSource = $_ENV['TIDB_CA_CERT_PATH'] ?? (getenv('TIDB_CA_CERT_PATH') ?: '');
-        $caCert = '/tmp/meditrack-tidb-ca.pem';
+        $caCert = $_ENV['TIDB_CA_CERT_PATH']
+            ?? (getenv('TIDB_CA_CERT_PATH') ?: '');
 
-        if ($caCertSource !== '' && is_readable($caCertSource)) {
-            if (!copy($caCertSource, $caCert)) {
-                $caCert = '';
-            }
-        }
-
-        error_log("TiDB CA path: " . $caCert);
-        error_log("TiDB CA file exists: " . (file_exists($caCert) ? "YES" : "NO"));
-        error_log("TiDB CA readable: " . (is_readable($caCert) ? "YES" : "NO"));
-        error_log("Secret directory exists: " . (is_dir("/etc/secrets") ? "YES" : "NO"));
+        error_log("TiDB CA source path configured: " . ($caCert !== '' ? 'YES' : 'NO'));
+        error_log("TiDB CA file exists: " . (is_file($caCert) ? 'YES' : 'NO'));
+        error_log("TiDB CA readable: " . (is_readable($caCert) ? 'YES' : 'NO'));
+        error_log("Secret directory exists: " . (is_dir('/etc/secrets') ? 'YES' : 'NO'));
 
         $missing = [];
 
