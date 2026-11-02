@@ -1,6 +1,6 @@
 FROM php:8.5-apache
 
-# Install system dependencies and PHP extensions
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -9,15 +9,21 @@ RUN apt-get update && apt-get install -y \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
     libxml2-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install mysqli \
-    && docker-php-ext-install curl \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install opcache \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Configure GD
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+
+# Install PHP extensions separately
+RUN docker-php-ext-install mysqli
+RUN docker-php-ext-install curl
+RUN docker-php-ext-install gd
+RUN docker-php-ext-install opcache
+
+# Verify DOM is available for Dompdf
 RUN php -m | grep -i '^dom$'
+
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
