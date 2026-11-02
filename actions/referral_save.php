@@ -60,10 +60,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contact_number = $_POST['contact_number'];
     $address = $_POST['address'];
 
-    $parent_name = $_POST['parent_name'];
-    $parent_dob = $_POST['parent_dob'];
-    $spouse_name = $_POST['spouse_name'];
-    $spouse_dob = $_POST['spouse_dob'];
+    $parent_name = $_POST['parent_name'] ?? '';
+    $parent_dob = !empty($_POST['parent_dob'])
+        ? $_POST['parent_dob']
+        : null;
+
+    $spouse_name = $_POST['spouse_name'] ?? '';
+    $spouse_dob = !empty($_POST['spouse_dob'])
+        ? $_POST['spouse_dob']
+        : null;
 
     // Convert Yes/No to 1/0 for the database
     $is_philhealth_member = ($_POST['philhealth'] === 'yes') ? 1 : 0;
