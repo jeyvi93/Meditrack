@@ -35,8 +35,12 @@ function confirmAppointment() {
         submitButton.disabled = true;
     }
 
-    // Submit the original form
-    bookingForm.submit();
+    // Allow the processing modal to render before submitting
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            bookingForm.submit();
+        });
+    });
 }
 
 function closeSuccessModal() {

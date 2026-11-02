@@ -211,25 +211,11 @@ while ($row = mysqli_fetch_assoc($medicineAlertResult)) {
 // COMBINE ACTIVITIES
 // ==========================
 
-$allActivities = [];
-
-$maxItems = max(
-    count($medicineAlerts),
-    count($appointmentActivities)
+// Put ALL medicine alerts first
+$allActivities = array_merge(
+    $medicineAlerts,
+    $appointmentActivities
 );
-
-for ($i = 0; $i < $maxItems; $i++) {
-
-    // Medicine alerts first
-    if (isset($medicineAlerts[$i])) {
-        $allActivities[] = $medicineAlerts[$i];
-    }
-
-    // Appointment actions next
-    if (isset($appointmentActivities[$i])) {
-        $allActivities[] = $appointmentActivities[$i];
-    }
-}
 
 $recentActivities = array_slice($allActivities, 0, 5);
 $allActivities = array_slice($allActivities, 0, 50);

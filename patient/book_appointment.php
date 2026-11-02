@@ -214,7 +214,7 @@
 
     <!-- APPOINTMENT PROCESSING MODAL -->
     <div id="processingAppointmentModal" class="modal-overlay hidden">
-        <div class="modal-box processing-modal">
+        <div class="modal-box processing-modal appointment-processing-box">
 
             <div class="processing-spinner"></div>
 
