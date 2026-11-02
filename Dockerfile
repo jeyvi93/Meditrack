@@ -19,7 +19,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install mysqli
 RUN docker-php-ext-install curl
 RUN docker-php-ext-install gd
-RUN docker-php-ext-install opcache
 
 # Verify DOM is available for Dompdf
 RUN php -m | grep -i '^dom$'
