@@ -39,7 +39,6 @@ COPY . /var/www/html
 RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod 644 /etc/secrets/isrgrootx1.pem
+RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 10000
