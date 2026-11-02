@@ -24,7 +24,7 @@ try {
         $database = $_ENV['DB_NAME'] ?? '';
 
         // Render Secret File containing the TiDB CA certificate
-        $caCert = getenv('TIDB_CA_CERT_PATH') ?: '';
+        $caCert = $_ENV['TIDB_CA_CERT_PATH'] ?? getenv('TIDB_CA_CERT_PATH') ?: '';
 
         if (
             $host === '' ||
