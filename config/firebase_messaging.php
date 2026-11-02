@@ -1,4 +1,3 @@
-
 <?php
 
 // Firebase Cloud Messaging configuration.
