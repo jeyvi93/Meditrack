@@ -59,8 +59,6 @@ function sendMediTrackEmail(
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
 
-        curl_close($ch);
-
         if ($response === false || $httpCode !== 201) {
 
             error_log(
