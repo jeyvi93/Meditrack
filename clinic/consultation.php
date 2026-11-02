@@ -1,611 +1,611 @@
-    <?php
+<?php
 
-    session_start();
-    require_once "../config/database.php";
+session_start();
+require_once "../config/database.php";
 
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: ../index.php");
-        exit();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
+
+$medicineQuery = mysqli_query($conn, "
+    SELECT DISTINCT medicine_name
+    FROM medicines
+    WHERE status = 'Active'
+    AND expiry_date >= CURDATE()
+    AND is_quarantined = 0
+    AND quantity > 0
+    AND medicine_name IS NOT NULL
+    AND medicine_name != ''
+    ORDER BY medicine_name ASC
+");
+
+
+$batchQuery = mysqli_query($conn, "
+    SELECT id, medicine_name, batch_number, quantity, expiry_date
+    FROM medicines
+    WHERE status = 'Active'
+    AND expiry_date >= CURDATE()
+    AND is_quarantined = 0
+    AND quantity > 0
+    AND medicine_name IS NOT NULL
+    AND medicine_name != ''
+    ORDER BY medicine_name ASC, expiry_date ASC
+");
+
+$availableBatches = [];
+
+if ($batchQuery) {
+    while ($batch = mysqli_fetch_assoc($batchQuery)) {
+        $availableBatches[] = $batch;
     }
-    
-    if (($_SESSION['role'] ?? '') === 'Administrator') {
-        header("Location: ../admin/accounts.php");
-        exit();
-    }
+}
+?>
 
-    $medicineQuery = mysqli_query($conn, "
-        SELECT DISTINCT medicine_name
-        FROM medicines
-        WHERE status = 'Active'
-        AND expiry_date >= CURDATE()
-        AND is_quarantined = 0
-        AND quantity > 0
-        AND medicine_name IS NOT NULL
-        AND medicine_name != ''
-        ORDER BY medicine_name ASC
-    ");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    
-    $batchQuery = mysqli_query($conn, "
-        SELECT id, medicine_name, batch_number, quantity, expiry_date
-        FROM medicines
-        WHERE status = 'Active'
-        AND expiry_date >= CURDATE()
-        AND is_quarantined = 0
-        AND quantity > 0
-        AND medicine_name IS NOT NULL
-        AND medicine_name != ''
-        ORDER BY medicine_name ASC, expiry_date ASC
-    ");
+    <title>Consultation Log | MediTrack</title>
 
-    $availableBatches = [];
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
 
-    if ($batchQuery) {
-        while ($batch = mysqli_fetch_assoc($batchQuery)) {
-            $availableBatches[] = $batch;
-        }
-    }
-    ?>
+    <!-- Icons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS -->
+    <link rel="stylesheet" href="../assets/css/consultation.css">
+    <link rel="stylesheet" href="../assets/css/sidebar.css">
+</head>
 
-        <title>Consultation Log | MediTrack</title>
+<body>
+    <!-- SIDEBAR -->
+    <?php include "../includes/sidebar.php"; ?>
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="bg-gradient"></div>
+        <!-- HEADER -->
+        <header class="content-header">
+            <div class="title-area">
+                <h1>New Consultation Log</h1>
+                <p>
+                    Record patient complaints, treatments, and medicines dispensed.
+                </p>
+            </div>
 
-        <!-- Icons -->
-        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            <a href="view_consultation.php" class="btn-secondary">
+                <i class="fas fa-list"></i>
+                View All Logs
+            </a>
+        </header>
 
-        <!-- CSS -->
-        <link rel="stylesheet" href="../assets/css/consultation.css">
-        <link rel="stylesheet" href="../assets/css/sidebar.css">
-    </head>
+        <!-- CONSULTATION FORM -->
+        <form id="consultationForm">
 
-    <body>
-        <!-- SIDEBAR -->
-        <?php include "../includes/sidebar.php"; ?>
-
-        <!-- MAIN CONTENT -->
-        <main class="main-content">
-            <div class="bg-gradient"></div>
-            <!-- HEADER -->
-            <header class="content-header">
-                <div class="title-area">
-                    <h1>New Consultation Log</h1>
-                    <p>
-                        Record patient complaints, treatments, and medicines dispensed.
-                    </p>
+            <!-- DATE & TIME -->
+            <div class="input-grid two-cols">
+                <div class="input-group">
+                    <label for="consultationDate">
+                        Date
+                    </label>
+                    <input
+                        type="date"
+                        id="consultationDate"
+                        name="consultation_date"
+                        required
+                    >
                 </div>
 
-                <a href="view_consultation.php" class="btn-secondary">
-                    <i class="fas fa-list"></i>
-                    View All Logs
-                </a>
-            </header>
+                <div class="input-group">
+                    <label for="consultationTime">
+                        Time
+                    </label>
+                    <input
+                        type="time"
+                        id="consultationTime"
+                        name="consultation_time"
+                        required
+                    >
+                </div>
+            </div>
 
-            <!-- CONSULTATION FORM -->
-            <form id="consultationForm">
+            <!-- SECTION 1: PATIENT INFORMATION -->
+            <section class="form-card">
+                <div class="card-header">
+                    <i class="fas fa-user-circle"></i>
+                    <h2>Patient Information</h2>
+                </div>
 
-                <!-- DATE & TIME -->
                 <div class="input-grid two-cols">
+                    <!-- PATIENT TYPE -->
                     <div class="input-group">
-                        <label for="consultationDate">
-                            Date
+                        <label for="patientType">
+                            Patient Type
                         </label>
-                        <input
-                            type="date"
-                            id="consultationDate"
-                            name="consultation_date"
-                            required
-                        >
-                    </div>
-
-                    <div class="input-group">
-                        <label for="consultationTime">
-                            Time
-                        </label>
-                        <input
-                            type="time"
-                            id="consultationTime"
-                            name="consultation_time"
-                            required
-                        >
-                    </div>
-                </div>
-
-                <!-- SECTION 1: PATIENT INFORMATION -->
-                <section class="form-card">
-                    <div class="card-header">
-                        <i class="fas fa-user-circle"></i>
-                        <h2>Patient Information</h2>
-                    </div>
-
-                    <div class="input-grid two-cols">
-                        <!-- PATIENT TYPE -->
-                        <div class="input-group">
-                            <label for="patientType">
-                                Patient Type
-                            </label>
-                            <select
-                                id="patientType"
-                                name="patient_type"
-                                onchange="togglePatientFields()"
-                                required
-                            >
-                                <option value="student">
-                                    Student
-                                </option>
-                                <option value="tstaff">
-                                    Teaching Staff
-                                </option>
-                                <option value="nstaff">
-                                    Non-Teaching Staff
-                                </option>
-                            </select>
-                        </div>
-
-                        <!-- FULL NAME -->
-                        <div class="input-group">
-                            <label for="lastName">Last Name</label>
-                            <input
-                                type="text"
-                                id="lastName"
-                                name="last_name"
-                                placeholder="Enter Last Name"
-                                pattern="[A-Za-zÀ-ÿ\s.'-]+"
-                                oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
-                                required
-                            >
-                        </div>
-
-                        <div class="input-group">
-                            <label for="firstName">First Name</label>
-                            <input
-                                type="text"
-                                id="firstName"
-                                name="first_name"
-                                placeholder="Enter First Name"
-                                pattern="[A-Za-zÀ-ÿ\s.'-]+"
-                                title="First name should contain letters and common name punctuation only."
-                                oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
-                                required
-                            >
-                        </div>
-
-                        <div class="input-group">
-                            <label for="middle_name">Middle Name <span class="middle-name-note">(Leave blank if none)</span></label>
-                            <input
-                                type="text"
-                                id="middleName"
-                                name="middle_name"
-                                placeholder="Enter Middle Name"
-                                pattern="[A-Za-zÀ-ÿ\s.'-]*"
-                                title="Middle name should contain letters and common name punctuation only."
-                                oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
-                            >
-                        </div>
-                    </div>
-
-                    <!-- AGE / SEX / CONTACT -->
-                    <div class="input-grid three-cols">
-                        <div class="input-group">
-                            <label for="age">
-                                Age
-                            </label>
-                            <input
-                                type="number"
-                                id="age"
-                                name="age"
-                                min="1"
-                                step="1"
-                                inputmode="numeric"
-                                placeholder="Enter Age"
-                            >
-                        </div>
-
-                        <div class="input-group">
-                            <label for="sex">
-                                Sex
-                            </label>
-                            <select
-                                id="sex"
-                                name="sex"
-                            >
-
-                                <option value="Male">
-                                    Male
-                                </option>
-
-                                <option value="Female">
-                                    Female
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="contactNumber">
-                                Contact Number
-                            </label>
-
-                            <input
-                                type="tel"
-                                id="contactNumber"
-                                name="contact_number"
-                                placeholder="09XXXXXXXXX"
-                                maxlength="11"
-                                minlength="11"
-                                pattern="09[0-9]{9}"
-                                inputmode="numeric"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                title="Contact number must contain exactly 11 digits and start with 09."
-                            >
-                        </div>
-                    </div>
-
-                    <!-- DEPARTMENT -->
-                    <div
-                        class="input-grid"
-                        id="sharedDepartmentField"
-                    >
-                        <div class="input-group">
-
-                            <label for="department">
-                                Department
-                            </label>
-
-                            <select id="department" name="department" required>
-                                <option value="">Select Department</option>
-                                    <option value="Technology">Technology</option>
-                                    <option value="Education">Education</option>
-                                    <option value="Business">Business</option>
-                                    <option value="Clinic">Clinic</option>
-                                    <option value="Library">Library</option>
-                                    <option value="Guidance Office">Guidance Office</option>
-                                    <option value="Cashier">Cashier</option>
-                                    <option value="Registrar">Registrar</option>
-                                    <option value="Utility">Utility</option>
-                                    <option value="Admin Office">Admin Office</option>
-                                    <option value="SASO">SASO</option>
-                                    <option value="CSU">CSU</option>
-                            </select>
-                    </div>
-
-                    <!-- STUDENT FIELDS -->
-                    <div
-                        class="input-grid two-cols conditional-fields"
-                        id="studentFields"
-                    >
-                        <div class="input-group">
-                            <label for="course">
-                                Course
-                            </label>
-
-                            <input
-                                type="text"
-                                id="course"
-                                name="course"
-                                placeholder="e.g. BS Information Technology"
-                                pattern="[A-Za-z0-9 .&-]+"
-                                title="Course should contain valid letters, numbers, spaces, periods, or hyphens."
-                            >
-                        </div>
-
-                        <div class="input-group">
-                            <label for="yearLevel">
-                                Year Level
-                            </label>
-
-                            <select
-                                id="yearLevel"
-                                name="year_level"
-                            >
-
-                                <option value="1st Year">
-                                    1st Year
-                                </option>
-
-                                <option value="2nd Year">
-                                    2nd Year
-                                </option>
-
-                                <option value="3rd Year">
-                                    3rd Year
-                                </option>
-
-                                <option value="4th Year">
-                                    4th Year
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- STAFF FIELDS -->
-                    <div
-                        class="input-grid conditional-fields"
-                        id="staffFields"
-                        style="display:none;"
-                    >
-                        <div class="input-group">
-                            <label for="position">
-                                Position
-                            </label>
-
-                            <input
-                                type="text"
-                                id="position"
-                                name="position"
-                                placeholder="e.g. Instructor I / Admin Assistant"
-                                pattern="[A-Za-zÀ-ÿ0-9\s.,&'()/-]+"
-                                title="Position should contain valid letters, numbers, spaces, and common punctuation."
-                            >
-                        </div>
-                    </div>
-                </section>
-
-                <!-- SECTION 2: CLINICAL ASSESSMENT -->
-                <section class="form-card">
-                    <div class="card-header">
-
-                        <i class="fas fa-stethoscope"></i>
-
-                        <h2>Clinical Assessment</h2>
-
-                    </div>
-
-                    <!-- COMPLAINT -->
-                    <div class="input-group">
-                        <label for="complaint">
-                            Complaint
-                        </label>
-
                         <select
-                            id="complaint"
-                            name="complaint"
-                            onchange="toggleOtherComplaint()"
+                            id="patientType"
+                            name="patient_type"
+                            onchange="togglePatientFields()"
                             required
                         >
-                            <option value="">
-                                Select Complaint / Symptoms
+                            <option value="student">
+                                Student
                             </option>
-                            <option value="Headache / Migraine">
-                                Headache / Migraine
+                            <option value="tstaff">
+                                Teaching Staff
                             </option>
-                            <option value="Fever">
-                                Fever
-                            </option>
-                            <option value="Cough & Cold">
-                                Cough & Cold
-                            </option>
-
-                            <option value="Stomach Ache">
-                                Stomach Ache
-                            </option>
-
-                            <option value="Allergic Reaction">
-                                Allergic Reaction
-                            </option>
-
-                            <option value="Dental Pain">
-                                Dental Pain
-                            </option>
-
-                            <option value="Minor Injury">
-                                Minor Injury
-                            </option>
-
-                            <option value="Dizziness">
-                                Dizziness
-                            </option>
-
-                            <option value="Body Pain">
-                                Body Pain
-                            </option>
-
-                            <option value="Nausea / Vomiting">
-                                Nausea / Vomiting
-                            </option>
-
-                            <option value="Other">
-                                Other
+                            <option value="nstaff">
+                                Non-Teaching Staff
                             </option>
                         </select>
                     </div>
 
-                    <div
-                        class="input-group"
-                        id="otherComplaintGroup"
-                        style="display: none;"
-                    >
-                        <label for="otherComplaint">
-                            Specify Complaint
+                    <!-- FULL NAME -->
+                    <div class="input-group">
+                        <label for="lastName">Last Name</label>
+                        <input
+                            type="text"
+                            id="lastName"
+                            name="last_name"
+                            placeholder="Enter Last Name"
+                            pattern="[A-Za-zÀ-ÿ\s.'-]+"
+                            oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
+                            required
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="firstName">First Name</label>
+                        <input
+                            type="text"
+                            id="firstName"
+                            name="first_name"
+                            placeholder="Enter First Name"
+                            pattern="[A-Za-zÀ-ÿ\s.'-]+"
+                            title="First name should contain letters and common name punctuation only."
+                            oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
+                            required
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="middle_name">Middle Name <span class="middle-name-note">(Leave blank if none)</span></label>
+                        <input
+                            type="text"
+                            id="middleName"
+                            name="middle_name"
+                            placeholder="Enter Middle Name"
+                            pattern="[A-Za-zÀ-ÿ\s.'-]*"
+                            title="Middle name should contain letters and common name punctuation only."
+                            oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
+                        >
+                    </div>
+                </div>
+
+                <!-- AGE / SEX / CONTACT -->
+                <div class="input-grid three-cols">
+                    <div class="input-group">
+                        <label for="age">
+                            Age
+                        </label>
+                        <input
+                            type="number"
+                            id="age"
+                            name="age"
+                            min="1"
+                            step="1"
+                            inputmode="numeric"
+                            placeholder="Enter Age"
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="sex">
+                            Sex
+                        </label>
+                        <select
+                            id="sex"
+                            name="sex"
+                        >
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="contactNumber">
+                            Contact Number
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="contactNumber"
+                            name="contact_number"
+                            placeholder="09XXXXXXXXX"
+                            maxlength="11"
+                            minlength="11"
+                            pattern="09[0-9]{9}"
+                            inputmode="numeric"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            title="Contact number must contain exactly 11 digits and start with 09."
+                        >
+                    </div>
+                </div>
+
+                <!-- DEPARTMENT -->
+                <div
+                    class="input-grid"
+                    id="sharedDepartmentField"
+                >
+                    <div class="input-group">
+
+                        <label for="department">
+                            Department
+                        </label>
+
+                        <select id="department" name="department" required>
+                            <option value="">Select Department</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Education">Education</option>
+                                <option value="Business">Business</option>
+                                <option value="Clinic">Clinic</option>
+                                <option value="Library">Library</option>
+                                <option value="Guidance Office">Guidance Office</option>
+                                <option value="Cashier">Cashier</option>
+                                <option value="Registrar">Registrar</option>
+                                <option value="Utility">Utility</option>
+                                <option value="Admin Office">Admin Office</option>
+                                <option value="SASO">SASO</option>
+                                <option value="CSU">CSU</option>
+                        </select>
+                </div>
+
+                <!-- STUDENT FIELDS -->
+                <div
+                    class="input-grid two-cols conditional-fields"
+                    id="studentFields"
+                >
+                    <div class="input-group">
+                        <label for="course">
+                            Course
                         </label>
 
                         <input
                             type="text"
-                            id="otherComplaint"
-                            placeholder="Enter Complaint / Symptoms"
-                            pattern="[A-Za-zÀ-ÿ0-9\s.,&'()/+-]+"
-                            title="Complaint should contain valid letters, numbers, spaces, and common punctuation."
+                            id="course"
+                            name="course"
+                            placeholder="e.g. BS Information Technology"
+                            pattern="[A-Za-z0-9 .&-]+"
+                            title="Course should contain valid letters, numbers, spaces, periods, or hyphens."
                         >
                     </div>
 
-                    <!-- TREATMENT / REMARKS -->
-                    <div class="input-row two-cols">
-                        <div class="input-group">
-                            <label for="treatment">
-                                Treatment Given
-                            </label>
+                    <div class="input-group">
+                        <label for="yearLevel">
+                            Year Level
+                        </label>
 
-                            <textarea
-                                id="treatment"
-                                name="treatment"
-                                rows="3"
-                                placeholder="Procedures or first aid performed"
-                            ></textarea>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="remarks">
-                                Remarks
-                            </label>
-                            <textarea
-                                id="remarks"
-                                name="remarks"
-                                rows="3"
-                                placeholder="Observation or recommendations"
-                            ></textarea>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- SECTION 3: MEDICINES DISPENSED -->
-                <section class="form-card">
-                    <div class="card-header space-between">
-                        <div class="header-title">
-
-                            <i class="fas fa-pills"></i>
-
-                            <h2>Medicines Dispensed</h2>
-
-                        </div>
-
-                        <button
-                            type="button"
-                            class="btn-add-row"
-                            onclick="addMedicineRow()"
+                        <select
+                            id="yearLevel"
+                            name="year_level"
                         >
-                            Add Medicine
-                        </button>
+
+                            <option value="1st Year">
+                                1st Year
+                            </option>
+
+                            <option value="2nd Year">
+                                2nd Year
+                            </option>
+
+                            <option value="3rd Year">
+                                3rd Year
+                            </option>
+
+                            <option value="4th Year">
+                                4th Year
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- STAFF FIELDS -->
+                <div
+                    class="input-grid conditional-fields"
+                    id="staffFields"
+                    style="display:none;"
+                >
+                    <div class="input-group">
+                        <label for="position">
+                            Position
+                        </label>
+
+                        <input
+                            type="text"
+                            id="position"
+                            name="position"
+                            placeholder="e.g. Instructor I / Admin Assistant"
+                            pattern="[A-Za-zÀ-ÿ0-9\s.,&'()/-]+"
+                            title="Position should contain valid letters, numbers, spaces, and common punctuation."
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: CLINICAL ASSESSMENT -->
+            <section class="form-card">
+                <div class="card-header">
+
+                    <i class="fas fa-stethoscope"></i>
+
+                    <h2>Clinical Assessment</h2>
+
+                </div>
+
+                <!-- COMPLAINT -->
+                <div class="input-group">
+                    <label for="complaint">
+                        Complaint
+                    </label>
+
+                    <select
+                        id="complaint"
+                        name="complaint"
+                        onchange="toggleOtherComplaint()"
+                        required
+                    >
+                        <option value="">
+                            Select Complaint / Symptoms
+                        </option>
+                        <option value="Headache / Migraine">
+                            Headache / Migraine
+                        </option>
+                        <option value="Fever">
+                            Fever
+                        </option>
+                        <option value="Cough & Cold">
+                            Cough & Cold
+                        </option>
+
+                        <option value="Stomach Ache">
+                            Stomach Ache
+                        </option>
+
+                        <option value="Allergic Reaction">
+                            Allergic Reaction
+                        </option>
+
+                        <option value="Dental Pain">
+                            Dental Pain
+                        </option>
+
+                        <option value="Minor Injury">
+                            Minor Injury
+                        </option>
+
+                        <option value="Dizziness">
+                            Dizziness
+                        </option>
+
+                        <option value="Body Pain">
+                            Body Pain
+                        </option>
+
+                        <option value="Nausea / Vomiting">
+                            Nausea / Vomiting
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+                    </select>
+                </div>
+
+                <div
+                    class="input-group"
+                    id="otherComplaintGroup"
+                    style="display: none;"
+                >
+                    <label for="otherComplaint">
+                        Specify Complaint
+                    </label>
+
+                    <input
+                        type="text"
+                        id="otherComplaint"
+                        placeholder="Enter Complaint / Symptoms"
+                        pattern="[A-Za-zÀ-ÿ0-9\s.,&'()/+-]+"
+                        title="Complaint should contain valid letters, numbers, spaces, and common punctuation."
+                    >
+                </div>
+
+                <!-- TREATMENT / REMARKS -->
+                <div class="input-row two-cols">
+                    <div class="input-group">
+                        <label for="treatment">
+                            Treatment Given
+                        </label>
+
+                        <textarea
+                            id="treatment"
+                            name="treatment"
+                            rows="3"
+                            placeholder="Procedures or first aid performed"
+                        ></textarea>
                     </div>
 
-                    <div id="medicineRows">
-                        <!-- DEFAULT MEDICINE ROW -->
-                        <div class="medicine-row">      
-                            <div class="input-group">
-                                <label>
-                                    Medicine Name
-                                </label>
-
-                                <select
-                                    class="med-select"
-                                    name="medicine_names[]"
-                                    required
-                                >
-                                    <option value="">
-                                        Select Medicine from Inventory
-                                    </option>
-
-                                    <?php while ($medicine = mysqli_fetch_assoc($medicineQuery)): ?>
-                                        <option value="<?= htmlspecialchars($medicine['medicine_name']); ?>">
-                                            <?= htmlspecialchars($medicine['medicine_name']); ?>
-                                        </option>
-                                    <?php endwhile; ?>
-                                </select>
-                            </div>
-
-                            <div class="input-group">
-                                <label>
-                                    Batch Number
-                                </label>
-
-                                <select
-                                    class="batch-select"
-                                    name="medicines[]"
-                                    required
-                                    disabled
-                                >
-                                    <option value="">
-                                        Select a medicine first
-                                    </option>
-                                </select>
-                            </div>
-
-
-                            <div class="input-group qty-input">
-                                <label>
-                                    Quantity
-                                </label>
-
-                                <input
-                                    type="number"
-                                    name="medicine_quantities[]"
-                                    min="1"
-                                    step="1"
-                                    value="1"
-                                    inputmode="numeric"
-                                    required
-                                >
-                            </div>
-
-                            <div class="row-action">
-                                <!-- No delete button on first row -->
-                            </div>
-                        </div>
+                    <div class="input-group">
+                        <label for="remarks">
+                            Remarks
+                        </label>
+                        <textarea
+                            id="remarks"
+                            name="remarks"
+                            rows="3"
+                            placeholder="Observation or recommendations"
+                        ></textarea>
                     </div>
-                </section>
+                </div>
+            </section>
 
-                <!-- FORM ACTIONS -->
-                <div class="form-actions">
-                    <button
-                        type="reset"
-                        class="btn-ghost"
-                    >
-                        Clear All
-                    </button>
+            <!-- SECTION 3: MEDICINES DISPENSED -->
+            <section class="form-card">
+                <div class="card-header space-between">
+                    <div class="header-title">
+
+                        <i class="fas fa-pills"></i>
+
+                        <h2>Medicines Dispensed</h2>
+
+                    </div>
 
                     <button
-                        type="submit"
-                        class="btn-primary"
+                        type="button"
+                        class="btn-add-row"
+                        onclick="addMedicineRow()"
                     >
-                        Save Consultation Log
+                        Add Medicine
                     </button>
                 </div>
-            </form>
 
-        <!-- SUCCESS MODAL -->
+                <div id="medicineRows">
+                    <!-- DEFAULT MEDICINE ROW -->
+                    <div class="medicine-row">      
+                        <div class="input-group">
+                            <label>
+                                Medicine Name
+                            </label>
+
+                            <select
+                                class="med-select"
+                                name="medicine_names[]"
+                                required
+                            >
+                                <option value="">
+                                    Select Medicine from Inventory
+                                </option>
+
+                                <?php while ($medicine = mysqli_fetch_assoc($medicineQuery)): ?>
+                                    <option value="<?= htmlspecialchars($medicine['medicine_name']); ?>">
+                                        <?= htmlspecialchars($medicine['medicine_name']); ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>
+                                Batch Number
+                            </label>
+
+                            <select
+                                class="batch-select"
+                                name="medicines[]"
+                                required
+                                disabled
+                            >
+                                <option value="">
+                                    Select a medicine first
+                                </option>
+                            </select>
+                        </div>
+
+
+                        <div class="input-group qty-input">
+                            <label>
+                                Quantity
+                            </label>
+
+                            <input
+                                type="number"
+                                name="medicine_quantities[]"
+                                min="1"
+                                step="1"
+                                value="1"
+                                inputmode="numeric"
+                                required
+                            >
+                        </div>
+
+                        <div class="row-action">
+                            <!-- No delete button on first row -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FORM ACTIONS -->
+            <div class="form-actions">
+                <button
+                    type="reset"
+                    class="btn-ghost"
+                >
+                    Clear All
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn-primary"
+                >
+                    Save Consultation Log
+                </button>
+            </div>
+        </form>
+
+    <!-- SUCCESS MODAL -->
 <div class="success-modal-overlay" id="successModal">
-    <div class="success-modal">
+<div class="success-modal">
 
-        <div class="success-icon">
-            <i class="fas fa-check"></i>
-        </div>
-
-        <h2>Consultation Saved!</h2>
-
-        <p>
-            The consultation log has been successfully recorded.
-        </p>
-
-        <div class="success-actions">
-            <button type="button" class="btn-secondary btn-stay-here" onclick="closeSuccessModal()">
-                Stay Here
-            </button>
-
-            <button type="button" class="btn-primary" onclick="viewConsultationLogs()">
-                View Consultation Logs
-            </button>
-        </div>
-
+    <div class="success-icon">
+        <i class="fas fa-check"></i>
     </div>
+
+    <h2>Consultation Saved!</h2>
+
+    <p>
+        The consultation log has been successfully recorded.
+    </p>
+
+    <div class="success-actions">
+        <button type="button" class="btn-secondary btn-stay-here" onclick="closeSuccessModal()">
+            Stay Here
+        </button>
+
+        <button type="button" class="btn-primary" onclick="viewConsultationLogs()">
+            View Consultation Logs
+        </button>
+    </div>
+
 </div>
-        </main>
+</div>
+    </main>
 
-    
 
-    <script>
-        window.availableMedicineBatches = <?= json_encode(
-            $availableBatches,
-            JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
-        ); ?>;
-    </script>
-    <script src="../assets/js/consultation.js"></script>
-    <script src="../includes/includes.js"></script>
 
-    </body>
-    </html>
+<script>
+    window.availableMedicineBatches = <?= json_encode(
+        $availableBatches,
+        JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+    ); ?>;
+</script>
+<script src="../assets/js/consultation.js"></script>
+<script src="../includes/includes.js"></script>
+
+</body>
+</html>
