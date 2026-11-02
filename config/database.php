@@ -32,11 +32,10 @@ try {
             }
         }
 
-        error_log(
-            'TiDB CA check: exists=' . (file_exists($caCert) ? 'yes' : 'no') .
-            ', readable=' . (is_readable($caCert) ? 'yes' : 'no') .
-            ', permissions=' . (file_exists($caCert) ? substr(sprintf('%o', fileperms($caCert)), -4) : 'N/A')
-        );
+        error_log("TiDB CA path: " . $caCert);
+        error_log("TiDB CA file exists: " . (file_exists($caCert) ? "YES" : "NO"));
+        error_log("TiDB CA readable: " . (is_readable($caCert) ? "YES" : "NO"));
+        error_log("Secret directory exists: " . (is_dir("/etc/secrets") ? "YES" : "NO"));
 
         $missing = [];
 
