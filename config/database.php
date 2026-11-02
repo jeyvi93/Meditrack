@@ -17,14 +17,13 @@ try {
     if ($isProduction) {
 
         // TiDB Cloud credentials from Render environment variables
-        $host = $_ENV['DB_HOST'] ?? '';
-        $port = (int) ($_ENV['DB_PORT'] ?? 4000);
-        $username = $_ENV['DB_USER'] ?? '';
-        $password = $_ENV['DB_PASSWORD'] ?? '';
-        $database = $_ENV['DB_NAME'] ?? '';
+        $host = $_ENV['DB_HOST'] ?? (getenv('DB_HOST') ?: '');
+        $port = (int) ($_ENV['DB_PORT'] ?? (getenv('DB_PORT') ?: 4000));
+        $username = $_ENV['DB_USER'] ?? (getenv('DB_USER') ?: '');
+        $password = $_ENV['DB_PASSWORD'] ?? (getenv('DB_PASSWORD') ?: '');
+        $database = $_ENV['DB_NAME'] ?? (getenv('DB_NAME') ?: '');
 
-        // Render Secret File containing the TiDB CA certificate
-        $caCert = $_ENV['TIDB_CA_CERT_PATH'] ?? getenv('TIDB_CA_CERT_PATH') ?: '';
+        $caCert = $_ENV['TIDB_CA_CERT_PATH'] ?? (getenv('TIDB_CA_CERT_PATH') ?: '');
 
         if (
             $host === '' ||
