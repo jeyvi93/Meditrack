@@ -2,10 +2,7 @@
 session_start();
 
 require_once "../config/database.php";
-require_once "../vendor/autoload.php";
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+require_once "../includes/email_sender.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -396,39 +393,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             urlencode($verification_token);
 
 
+        
         // Send verification email
-        $mailConfig = require "../config/mail.php";
-
-        $mail = new PHPMailer(true);
-
         try {
 
-            $mail->isSMTP();
-            $mail->Host       = $mailConfig['host'];
-            $mail->SMTPAuth   = true;
-            $mail->Username   = $mailConfig['username'];
-            $mail->Password   = $mailConfig['password'];
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = $mailConfig['port'];
-            $mail->Timeout = 15;
-
-            $mail->SMTPDebug = 2;
-
-            $mail->Debugoutput = function ($str, $level) {
-                error_log("PHPMailer SMTP [$level]: $str");
-            };
-
-            $mail->setFrom(
-                $mailConfig['username'],
-                "MediTrack"
-            );
-
-            $mail->addAddress($email, $full_name);
-
-            $mail->isHTML(true);
-            $mail->Subject = "Verify Your MediTrack Account";
-
-            $mail->Body = "
+            $emailBody = "
                 <h2>MediTrack</h2>
 
                 <p>Hello <strong>" . htmlspecialchars($full_name) . "</strong>,</p>
@@ -471,22 +440,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </p>
             ";
 
+            sendMediTrackEmail(
+                $email,
+                $full_name,
+                "Verify Your MediTrack Account",
+                $emailBody
+            );
 
-            error_log("MediTrack: About to send verification email");
-
-            $emailStart = microtime(true);
-
-            $mail->send();
-
-            error_log("MediTrack: Execution continued after mail send");
-
-            $emailDuration = round(microtime(true) - $emailStart, 2);
-
-            error_log("MediTrack: Email sent successfully in {$emailDuration} seconds");
             $_SESSION['success'] =
                 "Registration successful. A verification link has been sent to your email.";
 
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+
+            error_log("MediTrack registration email error: " . $e->getMessage());
 
             // Remove the account if email could not be sent
             mysqli_query(
@@ -504,6 +470,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: ../patient/register.php");
             exit();
         }
+
 
         // Clear saved form values after successful registration
         unset($_SESSION['old_last_name']);

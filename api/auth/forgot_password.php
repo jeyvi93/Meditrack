@@ -3,10 +3,7 @@
 session_start();
 
 require_once "../../config/database.php";
-require_once "../../vendor/autoload.php";
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+require_once "../../includes/email_sender.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: ../../patient/forgot_password.php");
@@ -147,67 +144,18 @@ $reset_link = $scheme . "://" . $host .
 
 /*
 |--------------------------------------------------------------------------
-| Mail Configuration
+| Send Password Reset Email
 |--------------------------------------------------------------------------
 */
 
-$mailConfig = require "../../config/mail.php";
-
-$mail = new PHPMailer(true);
-
 try {
 
-    $mail->isSMTP();
-
-    $mail->Host       = $mailConfig["host"];
-    $mail->SMTPAuth   = true;
-    $mail->Username   = $mailConfig["username"];
-    $mail->Password   = $mailConfig["password"];
-
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port       = $mailConfig["port"];
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Sender
-    |--------------------------------------------------------------------------
-    */
-
-    $mail->setFrom(
-        $mailConfig["username"],
-        "MediTrack"
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Recipient
-    |--------------------------------------------------------------------------
-    */
-
-    $mail->addAddress(
-        $user["email"],
-        $user["full_name"]
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Email Content
-    |--------------------------------------------------------------------------
-    */
-
-    $mail->isHTML(true);
-
-    $mail->Subject = "MediTrack Password Reset";
-
-    $mail->Body = "
+    $emailBody = "
         <h2>MediTrack</h2>
 
         <p>
             Hello <strong>" .
-            htmlspecialchars($user["full_name"]) .
+            htmlspecialchars($user["full_name"], ENT_QUOTES, 'UTF-8') .
             "</strong>,
         </p>
 
@@ -221,7 +169,7 @@ try {
         </p>
 
         <p style='margin: 30px 0;'>
-            <a href='" . $reset_link . "'
+            <a href='" . htmlspecialchars($reset_link, ENT_QUOTES, 'UTF-8') . "'
             style='
             display:inline-block;
             padding:12px 22px;
@@ -250,18 +198,17 @@ try {
         </p>
     ";
 
+    sendMediTrackEmail(
+        $user["email"],
+        $user["full_name"],
+        "MediTrack Password Reset",
+        $emailBody
+    );
 
-    /*
-    |--------------------------------------------------------------------------
-    | Send Email
-    |--------------------------------------------------------------------------
-    */
-
-    $mail->send();
-
-} catch (Exception $e) {
+} catch (\Throwable $e) {
 
     // Do not expose mail errors to the user.
+    error_log("MediTrack password reset email error: " . $e->getMessage());
 
 }
 

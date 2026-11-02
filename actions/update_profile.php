@@ -3,10 +3,7 @@
 session_start();
 
 require_once "../config/database.php";
-require_once "../vendor/autoload.php";
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+require_once "../includes/email_sender.php";
 
 $userId = $_SESSION['user_id'] ?? 0;
 
@@ -196,7 +193,7 @@ if ($email !== $currentEmail) {
     $expires = date("Y-m-d H:i:s", time() + 900);
 
     // The active email remains unchanged until verification.
-        $updateSql = "
+            $updateSql = "
         UPDATE users
         SET pending_email = ?,
             email_change_token = ?,
@@ -257,25 +254,7 @@ if ($email !== $currentEmail) {
     // SEND VERIFICATION EMAIL
     // ==========================
 
-    $mailConfig = require "../config/mail.php";
-    $mail = new PHPMailer(true);
-
-    try {
-
-        $mail->isSMTP();
-        $mail->Host       = $mailConfig['host'];
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $mailConfig['username'];
-        $mail->Password   = $mailConfig['password'];
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = $mailConfig['port'];
-
-        $mail->setFrom($mailConfig['username'], "MediTrack");
-
-        $mail->addAddress($email, $currentName);
-
-        $mail->isHTML(true);
-        $mail->Subject = "Verify Your New MediTrack Email";
+        try {
 
         $safeName = htmlspecialchars(
             $currentName,
@@ -289,7 +268,7 @@ if ($email !== $currentEmail) {
             'UTF-8'
         );
 
-        $mail->Body = "
+        $emailBody = "
             <h2>MediTrack</h2>
 
             <p>Hello <strong>{$safeName}</strong>,</p>
@@ -307,10 +286,10 @@ if ($email !== $currentEmail) {
 
             <p style='margin: 30px 0;'>
                 <a href='{$safeLink}'
-                   style='display:inline-block;padding:12px 22px;
-                   background:#800000;color:white;text-decoration:none;
-                   border-radius:6px;font-weight:bold;'>
-                   Verify New Email
+                style='display:inline-block;padding:12px 22px;
+                background:#800000;color:white;text-decoration:none;
+                border-radius:6px;font-weight:bold;'>
+                Verify New Email
                 </a>
             </p>
 
@@ -329,9 +308,16 @@ if ($email !== $currentEmail) {
             </p>
         ";
 
-        $mail->send();
+        sendMediTrackEmail(
+            $email,
+            $currentName,
+            "Verify Your New MediTrack Email",
+            $emailBody
+        );
 
-    } catch (Exception $e) {
+    } catch (\Throwable $e) {
+
+        error_log("MediTrack email change error: " . $e->getMessage());
 
         // Clear the pending request if sending fails.
         $clearSql = "
@@ -340,7 +326,7 @@ if ($email !== $currentEmail) {
                 email_change_token = NULL,
                 email_change_expires = NULL
             WHERE id = ?
-              AND email_change_token = ?
+            AND email_change_token = ?
         ";
 
         $clearStmt = mysqli_prepare($conn, $clearSql);
@@ -352,7 +338,7 @@ if ($email !== $currentEmail) {
         }
 
         $_SESSION['error'] =
-        "We couldn't send the verification email. Please try changing your email again.";
+            "We couldn't send the verification email. Please try changing your email again.";
 
         header("Location: ../patient/edit_profile.php");
         exit();

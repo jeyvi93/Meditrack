@@ -1,10 +1,7 @@
 <?php
 
 require_once "../../config/database.php";
-require_once "../../vendor/autoload.php";
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+require_once "../../includes/email_sender.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: ../../login.php");
@@ -155,40 +152,15 @@ $verification_link = $scheme . "://" . $host .
 |--------------------------------------------------------------------------
 */
 
-$mailConfig = require "../../config/mail.php";
-
-$mail = new PHPMailer(true);
-
 try {
 
-    $mail->isSMTP();
-
-    $mail->Host       = $mailConfig["host"];
-    $mail->SMTPAuth   = true;
-    $mail->Username   = $mailConfig["username"];
-    $mail->Password   = $mailConfig["password"];
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port       = $mailConfig["port"];
-
-    $mail->setFrom(
-        $mailConfig["username"],
-        "MediTrack"
-    );
-
-    $mail->addAddress(
-        $user["email"],
-        $user["full_name"]
-    );
-
-    $mail->isHTML(true);
-
-    $mail->Subject = "New MediTrack Verification Link";
-
-    $mail->Body = "
+    $emailBody = "
         <h2>MediTrack</h2>
 
         <p>
-            Hello <strong>" . htmlspecialchars($user["full_name"]) . "</strong>,
+            Hello <strong>" .
+            htmlspecialchars($user["full_name"], ENT_QUOTES, 'UTF-8') .
+            "</strong>,
         </p>
 
         <p>
@@ -201,7 +173,7 @@ try {
         </p>
 
         <p style='margin: 30px 0;'>
-            <a href='" . $verification_link . "'
+            <a href='" . htmlspecialchars($verification_link, ENT_QUOTES, 'UTF-8') . "'
             style='
             display:inline-block;
             padding:12px 22px;
@@ -230,12 +202,19 @@ try {
         </p>
     ";
 
-    $mail->send();
+    sendMediTrackEmail(
+        $user["email"],
+        $user["full_name"],
+        "New MediTrack Verification Link",
+        $emailBody
+    );
 
     header("Location: ../../login.php?resend=success");
     exit();
 
-} catch (Exception $e) {
+} catch (\Throwable $e) {
+
+    error_log("MediTrack resend verification email error: " . $e->getMessage());
 
     header("Location: ../../login.php?error=resend_failed");
     exit();
