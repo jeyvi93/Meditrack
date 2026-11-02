@@ -12,7 +12,8 @@ const FIREBASE_PROJECT_ID = 'meditrack-clinic-2f6a0';
 
 function getFirebaseAccessToken(): string
 {
-    $keyFile = 'C:/xampp/private/firebase-service-account.json';
+    $keyFile = getenv('FIREBASE_SERVICE_ACCOUNT_PATH')
+        ?: 'C:/xampp/private/firebase-service-account.json';
 
     if (!is_readable($keyFile)) {
         throw new RuntimeException(
