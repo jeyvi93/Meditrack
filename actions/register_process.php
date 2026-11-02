@@ -412,6 +412,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->Port       = $mailConfig['port'];
             $mail->Timeout = 15;
 
+            $mail->SMTPDebug = 2;
+
+            $mail->Debugoutput = function ($str, $level) {
+                error_log("PHPMailer SMTP [$level]: $str");
+            };
+
             $mail->setFrom(
                 $mailConfig['username'],
                 "MediTrack"
