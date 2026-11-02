@@ -23,7 +23,20 @@ try {
         $password = $_ENV['DB_PASSWORD'] ?? (getenv('DB_PASSWORD') ?: '');
         $database = $_ENV['DB_NAME'] ?? (getenv('DB_NAME') ?: '');
 
-        $caCert = $_ENV['TIDB_CA_CERT_PATH'] ?? (getenv('TIDB_CA_CERT_PATH') ?: '');
+        $caCertSource = $_ENV['TIDB_CA_CERT_PATH'] ?? (getenv('TIDB_CA_CERT_PATH') ?: '');
+        $caCert = '/tmp/meditrack-tidb-ca.pem';
+
+        if ($caCertSource !== '' && is_readable($caCertSource)) {
+            if (!copy($caCertSource, $caCert)) {
+                $caCert = '';
+            }
+        }
+
+        error_log(
+            'TiDB CA check: exists=' . (file_exists($caCert) ? 'yes' : 'no') .
+            ', readable=' . (is_readable($caCert) ? 'yes' : 'no') .
+            ', permissions=' . (file_exists($caCert) ? substr(sprintf('%o', fileperms($caCert)), -4) : 'N/A')
+        );
 
         $missing = [];
 

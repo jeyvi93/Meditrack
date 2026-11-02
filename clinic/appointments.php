@@ -1159,7 +1159,6 @@ $rejected = $rejectedStmt->get_result();
                         <option>Patient not available</option>
                         <option>Schedule conflict</option>
                         <option>Emergency case</option>
-                        <option>System adjustment</option>
                         <option>Other</option>
                     </select>
                 </div>
