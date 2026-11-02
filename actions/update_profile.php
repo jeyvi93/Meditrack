@@ -193,7 +193,7 @@ if ($email !== $currentEmail) {
     $expires = date("Y-m-d H:i:s", time() + 900);
 
     // The active email remains unchanged until verification.
-            $updateSql = "
+    $updateSql = "
         UPDATE users
         SET pending_email = ?,
             email_change_token = ?,
