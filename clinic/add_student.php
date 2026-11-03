@@ -67,7 +67,7 @@ unset($_SESSION['error']);
                             <div class="input-row">
                                 <div class="input-group">
                                     <label>Student ID</label>
-                                    <input type="text" name="student_id_number" placeholder="223-XXXXX" maxlength="9" pattern="[0-9]{3}-[0-9]{5}" title="Student ID must follow the format 223-XXXXX." required>
+                                    <input type="text" name="student_id_number" placeholder="Enter Student ID" maxlength="9" pattern="[0-9]{3}-[0-9]{5}" title="Student ID must follow the format 223-XXXXX." required>
                                 </div>
                             </div>
                             <div class="input-row two-cols">
