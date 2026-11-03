@@ -86,7 +86,7 @@ if ($sidebarUserId) {
 
             <li>
                 <a href="staffs.php">
-                    <i class='bx bxs-user-detail'></i> School Staffs
+                    <i class='bx bxs-user-detail'></i> School Staff
                 </a>
             </li>
 

@@ -50,7 +50,7 @@ unset($_SESSION['error']);
                         <p>Create a complete staff profile for the clinic system.</p>
                     </div>
                     <a href="staffs.php" class="btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Back to Staffs
+                        <i class="fas fa-arrow-left"></i> Back to School Staff
                     </a>
                 </header>
 
