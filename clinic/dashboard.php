@@ -478,11 +478,19 @@ $clinicActivityResult = mysqli_query($conn, $clinicActivitySql);
 
                                 <tr>
 
+                                    <?php
+                                    $activityTime = new DateTime(
+                                        $activity['created_at'],
+                                        new DateTimeZone('UTC')
+                                    );
+
+                                    $activityTime->setTimezone(
+                                        new DateTimeZone('Asia/Manila')
+                                    );
+                                    ?>
+
                                     <td>
-                                        <?= date(
-                                            "M d, Y • h:i A",
-                                            strtotime($activity['created_at'])
-                                        ) ?>
+                                        <?= $activityTime->format("M d, Y • h:i A") ?>
                                     </td>
 
                                     <td>

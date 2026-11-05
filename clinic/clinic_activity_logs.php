@@ -390,7 +390,7 @@ function pageUrl($page, $queryParams) {
                                     <!-- ROLE -->
                                     <td>
 
-                                        <span <?= $row['user_role'] === 'School Nurse' ? 'pill-student' : 'pill-staff' ?>">
+                                        <span <?= $row['user_role'] === 'School Nurse' ? 'pill-student' : 'pill-staff' ?>>
                                             <?= htmlspecialchars($row['user_role'], ENT_QUOTES, 'UTF-8') ?>
                                         </span>
 

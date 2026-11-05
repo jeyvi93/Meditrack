@@ -29,6 +29,7 @@ if (!in_array($role, ['School Nurse', 'Clinic Staff'], true)) {
 }
 
 require_once "../config/database.php";
+date_default_timezone_set('Asia/Manila');
 
 function renderActivityItem($activity, $isRecent = false)
 {
@@ -78,12 +79,20 @@ function renderActivityItem($activity, $isRecent = false)
 
     $isMedicineAlert = !empty($activity['is_medicine_alert']);
 
-    $timestamp = $isMedicineAlert
-        ? 'Current inventory status'
-        : date(
-            "M d, Y • h:i A",
-            strtotime($activity['created_at'])
+    if ($isMedicineAlert) {
+        $timestamp = 'Current inventory status';
+    } else {
+        $activityTime = new DateTime(
+            $activity['created_at'],
+            new DateTimeZone('UTC')
         );
+
+        $activityTime->setTimezone(
+            new DateTimeZone('Asia/Manila')
+        );
+
+        $timestamp = $activityTime->format("M d, Y • h:i A");
+    }
 
     return '
         <div class="activity-item">
