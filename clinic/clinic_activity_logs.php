@@ -357,20 +357,25 @@ function pageUrl($page, $queryParams) {
                                 <tr>
 
                                     <!-- DATE & TIME -->
+                                    <?php
+                                    $activityTime = new DateTime(
+                                        $row['created_at'],
+                                        new DateTimeZone('UTC')
+                                    );
+
+                                    $activityTime->setTimezone(
+                                        new DateTimeZone('Asia/Manila')
+                                    );
+                                    ?>
+
                                     <td class="date-cell">
 
                                         <strong>
-                                            <?= date(
-                                                "M d, Y",
-                                                strtotime($row['created_at'])
-                                            ) ?>
+                                            <?= $activityTime->format("M d, Y") ?>
                                         </strong>
 
                                         <span>
-                                            <?= date(
-                                                "h:i A",
-                                                strtotime($row['created_at'])
-                                            ) ?>
+                                            <?= $activityTime->format("h:i A") ?>
                                         </span>
 
                                     </td>
