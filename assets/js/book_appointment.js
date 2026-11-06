@@ -1,3 +1,15 @@
+// REMOVE EMOJIS FROM PURPOSE OF VISIT
+const purposeInput = document.querySelector('textarea[name="purpose"]');
+
+if (purposeInput) {
+    purposeInput.addEventListener("input", function () {
+        this.value = this.value.replace(
+            /[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu,
+            ""
+        );
+    });
+}
+
 function openAppointmentModal(event) {
     event.preventDefault();
 

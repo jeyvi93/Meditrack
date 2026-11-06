@@ -1,5 +1,22 @@
 const addMedicineForm = document.getElementById("addMedicineForm");
 
+// FILTER INVALID CHARACTERS AND EMOJIS
+const textFields = [
+    document.getElementById("medName"),
+    document.getElementById("batchNo"),
+    document.getElementById("supplier")
+];
+
+const allowedTextPattern = /[^\p{L}\p{M}\p{N}\s.,()\/#&+'%\-]/gu;
+
+textFields.forEach(input => {
+    if (!input) return;
+
+    input.addEventListener("input", function () {
+        this.value = this.value.replace(allowedTextPattern, "");
+    });
+});
+
 // REAL-TIME VALIDATION
 if (addMedicineForm) {
 

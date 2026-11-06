@@ -130,6 +130,44 @@ document.getElementById('medicineRows').addEventListener('change', function (eve
 
 const consultationForm = document.getElementById("consultationForm");
 
+// REMOVE EMOJIS FROM ALL TEXT FIELDS
+consultationForm.addEventListener("input", function (event) {
+
+    const input = event.target;
+
+    if (!input.matches('input[type="text"], input[type="tel"], textarea')) {
+        return;
+    }
+
+    input.value = input.value.replace(
+        /[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu,
+        ""
+    );
+
+});
+
+// FORMAT PATIENT NAMES
+const patientNameFields = [
+    document.getElementById("lastName"),
+    document.getElementById("firstName"),
+    document.getElementById("middleName")
+];
+
+patientNameFields.forEach(input => {
+    if (!input) return;
+
+    input.addEventListener("input", function () {
+
+        let value = this.value.replace(/[^\p{L}\p{M}\s.'-]/gu, "");
+
+        this.value = value.toLowerCase().replace(
+            /(^|[\s'-])(\p{L})/gu,
+            (match, separator, letter) => separator + letter.toUpperCase()
+        );
+
+    });
+});
+
 // ==========================
 // REAL-TIME FORM VALIDATION
 // ==========================

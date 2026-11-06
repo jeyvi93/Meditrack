@@ -305,6 +305,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const passwordForm = document.querySelector(".personnel-password-form");
 
+    // REMOVE EMOJIS FROM PASSWORD FIELDS
+    passwordForm.addEventListener("input", function (event) {
+
+        const input = event.target;
+
+        if (!input.matches('input[type="password"]')) {
+            return;
+        }
+
+        input.value = input.value.replace(
+            /[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu,
+            ""
+        );
+
+    });
+
     // ==========================
     // REAL-TIME PASSWORD VALIDATION
     // ==========================

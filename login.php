@@ -367,6 +367,18 @@ unset($_SESSION['login_email']);
 
     const loginForm = document.querySelector(".login-form");
 
+    // REMOVE EMOJIS FROM EMAIL FIELD
+    const emailInput = document.getElementById("email");
+
+    if (emailInput) {
+        emailInput.addEventListener("input", function () {
+            this.value = this.value.replace(
+                /[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu,
+                ""
+            );
+        });
+    }
+
     if (loginForm) {
 
         loginForm.addEventListener("submit", function (event) {

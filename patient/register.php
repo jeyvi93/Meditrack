@@ -289,7 +289,25 @@ unset($_SESSION['error_field']);
         }
 
         // REAL-TIME REGISTRATION VALIDATION
-const registrationForm = document.querySelector(".registration-form");
+        const registrationForm = document.querySelector(".registration-form");
+
+        // REMOVE EMOJIS FROM ALL TEXT FIELDS
+        if (registrationForm) {
+            registrationForm.addEventListener("input", function (event) {
+
+                const input = event.target;
+
+                if (!input.matches('input[type="text"], input[type="email"], textarea')) {
+                    return;
+                }
+
+                input.value = input.value.replace(
+                    /[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu,
+                    ""
+                );
+
+            });
+        }
 
 if (registrationForm) {
 

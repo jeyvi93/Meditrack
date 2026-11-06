@@ -1,6 +1,32 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    // NAME INPUT FORMATTING
+    const nameFields = [
+        "last_name",
+        "first_name",
+        "middle_name",
+        "emergency_name"
+    ];
+
+nameFields.forEach(id => {
+    const input = document.getElementById(id);
+
+    if (!input) return;
+
+    input.addEventListener("input", function () {
+
+        let value = this.value.replace(/[^\p{L}\p{M}\s.'-]/gu, "");
+
+        value = value.toLowerCase().replace(
+            /(^|[\s'-])(\p{L})/gu,
+            (match, separator, letter) => separator + letter.toUpperCase()
+        );
+
+        this.value = value;
+    });
+});
+
     const dobInput = document.getElementById("dobInput");
     const ageDisplay = document.getElementById("ageDisplay");
 
@@ -34,6 +60,26 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     // REAL-TIME FORM VALIDATION
     const studentForm = document.getElementById("studentForm");
+
+    // REMOVE EMOJIS FROM ALL TEXT FIELDS
+if (studentForm) {
+
+    studentForm.addEventListener("input", function (event) {
+
+        const input = event.target;
+
+        if (!input.matches('input[type="text"], input[type="tel"], textarea')) {
+            return;
+        }
+
+        input.value = input.value.replace(
+            /[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu,
+            ""
+        );
+
+    });
+
+}
 
     if (studentForm) {
 

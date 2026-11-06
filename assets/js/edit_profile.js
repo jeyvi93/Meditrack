@@ -30,6 +30,18 @@
     document.addEventListener("DOMContentLoaded", function () {
         const editForm = document.querySelector(".edit-form");
 
+        // REMOVE EMOJIS FROM EMAIL FIELD
+        const emailInput = editForm.querySelector('input[name="email"]');
+
+        if (emailInput) {
+            emailInput.addEventListener("input", function () {
+                this.value = this.value.replace(
+                    /[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu,
+                    ""
+                );
+            });
+        }
+
         if (!editForm) return;
 
         editForm.addEventListener("submit", function () {
