@@ -1,5 +1,5 @@
 <?php
-
+date_default_timezone_set('Asia/Manila');
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -37,17 +37,51 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $date = $_POST['appointment_date'];
     $timeInput = trim($_POST['appointment_time']);
 
-    $timeObject = DateTime::createFromFormat('h:i A', $timeInput);
+    // Allowed appointment time slots
+    $allowedTimes = [
+        '08:30:00',
+        '10:00:00',
+        '13:30:00',
+        '15:00:00'
+    ];
 
-    if (!$timeObject) {
+    // Validate appointment date
+    $dateObject = DateTime::createFromFormat('!Y-m-d', $date);
+    $dateErrors = DateTime::getLastErrors();
+
+    if (
+        !$dateObject ||
+        ($dateErrors !== false &&
+            ($dateErrors['warning_count'] > 0 || $dateErrors['error_count'] > 0)) ||
+        $dateObject->format('Y-m-d') !== $date
+    ) {
+        $_SESSION['error'] = "Invalid appointment date.";
+        header("Location: ../clinic/appointments.php");
+        exit();
+    }
+
+    // Prevent past dates
+    if ($date < date('Y-m-d')) {
+        $_SESSION['error'] = "You cannot reschedule an appointment to a past date.";
+        header("Location: ../clinic/appointments.php");
+        exit();
+    }
+
+    // Validate allowed time slots
+    if (!in_array($timeInput, $allowedTimes, true)) {
         $_SESSION['error'] = "Invalid appointment time.";
         header("Location: ../clinic/appointments.php");
         exit();
     }
 
-    $time = $timeObject->format('H:i:s');
+    $time = $timeInput;
 
-    
+    // Prevent past time slots today
+    if ($date === date('Y-m-d') && $time <= date('H:i:s')) {
+        $_SESSION['error'] = "This appointment time has already passed. Please select another time.";
+        header("Location: ../clinic/appointments.php");
+        exit();
+    }
     
     /* Get patient name and user ID */
     $patientSql = "
@@ -96,12 +130,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $sql = "
         UPDATE appointments
         SET
-            appointment_date = ?,
-            appointment_time = ?
+            proposed_date = ?,
+            proposed_time = ?,
+            reschedule_status = 'pending'
         WHERE id = ?
+        AND status = 'Approved'
+        AND (reschedule_status IS NULL OR reschedule_status <> 'pending')
     ";
 
-    $stmt = mysqli_prepare($conn,$sql);
+    $stmt = mysqli_prepare($conn, $sql);
 
     mysqli_stmt_bind_param(
         $stmt,
@@ -111,7 +148,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $appointment_id
     );
 
-    if(mysqli_stmt_execute($stmt)){
+    if(mysqli_stmt_execute($stmt) && mysqli_stmt_affected_rows($stmt) === 1){
 
         /* Notification */
         $notificationSql = "
@@ -120,13 +157,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             VALUES (?, ?, ?, ?)
         ";
 
-        $title = "Appointment Rescheduled";
+        $title = "Appointment Reschedule Request";
 
-        $message = "Your appointment has been rescheduled to "
-                 . date("F j, Y", strtotime($date))
-                 . " at "
-                 . date("g:i A", strtotime($time))
-                 . ".";
+        $message = "The clinic has requested to reschedule your appointment to "
+                . date("F j, Y", strtotime($date))
+                . " at "
+                . date("g:i A", strtotime($time))
+                . ". Please review the request in your appointments page.";
 
         $notificationStmt = mysqli_prepare($conn, $notificationSql);
 
@@ -163,11 +200,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             VALUES (?, 'Appointment', 'Rescheduled', ?)
         ";
 
-        $description = $patientName . "'s appointment was rescheduled to "
-             . date("F j, Y", strtotime($date))
-             . " at "
-             . date("g:i A", strtotime($time))
-             . ".";
+        $description = "A reschedule request was sent to "
+            . $patientName . " for "
+            . date("F j, Y", strtotime($date))
+            . " at "
+            . date("g:i A", strtotime($time))
+            . ".";
 
         $activityStmt = mysqli_prepare($conn, $activitySql);
 
@@ -188,15 +226,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $conn,
             'Rescheduled',
             'Appointments',
-            "{$patientName}'s appointment was rescheduled to "
+            "A reschedule request was sent to {$patientName} for "
                 . date("F j, Y", strtotime($date))
                 . " at "
                 . date("g:i A", strtotime($time))
                 . "."
         );
 
-        $_SESSION['success'] = "Appointment Rescheduled!";
-        $_SESSION['success_message'] = "The patient has been notified.";
+        $_SESSION['success'] = "Reschedule Request Sent!";
+        $_SESSION['success_message'] = "The patient has been notified and must confirm the proposed schedule.";
 
     }else{
 

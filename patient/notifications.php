@@ -226,7 +226,10 @@ mysqli_stmt_close($unreadStmt);
                         $iconClass = "bx-check-circle";
                         $iconColor = "icon-green";
 
-                    } elseif ($notification['title'] === "Appointment Rescheduled") {
+                    } elseif (
+                        $notification['title'] === "Appointment Rescheduled" ||
+                        $notification['title'] === "Appointment Reschedule Request"
+                    ) {
 
                         $iconClass = "bx-calendar-edit";
                         $iconColor = "icon-blue";
@@ -236,6 +239,8 @@ mysqli_stmt_close($unreadStmt);
 
                     switch ($notification['title']) {
                         case 'Appointment Approved':
+                        case 'Appointment Rescheduled':
+                        case 'Appointment Reschedule Request':
                             $targetTab = 'approved';
                             break;
 
@@ -246,10 +251,6 @@ mysqli_stmt_close($unreadStmt);
 
                         case 'Appointment Completed':
                             $targetTab = 'completed';
-                            break;
-
-                        case 'Appointment Rescheduled':
-                            $targetTab = 'approved';
                             break;
                     }
 

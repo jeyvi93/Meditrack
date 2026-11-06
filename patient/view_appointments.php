@@ -11,9 +11,10 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $successMessage = $_SESSION['success'] ?? '';
+$successDescription = $_SESSION['success_message'] ?? '';
 $errorMessage = $_SESSION['error'] ?? '';
 
-unset($_SESSION['success'], $_SESSION['error']);
+unset($_SESSION['success'], $_SESSION['success_message'], $_SESSION['error']);
 
 require_once "../config/database.php";
 
@@ -39,6 +40,9 @@ $stmt = $conn->prepare("
         id,
         appointment_date,
         appointment_time,
+        proposed_date,
+        proposed_time,
+        reschedule_status,
         purpose,
         status,
         reason,
@@ -247,6 +251,7 @@ usort($cancelledAppointments, function ($a, $b) {
                                     </div>
 
                                     <button
+                                        type="button"
                                         class="btn-cancel-mini"
                                         onclick="openModal(<?= (int)$appointment['id'] ?>)">
                                         Cancel
@@ -293,7 +298,7 @@ usort($cancelledAppointments, function ($a, $b) {
 
                                 <div class="inner-card">
 
-                                    <div class="card-date-info confirmed">
+                                    <div class="card-date-info <?= (($appointment['reschedule_status'] ?? '') === 'pending') ? 'reschedule-date' : 'confirmed' ?>">
                                         <span class="day">
                                             <?= date('d', strtotime($appointment['appointment_date'])) ?>
                                         </span>
@@ -305,9 +310,19 @@ usort($cancelledAppointments, function ($a, $b) {
 
                                     <div class="card-text">
 
-                                        <span class="status-pill confirmed">
-                                            Approved
-                                        </span>
+                                        <?php if (($appointment['reschedule_status'] ?? '') === 'pending'): ?>
+
+                                            <span class="status-pill reschedule-requested">
+                                                Requested to Reschedule
+                                            </span>
+
+                                        <?php else: ?>
+
+                                            <span class="status-pill confirmed">
+                                                Approved
+                                            </span>
+
+                                        <?php endif; ?>
 
                                         <h3>
                                             <?= htmlspecialchars($appointment['purpose']) ?>
@@ -320,11 +335,30 @@ usort($cancelledAppointments, function ($a, $b) {
 
                                     </div>
 
+                                    <?php if (($appointment['reschedule_status'] ?? '') === 'pending'): ?>
+
                                     <button
+                                        type="button"
+                                        class="btn-cancel-mini btn-take-action"
+                                        data-appointment-id="<?= (int)$appointment['id'] ?>"
+                                        data-original-date="<?= htmlspecialchars(date('F j, Y', strtotime($appointment['appointment_date'])), ENT_QUOTES, 'UTF-8') ?>"
+                                        data-original-time="<?= htmlspecialchars(date('g:i A', strtotime($appointment['appointment_time'])), ENT_QUOTES, 'UTF-8') ?>"
+                                        data-proposed-date="<?= htmlspecialchars(date('F j, Y', strtotime($appointment['proposed_date'])), ENT_QUOTES, 'UTF-8') ?>"
+                                        data-proposed-time="<?= htmlspecialchars(date('g:i A', strtotime($appointment['proposed_time'])), ENT_QUOTES, 'UTF-8') ?>"
+                                        onclick="openRescheduleActionModal(this)">
+                                        Take Action
+                                    </button>
+
+                                <?php else: ?>
+
+                                    <button
+                                        type="button"
                                         class="btn-cancel-mini"
                                         onclick="openModal(<?= (int)$appointment['id'] ?>)">
                                         Cancel
                                     </button>
+
+                                <?php endif; ?>
 
                                 </div>
 
@@ -511,6 +545,31 @@ usort($cancelledAppointments, function ($a, $b) {
     >
 </form>
 
+<form
+    id="rescheduleResponseForm"
+    method="POST"
+    action="../actions/respond_reschedule_request.php"
+    style="display: none;"
+>
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>"
+    >
+
+    <input
+        type="hidden"
+        name="appointment_id"
+        id="rescheduleAppointmentId"
+    >
+
+    <input
+        type="hidden"
+        name="action"
+        id="rescheduleResponseAction"
+    >
+</form>
+
 <?php if (in_array($_SESSION['role'] ?? '', $notificationRoles, true)): ?>
 <!-- NOTIFICATION PERMISSION MODAL -->
 <div
@@ -557,6 +616,67 @@ usort($cancelledAppointments, function ($a, $b) {
     </div>
 </div>
 <?php endif; ?>
+
+<!-- RESCHEDULE ACTION MODAL -->
+<div id="rescheduleActionModal" class="modal-overlay hidden">
+    <div class="modal-box reschedule-modal">
+
+        <div class="reschedule-modal-icon">
+            <i class='bx bx-calendar-edit'></i>
+        </div>
+
+        <h3>Appointment Reschedule Request</h3>
+
+        <p class="reschedule-modal-description">
+            The clinic has requested to change your appointment schedule.
+            Please review the proposed schedule before proceeding.
+        </p>
+
+        <div class="reschedule-details">
+
+            <div class="schedule-item current-schedule">
+                <span class="schedule-label">
+                    <i class='bx bx-calendar'></i>
+                    Current Schedule
+                </span>
+
+                <p id="originalAppointmentSchedule"></p>
+            </div>
+
+            <div class="schedule-item proposed-schedule">
+                <span class="schedule-label">
+                    <i class='bx bx-calendar-check'></i>
+                    Proposed Schedule
+                </span>
+
+                <p id="proposedAppointmentSchedule"></p>
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="btn-accept-reschedule"
+            onclick="acceptReschedule()">
+            Accept Schedule
+        </button>
+
+        <button
+            type="button"
+            class="btn-cancel-reschedule"
+            onclick="cancelRescheduledAppointment()">
+            Cancel Appointment
+        </button>
+
+        <button
+            type="button"
+            class="btn-close-reschedule"
+            onclick="closeRescheduleActionModal()">
+            Close
+        </button>
+
+    </div>
+</div>
 
 <!-- CANCEL MODAL -->
 <div id="cancelModal" class="modal-overlay hidden">
@@ -631,11 +751,15 @@ usort($cancelledAppointments, function ($a, $b) {
             <i class='bx bx-check'></i>
         </div>
 
-        <h3>Appointment Cancelled!</h3>
+        <h3><?= htmlspecialchars($successMessage ?: 'Success!', ENT_QUOTES, 'UTF-8') ?></h3>
 
-        <p>
-            Your appointment has been cancelled successfully.
-        </p>
+            <p>
+                <?= htmlspecialchars(
+                    $successDescription ?: 'Your appointment has been updated successfully.',
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>
+            </p>
 
         <div class="modal-btns single-btn">
             <button class="btn-success" onclick="closeSuccessModal()">
@@ -706,6 +830,66 @@ usort($cancelledAppointments, function ($a, $b) {
 
     let selectedAppointmentId = null;
 
+    let selectedRescheduleAppointmentId = null;
+
+    function openRescheduleActionModal(button) {
+        selectedRescheduleAppointmentId =
+            button.dataset.appointmentId;
+
+        document.getElementById('originalAppointmentSchedule').textContent =
+            button.dataset.originalDate + ' at ' +
+            button.dataset.originalTime;
+
+        document.getElementById('proposedAppointmentSchedule').textContent =
+            button.dataset.proposedDate + ' at ' +
+            button.dataset.proposedTime;
+
+        document.getElementById('rescheduleActionModal')
+            .classList.remove('hidden');
+    }
+
+    function closeRescheduleActionModal() {
+        selectedRescheduleAppointmentId = null;
+
+        document.getElementById('rescheduleActionModal')
+            .classList.add('hidden');
+    }
+
+    function acceptReschedule() {
+        if (!selectedRescheduleAppointmentId) {
+            return;
+        }
+
+        document.getElementById('rescheduleAppointmentId').value =
+            selectedRescheduleAppointmentId;
+
+        document.getElementById('rescheduleResponseAction').value =
+            'accept';
+
+        document.getElementById('rescheduleResponseForm').submit();
+    }
+
+    function cancelRescheduledAppointment() {
+    if (!selectedRescheduleAppointmentId) {
+        return;
+    }
+
+    const appointmentId = selectedRescheduleAppointmentId;
+
+    closeRescheduleActionModal();
+    openModal(appointmentId);
+}
+
+    function cancelRescheduledAppointment() {
+        if (!selectedRescheduleAppointmentId) {
+            return;
+        }
+
+        const appointmentId = selectedRescheduleAppointmentId;
+
+        closeRescheduleActionModal();
+        openModal(appointmentId);
+    }
 
     function openModal(appointmentId) {
 

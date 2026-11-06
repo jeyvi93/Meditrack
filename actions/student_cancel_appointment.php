@@ -159,7 +159,10 @@ $updateSql = "
     UPDATE appointments
     SET
         status = 'Cancelled',
-        reason = ?
+        reason = ?,
+        proposed_date = NULL,
+        proposed_time = NULL,
+        reschedule_status = NULL
     WHERE id = ?
       AND user_id = ?
 ";
@@ -227,7 +230,7 @@ if ($success && $affectedRows > 0) {
     }
 
     $_SESSION['success'] =
-        "Appointment cancelled successfully.";
+        "Appointment Cancelled!";
 
 } else {
 

@@ -177,12 +177,16 @@ function getNotificationTab(title) {
     switch (title) {
         case 'Appointment Approved':
         case 'Appointment Rescheduled':
+        case 'Appointment Reschedule Request':
             return 'approved';
+
         case 'Appointment Rejected':
         case 'Appointment Cancelled':
             return 'cancelled';
+
         case 'Appointment Completed':
             return 'completed';
+
         default:
             return 'pending';
     }

@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Manila');
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -151,6 +152,20 @@ if (!in_array($appointment_time, $allowed_times, true)) {
     exit();
 }
 
+// ==========================================
+// PREVENT BOOKING PAST TIME SLOTS TODAY
+// ==========================================
+
+if ($appointment_date === date('Y-m-d')) {
+
+    $currentTime = date('H:i:s');
+
+    if ($appointment_time <= $currentTime) {
+        $_SESSION['error'] = "This appointment time has already passed. Please select another time.";
+        header("Location: ../patient/book_appointment.php");
+        exit();
+    }
+}
 
 // ==========================================
 // CHECK IF USER EXISTS

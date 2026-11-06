@@ -1112,17 +1112,23 @@ $rejected = $rejectedStmt->get_result();
 
                 <div class="form-group">
                     <label>New Date</label>
-                    <input type="date" id="resDate" name="appointment_date" required>
+                    <input
+                        type="date"
+                        id="resDate"
+                        name="appointment_date"
+                        min="<?= date('Y-m-d') ?>"
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
                     <label>New Time</label>
                     <select id="resTime" name="appointment_time" required>
                         <option value="">Select Time</option>
-                        <option>08:30 AM</option>
-                        <option>10:00 AM</option>
-                        <option>01:30 PM</option>
-                        <option>03:00 PM</option>
+                        <option value="08:30:00">08:30 AM</option>
+                        <option value="10:00:00">10:00 AM</option>
+                        <option value="13:30:00">01:30 PM</option>
+                        <option value="15:00:00">03:00 PM</option>
                     </select>
                 </div>
 
@@ -1235,7 +1241,7 @@ $rejected = $rejectedStmt->get_result();
 
     <div class="modal-content message-modal">
 
-        <div class="message-icon success">
+        <div class="message-icon <?= isset($_SESSION['success']) ? 'success' : 'error' ?>">
 
             <?php if(isset($_SESSION['success'])): ?>
 

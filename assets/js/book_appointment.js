@@ -1,3 +1,60 @@
+// ==========================================
+// DISABLE PAST APPOINTMENT TIME SLOTS
+// ==========================================
+
+const appointmentDate = document.getElementById('appointmentDate');
+const appointmentTime = document.getElementById('appointmentTime');
+
+function updateAvailableTimeSlots() {
+    if (!appointmentDate || !appointmentTime) return;
+
+    const selectedDate = appointmentDate.value;
+
+    // Get current Philippine date and time
+    const manilaNow = new Date().toLocaleString('en-US', {
+        timeZone: 'Asia/Manila'
+    });
+
+    const currentDateTime = new Date(manilaNow);
+
+    const today = [
+        currentDateTime.getFullYear(),
+        String(currentDateTime.getMonth() + 1).padStart(2, '0'),
+        String(currentDateTime.getDate()).padStart(2, '0')
+    ].join('-');
+
+    const currentTime = [
+        String(currentDateTime.getHours()).padStart(2, '0'),
+        String(currentDateTime.getMinutes()).padStart(2, '0'),
+        '00'
+    ].join(':');
+
+    Array.from(appointmentTime.options).forEach(option => {
+        if (!option.value) return;
+
+        const isPast =
+            selectedDate === today &&
+            option.value <= currentTime;
+
+        option.disabled = isPast;
+
+        if (isPast && option.selected) {
+            appointmentTime.value = '';
+        }
+    });
+}
+
+// Update when the page loads
+updateAvailableTimeSlots();
+
+// Update whenever the appointment date changes
+if (appointmentDate) {
+    appointmentDate.addEventListener('change', updateAvailableTimeSlots);
+}
+
+// Recheck when the user returns to the booking page
+window.addEventListener('focus', updateAvailableTimeSlots);
+
 // REMOVE EMOJIS FROM PURPOSE OF VISIT
 const purposeInput = document.querySelector('textarea[name="purpose"]');
 

@@ -358,15 +358,78 @@ document.addEventListener("DOMContentLoaded", () => {
 // ===============================
 // RESCHEDULE MODAL
 // ===============================
-function openRescheduleModal(name,id){
 
-    document.getElementById("rescheduleModal").style.display="flex";
+const resDate = document.getElementById("resDate");
+const resTime = document.getElementById("resTime");
+
+function updateRescheduleTimeSlots() {
+
+    if (!resDate || !resTime) return;
+
+    const selectedDate = resDate.value;
+
+    // Get current Philippine date and time
+    const manilaNow = new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Manila"
+    });
+
+    const currentDateTime = new Date(manilaNow);
+
+    const today = [
+        currentDateTime.getFullYear(),
+        String(currentDateTime.getMonth() + 1).padStart(2, "0"),
+        String(currentDateTime.getDate()).padStart(2, "0")
+    ].join("-");
+
+    const currentTime = [
+        String(currentDateTime.getHours()).padStart(2, "0"),
+        String(currentDateTime.getMinutes()).padStart(2, "0"),
+        "00"
+    ].join(":");
+
+    Array.from(resTime.options).forEach(option => {
+
+        if (!option.value) return;
+
+        const isPast =
+            selectedDate === today &&
+            option.value <= currentTime;
+
+        option.disabled = isPast;
+
+        if (isPast && option.selected) {
+            resTime.value = "";
+        }
+
+    });
+
+}
+
+function openRescheduleModal(name, id) {
+
+    document.getElementById("rescheduleModal").style.display = "flex";
 
     document.getElementById("resPatientName").value = name;
 
     document.getElementById("resAppointmentId").value = id;
 
+    updateRescheduleTimeSlots();
+
 }
+
+function closeRescheduleModal() {
+
+    document.getElementById("rescheduleModal").style.display = "none";
+
+}
+
+// Update whenever the selected date changes
+if (resDate) {
+    resDate.addEventListener("change", updateRescheduleTimeSlots);
+}
+
+// Recheck when returning to the page
+window.addEventListener("focus", updateRescheduleTimeSlots);
 
 
 function closeRescheduleModal(){

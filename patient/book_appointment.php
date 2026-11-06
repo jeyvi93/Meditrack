@@ -262,7 +262,7 @@ unset($_SESSION['error']);
 
         <div class="modal-btns single-btn">
             <button class="btn-error" onclick="closeErrorModal()">
-                Ok
+                OK
             </button>
         </div>
     </div>
