@@ -463,3 +463,23 @@ function closeMessageModal() {
         .classList.remove("active");
 
 }
+
+// REMOVE EMOJIS FROM EDIT STAFF MODAL
+document.addEventListener("input", function (event) {
+
+    const input = event.target;
+
+    if (!input.closest("#editStaffModal")) {
+        return;
+    }
+
+    if (!input.matches('input[type="text"], input[type="tel"], textarea')) {
+        return;
+    }
+
+    input.value = input.value.replace(
+        /[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu,
+        ""
+    );
+
+});

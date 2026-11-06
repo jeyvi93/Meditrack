@@ -6,6 +6,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const searchInput = document.getElementById("studentSearch");
 
+    // REMOVE EMOJIS FROM EDIT STUDENT TEXT FIELDS
+    document.addEventListener("input", function (event) {
+
+        const input = event.target;
+
+        if (!input.closest("#editStudentModal")) {
+            return;
+        }
+
+        if (!input.matches('input[type="text"], input[type="tel"], textarea')) {
+            return;
+        }
+
+        input.value = input.value.replace(
+            /[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu,
+            ""
+        );
+
+    });
+
     if (searchInput) {
 
         let searchTimeout;
