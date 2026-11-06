@@ -313,7 +313,7 @@ usort($cancelledAppointments, function ($a, $b) {
                                         <?php if (($appointment['reschedule_status'] ?? '') === 'pending'): ?>
 
                                             <span class="status-pill reschedule-requested">
-                                                Requested to Reschedule
+                                                Clinic Reschedule
                                             </span>
 
                                         <?php else: ?>
