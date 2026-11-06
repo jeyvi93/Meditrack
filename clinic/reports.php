@@ -53,6 +53,25 @@ $endDate = date(
 );
 
 // ==========================
+// AVAILABLE MONTHS AND YEARS
+// ==========================
+
+$availablePeriods = [];
+
+$periodQuery = $conn->query("
+    SELECT
+        YEAR(date) AS report_year,
+        MONTH(date) AS report_month
+    FROM consultations
+    GROUP BY YEAR(date), MONTH(date)
+    ORDER BY report_year DESC, report_month DESC
+");
+
+while ($period = $periodQuery->fetch_assoc()) {
+    $availablePeriods[] = $period;
+}
+
+// ==========================
 // PREVIOUS MONTH
 // ==========================
 
@@ -382,17 +401,16 @@ $summaryResult = $stmt->get_result();
                     <div class="selector-group">
                         <i class="fas fa-calendar-alt"></i>
                         <select id="monthSelect" name="month" onchange="changeReport()">
-
-                            <?php for ($month = 1; $month <= 12; $month++): ?>
-
-                                <option
-                                    value="<?= $month ?>"
-                                    <?= $month === $selectedMonth ? 'selected' : '' ?>
-                                >
-                                    <?= date('F', mktime(0, 0, 0, $month, 1)) ?>
-                                </option>
-
-                            <?php endfor; ?>
+                            <?php foreach ($availablePeriods as $period): ?>
+                                <?php if ((int) $period['report_year'] === $selectedYear): ?>
+                                    <option
+                                        value="<?= $period['report_month'] ?>"
+                                        <?= (int) $period['report_month'] === $selectedMonth ? 'selected' : '' ?>
+                                    >
+                                        <?= date('F', mktime(0, 0, 0, $period['report_month'], 1)) ?>
+                                    </option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
                         </select>
 
                         <select id="yearSelect" name="year" onchange="changeReport()">
@@ -406,6 +424,22 @@ $summaryResult = $stmt->get_result();
                                     </option>
 
                                 <?php endfor; ?>
+                        </select>
+                        <select id="yearSelect" name="year" onchange="changeReport()">
+                            <?php
+                            $availableYears = array_unique(
+                                array_column($availablePeriods, 'report_year')
+                            );
+                            ?>
+
+                            <?php foreach ($availableYears as $year): ?>
+                                <option
+                                    value="<?= $year ?>"
+                                    <?= (int) $year === $selectedYear ? 'selected' : '' ?>
+                                >
+                                    <?= $year ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
