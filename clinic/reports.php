@@ -414,18 +414,6 @@ $summaryResult = $stmt->get_result();
                         </select>
 
                         <select id="yearSelect" name="year" onchange="changeReport()">
-                            <?php for ($year = date('Y'); $year >= 2024; $year--): ?>
-
-                                    <option
-                                        value="<?= $year ?>"
-                                        <?= $year === $selectedYear ? 'selected' : '' ?>
-                                    >       
-                                        <?= $year ?>
-                                    </option>
-
-                                <?php endfor; ?>
-                        </select>
-                        <select id="yearSelect" name="year" onchange="changeReport()">
                             <?php
                             $availableYears = array_unique(
                                 array_column($availablePeriods, 'report_year')
