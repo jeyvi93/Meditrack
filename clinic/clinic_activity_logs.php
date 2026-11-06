@@ -147,7 +147,7 @@ if ($moduleFilter !== '') {
 
 if ($dateFilter !== '') {
 
-    $where[] = "DATE(created_at) = ?";
+    $where[] = "DATE(DATE_ADD(created_at, INTERVAL 8 HOUR)) = ?";
 
     $params[] = $dateFilter;
     $types .= "s";
@@ -545,6 +545,7 @@ function pageUrl($page, $queryParams) {
     $stmt->close();
     $conn->close();
     ?>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="../assets/js/clinic_activity_logs.js"></script>
