@@ -99,7 +99,7 @@
 
 /* INPUTS */
 .input-group { 
-    margin-bottom: 16px; 
+    margin-bottom: 20px; 
 }
 
 .input-group label { 
@@ -120,7 +120,7 @@
 
 .input-row { 
     display: grid; 
-    gap: 16px; 
+    gap: 20px; 
 }
 
 .two-cols { 
@@ -270,4 +270,81 @@
     font-weight: 400;
     color: #6c757d;
     margin-left: 4px;
+}
+
+/* RESPONSIVE FORM LAYOUT */
+
+/* Smaller desktop and laptop screens */
+@media (max-width: 1200px) {
+
+    .content-wrapper {
+        width: 100%;
+        padding: 24px;
+    }
+
+    .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .form-column {
+        min-width: 0;
+    }
+
+    .form-card {
+        min-width: 0;
+    }
+
+    .input-row {
+        min-width: 0;
+    }
+
+    .input-group {
+        min-width: 0;
+    }
+
+    .input-group input,
+    .input-group select,
+    .input-group textarea {
+        min-width: 0;
+        max-width: 100%;
+    }
+}
+
+/* Tablet and smaller screens */
+@media (max-width: 768px) {
+
+    .content-wrapper {
+        padding: 16px;
+    }
+
+    .action-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .title-area h1 {
+        font-size: 1.5rem;
+    }
+
+    .form-card {
+        padding: 18px;
+    }
+}
+
+/* Narrow screens */
+@media (max-width: 520px) {
+
+    .input-row.two-cols,
+    .input-row.three-cols {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .form-footer {
+        flex-direction: column;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
 }

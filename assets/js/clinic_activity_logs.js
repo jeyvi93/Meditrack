@@ -153,13 +153,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // =========================
-    // DATE FILTER
+    // DATE FILTER - AVAILABLE LOG DATES ONLY
     // =========================
 
-    if (dateFilter) {
+    if (dateFilter && typeof flatpickr !== "undefined") {
 
-        dateFilter.addEventListener("change", function () {
-            refreshActivityTable();
+        console.log("Dates with logs:", availableLogDates);
+console.log("Date filter value:", dateFilter.value);
+
+        flatpickr(dateFilter, {
+            dateFormat: "Y-m-d",
+            enable: availableLogDates,
+            allowInput: false,
+
+            onChange: function (selectedDates, dateStr) {
+                dateFilter.value = dateStr;
+                refreshActivityTable();
+            }
         });
 
     }

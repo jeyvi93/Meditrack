@@ -78,10 +78,28 @@ $dateFilter = trim($_GET['date'] ?? '');
 $dateObject = DateTime::createFromFormat('!Y-m-d', $dateFilter);
 
 if (
-    $dateFilter !== '' &&
+    $dateFilter !== '' &&       
     (!$dateObject || $dateObject->format('Y-m-d') !== $dateFilter)
 ) {
     $dateFilter = '';
+}
+
+// ==========================
+// AVAILABLE LOG DATES
+// ==========================
+
+$availableLogDates = [];
+
+$dateQuery = mysqli_query($conn, "
+    SELECT DISTINCT DATE(DATE_ADD(created_at, INTERVAL 8 HOUR)) AS log_date
+    FROM clinic_activity_logs
+    ORDER BY log_date DESC
+");
+
+if ($dateQuery) {
+    while ($dateRow = mysqli_fetch_assoc($dateQuery)) {
+        $availableLogDates[] = $dateRow['log_date'];
+    }
 }
 
 // ==========================
@@ -273,6 +291,7 @@ function pageUrl($page, $queryParams) {
     <!-- CSS -->
     <link rel="stylesheet" href="../assets/css/view_consultation.css">
     <link rel="stylesheet" href="../assets/css/sidebar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 </head>
 
@@ -323,9 +342,12 @@ function pageUrl($page, $queryParams) {
                     </select>
 
                     <input
-                        type="date"
+                        type="text"
                         class="filter-select"
                         id="dateFilter"
+                        placeholder="Select date"
+                        value="<?= htmlspecialchars($dateFilter) ?>"
+                        readonly
                     >
 
                 </div>
@@ -524,8 +546,12 @@ function pageUrl($page, $queryParams) {
     $conn->close();
     ?>
 
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="../assets/js/clinic_activity_logs.js"></script>
     <script src="../includes/includes.js"></script>
+    <script>
+        const availableLogDates = <?= json_encode($availableLogDates) ?>;
+    </script>
 
 </body>
 </html>
