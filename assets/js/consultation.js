@@ -128,16 +128,110 @@ document.getElementById('medicineRows').addEventListener('change', function (eve
     batchSelect.disabled = false;
 });
 
+const consultationForm = document.getElementById("consultationForm");
+
+// ==========================
+// REAL-TIME FORM VALIDATION
+// ==========================
+
+function validateField(input) {
+
+    const group = input.closest(".input-group");
+
+    if (!group) return true;
+
+    // Skip disabled or hidden fields
+    if (input.disabled || input.offsetParent === null) {
+        input.classList.remove("invalid");
+
+        const existingError = group.querySelector(".field-error");
+        if (existingError) existingError.remove();
+
+        return true;
+    }
+
+    let error = "";
+
+    if (!input.checkValidity()) {
+
+        if (input.validity.valueMissing) {
+            error = "This field is required.";
+        } else if (input.validity.patternMismatch) {
+            error = input.title || "Please enter a valid value.";
+        } else if (input.validity.rangeUnderflow) {
+            error = `Value must be at least ${input.min}.`;
+        } else if (input.validity.tooShort) {
+            error = `Please enter at least ${input.minLength} characters.`;
+        } else if (input.validity.tooLong) {
+            error = `Please enter no more than ${input.maxLength} characters.`;
+        } else {
+            error = "Please enter a valid value.";
+        }
+    }
+
+    let errorElement = group.querySelector(".field-error");
+
+    if (!errorElement) {
+        errorElement = document.createElement("span");
+        errorElement.className = "field-error";
+        input.insertAdjacentElement("afterend", errorElement);
+    }
+
+    errorElement.textContent = error;
+    errorElement.hidden = !error;
+
+    input.classList.toggle("invalid", error !== "");
+
+    return error === "";
+}
+
+// Handle existing and dynamically added fields
+consultationForm.addEventListener("input", function (e) {
+    if (e.target.matches("input, select, textarea")) {
+        validateField(e.target);
+    }
+});
+
+consultationForm.addEventListener("change", function (e) {
+    if (e.target.matches("input, select, textarea")) {
+        validateField(e.target);
+    }
+});
+
+consultationForm.addEventListener("focusout", function (e) {
+    if (e.target.matches("input, select, textarea")) {
+        validateField(e.target);
+    }
+});
 
 // ==========================
 // SAVE CONSULTATION
 // ==========================
 
-const consultationForm = document.getElementById("consultationForm");
-
 consultationForm.addEventListener("submit", function (e) {
 
     e.preventDefault();
+
+    let formIsValid = true;
+    let firstInvalidInput = null;
+
+    consultationForm.querySelectorAll("input, select, textarea").forEach(input => {
+
+        if (!validateField(input)) {
+
+            formIsValid = false;
+
+            if (!firstInvalidInput) {
+                firstInvalidInput = input;
+            }
+        }
+
+    });
+
+    if (!formIsValid) {
+        firstInvalidInput.focus();
+        return;
+    }
 
     const formData = new FormData(consultationForm);
 

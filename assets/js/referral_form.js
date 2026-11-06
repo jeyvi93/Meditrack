@@ -1,5 +1,98 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    const referralForm = document.getElementById("referralForm");
+
+    // ======================
+    // REAL-TIME FORM VALIDATION
+    // ======================
+
+    function validateField(input) {
+        const group = input.closest(".input-group");
+
+        if (!group) return true;
+
+        // Skip hidden fields
+        if (input.disabled || input.offsetParent === null) {
+            input.classList.remove("invalid");
+
+            const oldError = group.querySelector(".field-error");
+            if (oldError) oldError.remove();
+
+            return true;
+        }
+
+        let error = "";
+
+        if (!input.checkValidity()) {
+            if (input.validity.valueMissing) {
+                error = "This field is required.";
+            } else if (input.validity.patternMismatch) {
+                error = input.title || "Please enter a valid value.";
+            } else if (input.validity.rangeUnderflow) {
+                error = `Value must be at least ${input.min}.`;
+            } else if (input.validity.typeMismatch) {
+                error = "Please enter a valid value.";
+            } else {
+                error = "Please check this field.";
+            }
+        }
+
+        let errorElement = group.querySelector(".field-error");
+
+        if (!errorElement) {
+            errorElement = document.createElement("span");
+            errorElement.className = "field-error";
+            input.insertAdjacentElement("afterend", errorElement);
+        }
+
+        errorElement.textContent = error;
+        errorElement.hidden = !error;
+
+        input.classList.toggle("invalid", error !== "");
+
+        return error === "";
+    }
+
+    // Validate while typing, changing, or leaving a field
+    referralForm.addEventListener("input", function (e) {
+        if (e.target.matches("input, select, textarea")) {
+            validateField(e.target);
+        }
+    });
+
+    referralForm.addEventListener("change", function (e) {
+        if (e.target.matches("input, select, textarea")) {
+            validateField(e.target);
+        }
+    });
+
+    referralForm.addEventListener("focusout", function (e) {
+        if (e.target.matches("input, select, textarea")) {
+            validateField(e.target);
+        }
+    });
+
+    // Prevent submission when any visible field is invalid
+    referralForm.addEventListener("submit", function (e) {
+        let formIsValid = true;
+        let firstInvalidInput = null;
+
+        referralForm.querySelectorAll("input, select, textarea").forEach(input => {
+            if (!validateField(input)) {
+                formIsValid = false;
+
+                if (!firstInvalidInput) {
+                    firstInvalidInput = input;
+                }
+            }
+        });
+
+        if (!formIsValid) {
+            e.preventDefault();
+            firstInvalidInput.focus();
+        }
+    });
+
     // ======================
     // AGE CALCULATION
     // ======================
@@ -78,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // RESET FORM AFTER SUBMISSION
     // ======================
 
-    const referralForm = document.getElementById("referralForm");
+    
 
     if (referralForm) {
         referralForm.addEventListener("submit", function () {

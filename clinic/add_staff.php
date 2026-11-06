@@ -299,7 +299,6 @@ unset($_SESSION['error']);
                         </section>
 
                         <div class="form-footer">
-                            <button type="button" class="btn-ghost">Discard Draft</button>
                             <button type="submit" class="btn-primary">Save Staff Record</button>
                         </div>
                     </div>

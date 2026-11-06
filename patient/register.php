@@ -80,7 +80,7 @@ unset($_SESSION['error_field']);
                         <p>Fill in your details to get started.</p>
                     </div>
 
-                    <form action="../actions/register_process.php" method="POST" class="registration-form">
+                    <form action="../actions/register_process.php" method="POST" class="registration-form" novalidate>
                         <div class="form-grid">
                             <div class="input-group">
                                 <label for="last_name">Last Name</label>
@@ -288,26 +288,186 @@ unset($_SESSION['error_field']);
             }
         }
 
-        // REGISTRATION PROCESSING
-        const registrationForm = document.querySelector(".registration-form");
+        // REAL-TIME REGISTRATION VALIDATION
+const registrationForm = document.querySelector(".registration-form");
 
-        if (registrationForm) {
-            registrationForm.addEventListener("submit", function () {
+if (registrationForm) {
 
-                if (!registrationForm.checkValidity()) {
-                    return;
-                }
+    const fields = [
+        "last_name",
+        "first_name",
+        "middle_name",
+        "email",
+        "role",
+        "id_number",
+        "password",
+        "confirm_password"
+    ];
 
-                const modal = document.getElementById("registerProcessingModal");
-                const registerButton = registrationForm.querySelector(".btn-submit");
+    const touchedFields = new Set();
 
-                if (modal && registerButton) {
-                    modal.classList.add("show");
-                    registerButton.disabled = true;
-                    registerButton.textContent = "Creating Account...";
-                }
-            });
+    const errorMessages = {
+        last_name: "Please enter a valid name using letters only.",
+        first_name: "Please enter a valid name using letters only.",
+        middle_name: "Please enter a valid name using letters only.",
+        email: "Please enter a valid email address.",
+        role: "Please select a valid role.",
+        id_number: "ID number can contain numbers and symbols only.",
+        password: "Password must be at least 8 characters.",
+        confirm_password: "Passwords do not match."
+    };
+
+    function validateField(fieldName) {
+
+        const input = registrationForm.elements[fieldName];
+        const group = input.closest(".input-group");
+        const inputBox = group.querySelector(".input-box");
+
+        let error = "";
+
+        if (fieldName === "password") {
+
+            if (input.value.length < 8) {
+                error = errorMessages.password;
+            }
+
+        } else if (fieldName === "confirm_password") {
+
+            const password = registrationForm.elements.password;
+
+            if (
+                input.value === "" ||
+                input.value !== password.value
+            ) {
+                error = errorMessages.confirm_password;
+            }
+
+        } else if (
+            fieldName === "middle_name" &&
+            input.value.trim() === ""
+        ) {
+
+            error = "";
+
+        } else if (!input.checkValidity()) {
+
+            error = errorMessages[fieldName];
         }
+
+        let errorElement = group.querySelector(".field-error");
+
+        if (!errorElement) {
+            errorElement = document.createElement("span");
+            errorElement.className = "field-error";
+            inputBox.insertAdjacentElement("afterend", errorElement);
+        }
+
+        errorElement.textContent = error;
+        errorElement.hidden = !error;
+
+        inputBox.classList.toggle("invalid", error !== "");
+
+        return error === "";
+    }
+
+    // Preserve existing PHP-generated errors
+    fields.forEach(fieldName => {
+
+        const input = registrationForm.elements[fieldName];
+        const group = input.closest(".input-group");
+        const existingError = group.querySelector(".field-error");
+
+        if (existingError && existingError.textContent.trim() !== "") {
+            input.closest(".input-box").classList.add("invalid");
+            touchedFields.add(fieldName);
+        } else if (existingError) {
+            existingError.hidden = true;
+        }
+
+    });
+
+    // Validate while typing or changing selections
+    fields.forEach(fieldName => {
+
+        const input = registrationForm.elements[fieldName];
+
+        input.addEventListener("input", function () {
+
+            touchedFields.add(fieldName);
+            validateField(fieldName);
+
+            // Recheck confirmation when the password changes
+            if (
+                fieldName === "password" &&
+                touchedFields.has("confirm_password")
+            ) {
+                validateField("confirm_password");
+            }
+
+        });
+
+        input.addEventListener("change", function () {
+
+            touchedFields.add(fieldName);
+            validateField(fieldName);
+
+        });
+
+        input.addEventListener("blur", function () {
+
+            touchedFields.add(fieldName);
+            validateField(fieldName);
+
+        });
+
+    });
+
+    // REGISTRATION PROCESSING
+        registrationForm.addEventListener("submit", function (event) {
+
+            let formIsValid = true;
+            let firstInvalidField = null;
+
+            fields.forEach(fieldName => {
+
+                touchedFields.add(fieldName);
+
+                const isValid = validateField(fieldName);
+
+                if (!isValid) {
+
+                    formIsValid = false;
+
+                    if (!firstInvalidField) {
+                        firstInvalidField = registrationForm.elements[fieldName];
+                    }
+                }
+
+            });
+
+            if (!formIsValid) {
+
+                event.preventDefault();
+
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                }
+
+                return;
+            }
+
+            const modal = document.getElementById("registerProcessingModal");
+            const registerButton = registrationForm.querySelector(".btn-submit");
+
+            if (modal && registerButton) {
+                modal.classList.add("show");
+                registerButton.disabled = true;
+                registerButton.textContent = "Creating Account...";
+            }
+
+        });
+
+    }
 
     </script>
 </body>

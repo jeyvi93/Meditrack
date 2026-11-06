@@ -75,7 +75,30 @@ body { background-color: var(--bg-light); color: var(--text-main); }
 }
 
 .input-group input:focus, .input-group textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+/* REAL-TIME VALIDATION */
+.input-group input.invalid,
+.input-group select.invalid,
+.input-group textarea.invalid {
+    border-color: #dc2626;
+    background-color: #fff5f5;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.08);
+}
 
+.input-group input.invalid:focus,
+.input-group select.invalid:focus,
+.input-group textarea.invalid:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.08);
+}
+
+.field-error {
+    display: block;
+    margin-top: -3px;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 500;
+}
 
 /* DYNAMIC MEDICINE ROWS */
 .medicine-row {

@@ -90,7 +90,13 @@ unset($_SESSION['error']);
                 </div>
             </div>
 
-            <form action="../actions/change_password.php" method="POST" class="password-form">
+            <form
+                id="changePasswordForm"
+                action="../actions/change_password.php"
+                method="POST"
+                class="password-form"
+                novalidate
+            >
                 <div class="info-grid single-col">
                     
                     <div class="info-group">

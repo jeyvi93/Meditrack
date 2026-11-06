@@ -52,7 +52,7 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                 </div>
             </header>
 
-            <form id="referralForm" method="POST" action="../actions/referral_save.php" target="_blank">
+            <form id="referralForm" method="POST" action="../actions/referral_save.php" target="_blank" novalidate>
                 
                 <!-- SECTION 1: REFERRAL INFORMATION -->
                 <section class="form-card highlight-blue">
@@ -71,7 +71,7 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                                 type="text"
                                 id="DoctorName"
                                 name="doctor_name"
-                                placeholder="e.g. Dr. Juan Dela Cruz"
+                                placeholder="Enter Doctor's Name"
                                 pattern="[A-Za-zÀ-ÿ .'-]+"
                                 oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."

@@ -90,7 +90,7 @@ if ($batchQuery) {
         </header>
 
         <!-- CONSULTATION FORM -->
-        <form id="consultationForm">
+        <form id="consultationForm" novalidate>
 
             <!-- DATE & TIME -->
             <div class="input-grid two-cols">

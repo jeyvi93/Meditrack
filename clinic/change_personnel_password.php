@@ -83,6 +83,7 @@ $backUrl = $role === 'Administrator'
             </div>
 
             <form
+                id="changePasswordForm"
                 action="../actions/change_personnel_password.php"
                 method="POST"
                 class="personnel-password-form"
@@ -304,9 +305,90 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const passwordForm = document.querySelector(".personnel-password-form");
 
+    // ==========================
+    // REAL-TIME PASSWORD VALIDATION
+    // ==========================
+
+    const passwordInputs = {
+        current: document.getElementById("current_password"),
+        new: document.getElementById("new_password"),
+        confirm: document.getElementById("confirm_password")
+    };
+
+    function validatePasswordField(input) {
+        const box = input.closest(".password-input-box");
+        const group = input.closest(".form-group");
+
+        if (!box || !group) return true;
+
+        let error = "";
+
+        if (input.value.trim() === "") {
+            error = "This field is required.";
+        } else if (input.id === "new_password" && input.value.length < 8) {
+            error = "Password must be at least 8 characters long.";
+        } else if (
+            input.id === "confirm_password" &&
+            input.value !== passwordInputs.new.value
+        ) {
+            error = "Passwords do not match.";
+        }
+
+        let errorElement = group.querySelector(".password-field-error");
+
+        if (!errorElement) {
+            errorElement = document.createElement("span");
+            errorElement.className = "password-field-error";
+            box.insertAdjacentElement("afterend", errorElement);
+        }
+
+        errorElement.textContent = error;
+        errorElement.hidden = !error;
+
+        box.classList.toggle("invalid", error !== "");
+
+        return error === "";
+    }
+
+    Object.values(passwordInputs).forEach(input => {
+        input.addEventListener("input", function () {
+            validatePasswordField(input);
+
+            // Recheck confirmation when the new password changes
+            if (input.id === "new_password" && passwordInputs.confirm.value !== "") {
+                validatePasswordField(passwordInputs.confirm);
+            }
+        });
+
+        input.addEventListener("blur", function () {
+            validatePasswordField(input);
+        });
+    });
+
     if (!passwordForm) return;
 
-    passwordForm.addEventListener("submit", function () {
+        passwordForm.addEventListener("submit", function (e) {
+
+        let formIsValid = true;
+        let firstInvalidInput = null;
+
+        Object.values(passwordInputs).forEach(input => {
+
+            if (!validatePasswordField(input)) {
+                formIsValid = false;
+
+                if (!firstInvalidInput) {
+                    firstInvalidInput = input;
+                }
+            }
+
+        });
+
+        if (!formIsValid) {
+            e.preventDefault();
+            firstInvalidInput.focus();
+            return;
+        }
 
         const processingModal = document.getElementById("passwordProcessingModal");
         const saveButton = passwordForm.querySelector(".password-save");
@@ -319,7 +401,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
-});
+    });
 </script>
 
 </body>
