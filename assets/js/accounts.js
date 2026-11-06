@@ -126,34 +126,168 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }, 10000);
 
+    // =========================
+    // ACCOUNT ACTION DROPDOWN
+    // =========================
+
+    document.addEventListener("click", function (e) {
+
+        const menuButton = e.target.closest(".account-menu-btn");
+
+        if (menuButton) {
+            e.stopPropagation();
+
+            const dropdown = menuButton.nextElementSibling;
+            const isOpen = dropdown.classList.contains("active");
+
+            document.querySelectorAll(".account-dropdown.active").forEach(menu => {
+                menu.classList.remove("active");
+            });
+
+            if (!isOpen) {
+                dropdown.classList.add("active");
+            }
+
+            return;
+        }
+
+        if (!e.target.closest(".account-dropdown")) {
+            document.querySelectorAll(".account-dropdown.active").forEach(menu => {
+                menu.classList.remove("active");
+            });
+        }
+
+    });
+
+        // =========================
+        // DELETE ACCOUNT MODAL
+        // =========================
+
+        const deleteAccountModal = document.getElementById("deleteAccountModal");
+        let selectedAccountId = null;
+
+        const deleteSuccessModal = document.getElementById("deleteSuccessModal");
+        const closeDeleteSuccessModal = document.getElementById("closeDeleteSuccessModal");
+
+        if (closeDeleteSuccessModal && deleteSuccessModal) {
+            closeDeleteSuccessModal.addEventListener("click", function () {
+                deleteSuccessModal.classList.remove("active");
+            });
+        }
+
+        document.addEventListener("click", function (e) {
+
+            const deleteButton = e.target.closest(".delete-account-btn");
+
+            if (deleteButton) {
+                selectedAccountId = deleteButton.dataset.id;
+
+                document.querySelectorAll(".account-dropdown.active").forEach(menu => {
+                    menu.classList.remove("active");
+                });
+
+                deleteAccountModal.classList.add("active");
+                return;
+            }
+
+            if (e.target.closest("#cancelDeleteAccount")) {
+                deleteAccountModal.classList.remove("active");
+                selectedAccountId = null;
+            }
+
+        });
+
+            if (deleteAccountModal) {
+            deleteAccountModal.addEventListener("click", function (e) {
+                if (e.target === deleteAccountModal) {
+                    deleteAccountModal.classList.remove("active");
+                    selectedAccountId = null;
+                }
+            });
+        }
+
+        // CONFIRM ACCOUNT DELETION
+        const confirmDeleteButton = document.getElementById("confirmDeleteAccount");
+
+        if (confirmDeleteButton) {
+            confirmDeleteButton.addEventListener("click", async function () {
+
+            if (!selectedAccountId) return;
+
+            const csrfToken = document.getElementById("deleteAccountCsrfToken").value;
+
+            confirmDeleteButton.disabled = true;
+            confirmDeleteButton.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Deleting...';
+
+            try {
+
+                const response = await fetch("delete_unverified_account.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({
+                        account_id: selectedAccountId,
+                        csrf_token: csrfToken
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || "Unable to delete account.");
+                }
+
+                deleteAccountModal.classList.remove("active");
+                selectedAccountId = null;
+
+                await refreshAccountList();
+
+                deleteSuccessModal.classList.add("active");
+
+            } catch (error) {
+
+                alert(error.message);
+
+            } finally {
+
+                confirmDeleteButton.disabled = false;
+                confirmDeleteButton.innerHTML = '<i class="bx bx-trash"></i> Delete Account';
+
+                        }
+
+            });
+        }
+
 });
 
-// =========================
-// ADMIN SIDEBAR LOGOUT MENU
-// =========================
 
-function toggleLogoutMenu() {
-    const menu = document.getElementById("logoutMenu");
+    // =========================
+    // ADMIN SIDEBAR LOGOUT MENU
+    // =========================
 
-    if (!menu) return;
+    function toggleLogoutMenu() {
+        const menu = document.getElementById("logoutMenu");
 
-    const isVisible = window.getComputedStyle(menu).display !== "none";
+        if (!menu) return;
 
-    menu.style.display = isVisible ? "none" : "block";
-}
+        const isVisible = window.getComputedStyle(menu).display !== "none";
 
-document.addEventListener("click", function (event) {
-    const menu = document.getElementById("logoutMenu");
-    const adminCard = document.querySelector(".admin-card");
-
-    if (
-        menu &&
-        adminCard &&
-        !menu.contains(event.target) &&
-        !adminCard.contains(event.target)
-    ) {
-        menu.style.display = "none";
+        menu.style.display = isVisible ? "none" : "block";
     }
+
+    document.addEventListener("click", function (event) {
+        const menu = document.getElementById("logoutMenu");
+        const adminCard = document.querySelector(".admin-card");
+
+        if (
+            menu &&
+            adminCard &&
+            !menu.contains(event.target) &&
+            !adminCard.contains(event.target)
+        ) {
+            menu.style.display = "none";
+        }
 });
 
 

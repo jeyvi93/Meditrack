@@ -10,6 +10,11 @@ if (($_SESSION['role'] ?? '') !== 'Administrator') {
     exit('Access denied. Admin privileges are required.');
 }
 
+// CSRF protection
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 require_once "../config/database.php";
 
 // Search and filters
@@ -218,6 +223,55 @@ while ($row = mysqli_fetch_assoc($rolesResult)) {
     </div>
 </div>
 
+<!-- Delete Account Confirmation Modal -->
+<div id="deleteAccountModal" class="modal-overlay">
+    <input
+        type="hidden"
+        id="deleteAccountCsrfToken"
+        value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>"
+    >
+    <div class="delete-account-modal">
+
+        <div class="delete-account-icon">
+            <i class="bx bx-trash"></i>
+        </div>
+
+        <h2>Delete Account</h2>
+
+        <p>
+            Are you sure you want to delete this unverified account?
+            This action cannot be undone.
+        </p>
+
+        <div class="delete-account-buttons">
+            <button type="button" id="cancelDeleteAccount">
+                Cancel
+            </button>
+
+            <button type="button" id="confirmDeleteAccount">
+                Delete Account
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- Delete Account Success Modal -->
+<div id="deleteSuccessModal" class="modal-overlay">
+    <div class="message-modal">
+        <div class="message-icon success">
+            <i class="bx bx-check"></i>
+        </div>
+        <h2>Account Deleted!</h2>
+        <p>The unverified account has been successfully deleted.</p>
+        <div class="modal-actions">
+            <button type="button" class="btn-primary" id="closeDeleteSuccessModal">
+                OK
+            </button>
+        </div>
+    </div>
+</div>
+
 <main class="main-content">
     <header class="page-header">
         <div>
@@ -291,11 +345,36 @@ while ($row = mysqli_fetch_assoc($rolesResult)) {
                                     </span>
                                 </td>
 
-                                <td>
+                                <td class="email-status-cell">
                                     <?php if ((int) $account['email_verified'] === 1): ?>
+
                                         <span class="status-badge verified">Verified</span>
+
                                     <?php else: ?>
-                                        <span class="status-badge unverified">Unverified</span>
+
+                                        <div class="unverified-actions">
+                                            <span class="status-badge unverified">Unverified</span>
+
+                                            <button
+                                                type="button"
+                                                class="account-menu-btn"
+                                                aria-label="Account actions"
+                                            >
+                                                <i class="bx bx-dots-vertical-rounded"></i>
+                                            </button>
+
+                                            <div class="account-dropdown">
+                                                <button
+                                                    type="button"
+                                                    class="delete-account-btn"
+                                                    data-id="<?= (int) $account['id'] ?>"
+                                                >
+                                                    <i class="bx bx-trash"></i>
+                                                    Delete Account
+                                                </button>
+                                            </div>
+                                        </div>
+
                                     <?php endif; ?>
                                 </td>
                             </tr>
