@@ -42,6 +42,23 @@ $search = isset($_GET['search'])
     ? trim($_GET['search'])
     : '';
 
+// ==========================
+// AVAILABLE REFERRAL DATES
+// ==========================
+
+$availableReferralDates = [];
+
+$dateQuery = mysqli_query($conn, "
+    SELECT DISTINCT referred_date
+    FROM referrals
+    ORDER BY referred_date DESC
+");
+
+if ($dateQuery) {
+    while ($dateRow = mysqli_fetch_assoc($dateQuery)) {
+        $availableReferralDates[] = $dateRow['referred_date'];
+    }
+}
 
 // ==========================
 // BUILD WHERE CONDITION
@@ -51,6 +68,16 @@ $where = [];
 $params = [];
 $types = "";
 
+// DATE FILTER
+$dateFilter = isset($_GET['date'])
+    ? trim($_GET['date'])
+    : '';
+
+if ($dateFilter !== '') {
+    $where[] = "DATE(referred_date) = ?";
+    $params[] = $dateFilter;
+    $types .= "s";
+}
 if ($search !== '') {
 
     $where[] = "(
@@ -173,6 +200,10 @@ if ($search !== '') {
     $queryParams['search'] = $search;
 }
 
+if ($dateFilter !== '') {
+    $queryParams['date'] = $dateFilter;
+}
+
 function pageUrl($page, $queryParams) {
 
     $queryParams['page'] = $page;
@@ -192,6 +223,7 @@ function pageUrl($page, $queryParams) {
     <!-- Icons -->
      <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="../assets/css/referral_history.css">
     <link rel="stylesheet" href="../assets/css/sidebar.css">
 </head>
@@ -233,6 +265,19 @@ function pageUrl($page, $queryParams) {
                         >
 
                     </form>
+
+                    <div class="filter-group date-filter-group">
+                        <i class="bx bx-calendar"></i>
+
+                        <input
+                            type="text"
+                            class="filter-select"
+                            id="dateFilter"
+                            placeholder="dd/mm/yyyy"
+                            value="<?= htmlspecialchars($dateFilter) ?>"
+                            readonly
+                        >
+                    </div>
                 </div>
 
                 <!-- TABLE -->
@@ -571,6 +616,12 @@ function pageUrl($page, $queryParams) {
     </div>
 </div>
 <script src="../includes/includes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    const availableReferralDates = <?= json_encode($availableReferralDates) ?>;
+</script>
+
 <script src="../assets/js/referral_history.js"></script>
 </body>
 </html>

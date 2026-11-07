@@ -385,6 +385,8 @@ $rejected = $rejectedStmt->get_result();
         <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <link rel="stylesheet" href="../assets/css/appointments.css">
         <link rel="stylesheet" href="../assets/css/sidebar.css">
     </head>
@@ -1112,13 +1114,18 @@ $rejected = $rejectedStmt->get_result();
 
                 <div class="form-group">
                     <label>New Date</label>
-                    <input
-                        type="date"
-                        id="resDate"
-                        name="appointment_date"
-                        min="<?= date('Y-m-d') ?>"
-                        required
-                    >
+
+                    <div class="res-date-wrapper">
+                        <input
+                            type="text"
+                            id="resDate"
+                            name="appointment_date"
+                            placeholder="dd/mm/yyyy"
+                            required
+                            readonly
+                        >
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -1336,6 +1343,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setInterval(updatePendingAppointments, 5000);
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="../assets/js/appointments.js"></script>
 <script src="../includes/includes.js"></script>
     </body>

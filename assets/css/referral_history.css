@@ -447,3 +447,153 @@ body { background-color: var(--bg-light); color: var(--text-main); }
     cursor: pointer;
     color: var(--text-main);
 }
+
+/* ================================
+   MEDITRACK - COMPACT CALENDAR
+================================ */
+
+.flatpickr-calendar {
+    width: 250px !important;
+    max-width: calc(100vw - 20px) !important;
+    padding: 4px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10) !important;
+    font-family: Arial, sans-serif !important;
+    box-sizing: border-box !important;
+}
+
+/* Header */
+.flatpickr-months {
+    background: #1e40af !important;
+    border-radius: 3px 3px 0 0;
+}
+
+.flatpickr-months .flatpickr-month,
+.flatpickr-current-month,
+.flatpickr-current-month input.cur-year,
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+}
+
+/* Weekdays */
+.flatpickr-weekdays {
+    background: #f3f4f6 !important;
+}
+
+span.flatpickr-weekday {
+    color: #374151 !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+}
+
+/* Days */
+.flatpickr-day {
+    height: 28px !important;
+    line-height: 28px !important;
+    max-width: 28px !important;
+    border-radius: 3px !important;
+    font-size: 11px !important;
+    color: #374151 !important;
+}
+
+/* Selected date */
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: #1e40af !important;
+    border-color: #1e40af !important;
+    color: #ffffff !important;
+}
+
+/* Today */
+.flatpickr-day.today {
+    border: 1px solid #1e40af !important;
+}
+
+/* Disabled dates */
+.flatpickr-day.flatpickr-disabled {
+    color: #c5cbd3 !important;
+    background: transparent !important;
+    border-color: transparent !important;
+}
+
+/* Input */
+#dateFilter,
+.date-filter-group .flatpickr-input {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    outline: none;
+    box-shadow: none;
+    background: #ffffff;
+    color: var(--text-main);
+    font-size: 13px;
+    cursor: pointer;
+}
+@media (max-width: 480px) {
+    .flatpickr-calendar {
+        width: 250px !important;
+        max-width: calc(100vw - 20px) !important;
+    }
+}
+
+/* FILTER LAYOUT */
+.logs-toolbar {
+    gap: 16px;
+}
+
+.filters-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+}
+
+.filter-select {
+    height: 40px;
+}
+
+#dateFilter {
+    width: 140px;
+}
+
+.date-filter-group {
+    position: relative;
+}
+
+.date-filter-group i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #64748b;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.date-filter-group input {
+    height: 40px;
+    width: 140px;
+    padding: 0 10px 0 38px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px;
+    outline: none;
+    box-shadow: none;
+    background: #ffffff !important;
+    color: var(--text-main);
+    font-size: 13px;
+    cursor: pointer;
+}

@@ -5,6 +5,20 @@
 const appointmentDate = document.getElementById('appointmentDate');
 const appointmentTime = document.getElementById('appointmentTime');
 
+// Disable Sundays in the appointment date picker
+if (appointmentDate) {
+    appointmentDate.addEventListener('input', function () {
+        if (!this.value) return;
+
+        const selectedDate = new Date(this.value + 'T00:00:00');
+
+        if (selectedDate.getDay() === 0) {
+            this.value = '';
+            alert('Appointments are not available on Sundays. Please select another date.');
+        }
+    });
+}
+
 function updateAvailableTimeSlots() {
     if (!appointmentDate || !appointmentTime) return;
 

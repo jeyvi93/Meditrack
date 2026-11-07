@@ -131,6 +131,12 @@ if (searchInput) {
                 params.set("search", search);
             }
 
+            const selectedDate = document.getElementById("dateFilter")?.value;
+
+            if (selectedDate) {
+                params.set("date", selectedDate);
+            }
+
             // ALWAYS RESET TO PAGE 1
             params.set("page", "1");
 
@@ -215,6 +221,49 @@ if (searchInput) {
             }
 
         }, 300);
+
+    });
+
+}
+
+// ===============================
+// REFERRAL DATE FILTER
+// ===============================
+
+const dateFilter = document.getElementById("dateFilter");
+
+if (dateFilter && typeof flatpickr !== "undefined") {
+
+    flatpickr(dateFilter, {
+
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d/m/Y",
+        enable: availableReferralDates,
+        allowInput: false,
+
+        onChange: function (selectedDates, dateStr) {
+
+            const params = new URLSearchParams();
+
+            const search = searchInput
+                ? searchInput.value.trim()
+                : "";
+
+            if (search !== "") {
+                params.set("search", search);
+            }
+
+            if (dateStr !== "") {
+                params.set("date", dateStr);
+            }
+
+            params.set("page", "1");
+
+            window.location.href =
+                "referral_history.php?" + params.toString();
+
+        }
 
     });
 

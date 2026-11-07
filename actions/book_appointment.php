@@ -134,6 +134,15 @@ if ($appointment_date < $today) {
     exit();
 }
 
+// ==========================================
+// PREVENT SUNDAY APPOINTMENTS
+// ==========================================
+
+if ($dateObject->format('w') === '0') {
+    $_SESSION['error'] = "Appointments are not available on Sundays. Please select another date.";
+    header("Location: ../patient/book_appointment.php");
+    exit();
+}
 
 // ==========================================
 // VALIDATE AVAILABLE TIME

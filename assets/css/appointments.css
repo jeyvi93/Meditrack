@@ -575,3 +575,111 @@ body { background-color: var(--bg-light); color: var(--text-main); }
     background: #f3f4f6;
     color: #475569;
 }
+
+/* FLATPICKR - RESCHEDULE CALENDAR */
+#resDate.flatpickr-input {
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.flatpickr-calendar {
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+    padding: 4px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+.flatpickr-innerContainer,
+.flatpickr-rContainer {
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.flatpickr-days {
+    width: 100% !important;
+}
+
+.dayContainer {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    justify-content: space-around !important;
+}
+
+.flatpickr-day {
+    flex-basis: 14.2857% !important;
+    max-width: 14.2857% !important;
+    height: 28px !important;
+    line-height: 28px !important;
+    margin: 0 !important;
+    border-radius: 3px !important;
+    font-size: 11px !important;
+}
+
+.flatpickr-months {
+    background: #1e40af !important;
+}
+
+.flatpickr-months .flatpickr-month,
+.flatpickr-current-month,
+.flatpickr-current-month input.cur-year,
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    fill: #ffffff !important;
+}
+
+.flatpickr-weekdays {
+    background: #f3f4f6 !important;
+}
+
+span.flatpickr-weekday {
+    color: #374151 !important;
+    font-size: 11px !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: #1e40af !important;
+    border-color: #1e40af !important;
+    color: #ffffff !important;
+}
+
+.flatpickr-day.today {
+    border-color: #1e40af !important;
+}
+
+.flatpickr-day.flatpickr-disabled {
+    color: #c5cbd3 !important;
+    background: transparent !important;
+    border-color: transparent !important;
+}
+
+/* RESCHEDULE DATE INPUT */
+.res-date-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.res-date-wrapper .flatpickr-input {
+    width: 100%;
+    padding-right: 38px !important;
+    cursor: pointer;
+    background: #ffffff;
+}
+
+.res-date-wrapper i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #1e40af;
+    pointer-events: none;
+    font-size: 14px;
+}

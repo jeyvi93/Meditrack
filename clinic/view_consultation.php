@@ -35,6 +35,25 @@ $search = isset($_GET['search'])
     ? trim($_GET['search'])
     : '';
 
+
+// ==========================
+// AVAILABLE CONSULTATION DATES
+// ==========================
+
+$availableConsultationDates = [];
+
+$dateQuery = mysqli_query($conn, "
+    SELECT DISTINCT date
+    FROM consultations
+    ORDER BY date DESC
+");
+
+if ($dateQuery) {
+    while ($dateRow = mysqli_fetch_assoc($dateQuery)) {
+        $availableConsultationDates[] = $dateRow['date'];
+    }
+}
+
 // ==========================
 // PATIENT TYPE FILTER
 // ==========================
@@ -44,12 +63,29 @@ $patientType = isset($_GET['patient_type'])
     : '';
 
 // ==========================
+// DATE FILTER
+// ==========================
+
+$dateFilter = isset($_GET['date'])
+    ? trim($_GET['date'])
+    : '';
+
+// ==========================
 // BUILD WHERE CONDITION
 // ==========================
 
 $where = [];
 $params = [];
 $types = "";
+
+if ($dateFilter !== '') {
+
+    $where[] = "`date` = ?";
+
+    $params[] = $dateFilter;
+
+    $types .= "s";
+}
 
 if ($search !== '') {
 
@@ -196,6 +232,10 @@ if ($patientType !== '' && $patientType !== 'all') {
     $queryParams['patient_type'] = $patientType;
 }
 
+if ($dateFilter !== '') {
+    $queryParams['date'] = $dateFilter;
+}
+
 function pageUrl($page, $queryParams) {
 
     $queryParams['page'] = $page;
@@ -215,6 +255,7 @@ function pageUrl($page, $queryParams) {
     <!-- Icons -->
      <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="../assets/css/view_consultation.css">
     <link rel="stylesheet" href="../assets/css/sidebar.css">
 </head>
@@ -266,31 +307,48 @@ function pageUrl($page, $queryParams) {
                         <?php endif; ?>
 
                     </form>
-                    
-                    <div class="filter-group">
-                        <select class="filter-select" id="patientFilter">
 
-                            <option value="all"
-                                <?= $patientType === '' || $patientType === 'all' ? 'selected' : '' ?>>
-                                All Patient Types
-                            </option>
+                    <div class="filters-wrapper">
 
-                            <option value="student"
-                                <?= $patientType === 'student' ? 'selected' : '' ?>>
-                                Student
-                            </option>
+                        <div class="filter-group">
+                            <select class="filter-select" id="patientFilter">
 
-                            <option value="tstaff"
-                                <?= $patientType === 'tstaff' ? 'selected' : '' ?>>
-                                Teaching Staff
-                            </option>
+                                <option value="all"
+                                    <?= $patientType === '' || $patientType === 'all' ? 'selected' : '' ?>>
+                                    All Patient Types
+                                </option>
 
-                            <option value="nstaff"
-                                <?= $patientType === 'nstaff' ? 'selected' : '' ?>>
-                                Non-Teaching Staff
-                            </option>
+                                <option value="student"
+                                    <?= $patientType === 'student' ? 'selected' : '' ?>>
+                                    Student
+                                </option>
 
-                        </select>
+                                <option value="tstaff"
+                                    <?= $patientType === 'tstaff' ? 'selected' : '' ?>>
+                                    Teaching Staff
+                                </option>
+
+                                <option value="nstaff"
+                                    <?= $patientType === 'nstaff' ? 'selected' : '' ?>>
+                                    Non-Teaching Staff
+                                </option>
+
+                            </select>
+                        </div>
+
+                        <div class="filter-group date-filter-group">
+                            <i class="bx bx-calendar"></i>
+
+                            <input
+                                type="text"
+                                class="filter-select"
+                                id="dateFilter"
+                                placeholder="dd/mm/yyyy"
+                                value="<?= htmlspecialchars($dateFilter) ?>"
+                                readonly
+                            >
+                        </div>
+
                     </div>
                 </div>
 
@@ -615,6 +673,13 @@ function pageUrl($page, $queryParams) {
 </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    const availableConsultationDates = <?= json_encode($availableConsultationDates) ?>;
+</script>
+
 <script src="../includes/includes.js"></script>
 <script src="../assets/js/view_consultation.js"></script>
 </body>

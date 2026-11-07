@@ -67,6 +67,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         exit();
     }
 
+    // Prevent Sunday rescheduling
+    if ($dateObject->format('w') === '0') {
+        $_SESSION['error'] = "Rescheduling is not available on Sundays. Please select another date.";
+        header("Location: ../clinic/appointments.php");
+        exit();
+    }
+
     // Validate allowed time slots
     if (!in_array($timeInput, $allowedTimes, true)) {
         $_SESSION['error'] = "Invalid appointment time.";

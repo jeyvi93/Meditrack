@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
     const patientFilter = document.getElementById("patientFilter");
 
+    const dateFilter = document.getElementById("dateFilter");
+
 
     // =========================
     // AJAX LIVE SERVER-SIDE SEARCH
@@ -43,6 +45,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         "patient_type",
                         patientFilter.value
                     );
+                }
+
+                // Preserve date filter
+                if (dateFilter && dateFilter.value !== "") {
+                    params.set("date", dateFilter.value);
                 }
 
                 // ALWAYS RESET SEARCH TO PAGE 1
@@ -132,7 +139,51 @@ document.addEventListener("DOMContentLoaded", function () {
 
         });
 
+    }
 
+    // =========================
+    // DATE FILTER
+    // =========================
+
+    if (dateFilter && typeof flatpickr !== "undefined") {
+
+        flatpickr(dateFilter, {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "d/m/Y",
+            enable: availableConsultationDates,
+            allowInput: false,
+
+        onChange: function (selectedDates, dateStr) {
+
+            const params = new URLSearchParams();
+
+            const search = searchInput
+                ? searchInput.value.trim()
+                : "";
+
+            const patientType = patientFilter
+                ? patientFilter.value
+                : "all";
+
+            if (search !== "") {
+                params.set("search", search);
+            }
+
+            if (patientType !== "all") {
+                params.set("patient_type", patientType);
+            }
+
+            if (dateStr !== "") {
+                params.set("date", dateStr);
+            }
+
+            params.set("page", "1");
+
+            window.location.href =
+                "view_consultation.php?" + params.toString();
+        }
+    });
 
     }
 
@@ -164,6 +215,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     "patient_type",
                     patientType
                 );
+            }
+
+            // Preserve date filter
+            if (dateFilter && dateFilter.value !== "") {
+                params.set("date", dateFilter.value);
             }
 
             // ALWAYS reset filter to page 1

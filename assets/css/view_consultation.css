@@ -444,3 +444,48 @@ span.flatpickr-weekday {
         max-width: calc(100vw - 20px) !important;
     }
 }
+
+/* FILTER LAYOUT */
+.logs-toolbar {
+    gap: 16px;
+}
+
+.filters-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+}
+
+.filter-select {
+    height: 40px;
+}
+
+#dateFilter {
+    width: 140px;
+}
+
+.date-filter-group {
+    position: relative;
+}
+
+.date-filter-group i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #64748b;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.date-filter-group input {
+    padding-left: 38px;
+    cursor: pointer;
+}

@@ -362,6 +362,40 @@ document.addEventListener("DOMContentLoaded", () => {
 const resDate = document.getElementById("resDate");
 const resTime = document.getElementById("resTime");
 
+if (resDate && typeof flatpickr !== "undefined") {
+
+    flatpickr(resDate, {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d/m/Y",
+        clickOpens: true,
+        minDate: "today",
+
+        disable: [
+            function(date) {
+                return date.getDay() === 0;
+            }
+        ],
+
+        onReady: function(selectedDates, dateStr, instance) {
+            instance.altInput.placeholder = "dd/mm/yyyy";
+            instance.altInput.readOnly = true;
+
+            const wrapper = instance.altInput.parentElement;
+            const icon = wrapper.querySelector(".fa-calendar-alt");
+
+            if (icon) {
+                icon.style.pointerEvents = "auto";
+                icon.style.cursor = "pointer";
+
+                icon.addEventListener("click", function() {
+                    instance.open();
+                });
+            }
+        }
+    });
+}
+
 function updateRescheduleTimeSlots() {
 
     if (!resDate || !resTime) return;
