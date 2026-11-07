@@ -11,6 +11,7 @@ if (($_SESSION['role'] ?? '') !== 'Administrator') {
 }
 
 require_once "../config/database.php";
+require_once "../includes/email_sender.php";
 
 $redirect = "../admin/create_personnel.php";
 
@@ -258,19 +259,22 @@ mysqli_stmt_close($check_account);
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
 
-// Create the personnel account as already email-verified
+// Generate email verification token
+$verification_token = bin2hex(random_bytes(32));
+$verification_expires = date("Y-m-d H:i:s", time() + 900);
+
 $sql = "INSERT INTO users (
-            student_id,
-            staff_id,
-            email,
-            password,
-            role,
-            email_verified,
-            verification_token,
-            verification_expires
-        ) VALUES (
-            NULL, ?, ?, ?, ?, 1, NULL, NULL
-        )";
+    student_id,
+    staff_id,
+    email,
+    password,
+    role,
+    email_verified,
+    verification_token,
+    verification_expires
+) VALUES (
+    NULL, ?, ?, ?, ?, 0, ?, ?
+)";
 
 $stmt = mysqli_prepare($conn, $sql);
 
@@ -286,16 +290,119 @@ if (!$stmt) {
 
 mysqli_stmt_bind_param(
     $stmt,
-    "isss",
+    "isssss",
     $profile_id,
     $email,
     $hashed_password,
-    $role
+    $role,
+    $verification_token,
+    $verification_expires
 );
 
 
 // Save the account
 if (mysqli_stmt_execute($stmt)) {
+    $user_id = mysqli_insert_id($conn);
+
+    // Build account name
+    $full_name = $first_name . ' ' . $last_name;
+
+    // Create verification link dynamically
+    $isHttps = (
+        (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+        (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+        $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+    );
+
+    $scheme = $isHttps ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
+    $projectPath = str_replace(
+        '\\',
+        '/',
+        rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'])), '/\\')
+    );
+
+    $verification_link = $scheme . '://' . $host .
+        $projectPath .
+        '/api/auth/verify_email.php?token=' .
+        urlencode($verification_token);
+
+    // Send verification email
+    try {
+
+        $emailBody = "
+            <h2>MediTrack</h2>
+
+            <p>Hello <strong>" . htmlspecialchars($full_name) . "</strong>,</p>
+
+            <p>
+                Your MediTrack personnel account has been successfully created.
+            </p>
+
+            <p>
+                To activate your account, please verify your email address
+                by clicking the button below.
+            </p>
+
+            <p style='margin: 30px 0;'>
+                <a href='" . $verification_link . "'
+                style='
+                display:inline-block;
+                padding:12px 22px;
+                background:#800000;
+                color:white;
+                text-decoration:none;
+                border-radius:6px;
+                font-weight:bold;'>
+                Verify Email Address
+                </a>
+            </p>
+
+            <p>
+                This verification link will expire in <strong>15 minutes</strong>.
+            </p>
+
+            <p>
+                If you did not expect this account, please disregard this message.
+            </p>
+
+            <p style='margin-top: 30px;'>
+                Regards,<br>
+                <strong>MediTrack</strong>
+            </p>
+        ";
+
+        sendMediTrackEmail(
+            $email,
+            $full_name,
+            "Verify Your MediTrack Personnel Account",
+            $emailBody
+        );
+
+    } catch (\Throwable $e) {
+
+        error_log("MediTrack personnel email error: " . $e->getMessage());
+
+        // Remove the account if the verification email could not be sent
+        $delete = mysqli_prepare(
+            $conn,
+            "DELETE FROM users WHERE id = ?"
+        );
+
+        mysqli_stmt_bind_param($delete, "i", $user_id);
+        mysqli_stmt_execute($delete);
+        mysqli_stmt_close($delete);
+
+        $_SESSION['error'] =
+            "Personnel account creation failed because the verification email could not be sent.";
+
+        mysqli_stmt_close($stmt);
+        mysqli_close($conn);
+
+        header("Location: ../admin/create_personnel.php");
+        exit();
+    }
 
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
@@ -312,8 +419,7 @@ if (mysqli_stmt_execute($stmt)) {
         $_SESSION['error_field']
     );
 
-    $_SESSION['success'] =
-        "Personnel account created successfully. The account can now log in.";
+    $_SESSION['success'] = "Personnel account created successfully. A verification link has been sent to the registered email address.";
 
     header("Location: " . $redirect);
     exit();

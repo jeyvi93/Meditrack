@@ -53,7 +53,6 @@ unset(
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body>
 
@@ -149,7 +148,7 @@ unset(
             </p>
         <?php endif; ?>
 
-        <form action="../actions/create_personnel_process.php" method="POST">
+        <form id="personnelForm" action="../actions/create_personnel_process.php" method="POST" novalidate>
 
             <div class="form-row">
 
@@ -161,10 +160,10 @@ unset(
                         name="staff_id_number"
                         placeholder="Enter registered personnel ID"
                         value="<?= htmlspecialchars($oldStaffIdNumber, ENT_QUOTES, 'UTF-8') ?>"
-                        oninput="this.value = this.value.trimStart()"
+                        oninput="this.value = this.value.replace(/[A-Za-z]/g, '')"
                         required
                     >
-                    <span class="field-error" id="staff_id_error">
+                    <span class="field-error" id="staff_id_number_error">
                         <?= $errorField === 'staff_id_number' ? htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8') : '' ?>
                     </span>
                 </div>
@@ -317,7 +316,7 @@ unset(
 </main>
 
 <script src="../assets/js/accounts.js"></script>
-
+<script src="../assets/js/personnel-validation.js"></script>
 
 </body>
 </html>

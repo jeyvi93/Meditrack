@@ -380,3 +380,29 @@
     outline: 3px solid #93c5fd;
     outline-offset: 3px;
 }
+
+/* Real-Time Form Validation */
+
+.form-group input.input-invalid,
+.form-group select.input-invalid {
+    border-color: #dc2626;
+    background-color: #fffafa;
+}
+
+.form-group input.input-invalid:focus,
+.form-group select.input-invalid:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.10);
+}
+
+.field-error {
+    display: block;
+    min-height: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #dc2626;
+}
+
+.field-error:not(:empty) {
+    margin-top: -2px;
+}
