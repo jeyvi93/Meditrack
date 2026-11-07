@@ -303,7 +303,6 @@ unset(
             </div>
 
             <div class="form-actions">
-                <a href="accounts.php" class="btn-secondary">Cancel</a>
                 <button type="submit" class="btn-primary">
                     Create Account
                 </button>
