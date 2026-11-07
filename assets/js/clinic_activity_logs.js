@@ -158,18 +158,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (dateFilter && typeof flatpickr !== "undefined") {
 
-        console.log("Dates with logs:", availableLogDates);
-console.log("Date filter value:", dateFilter.value);
-
         flatpickr(dateFilter, {
+
             dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "d/m/Y",
             enable: availableLogDates,
             allowInput: false,
 
             onChange: function (selectedDates, dateStr) {
-                dateFilter.value = dateStr;
                 refreshActivityTable();
             }
+
         });
 
     }

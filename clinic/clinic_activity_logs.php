@@ -333,22 +333,28 @@ function pageUrl($page, $queryParams) {
                 </div>
 
                 <!-- FILTERS -->
-                <div class="filter-group">
+                <div class="activity-filters-wrapper">
 
-                    <select class="filter-select" id="roleFilter">
-                        <option value="">All Personnel</option>
-                        <option value="School Nurse">School Nurse</option>
-                        <option value="Clinic Staff">Clinic Staff</option>
-                    </select>
+                    <div class="activity-filter-group">
+                        <select class="filter-select" id="roleFilter">
+                            <option value="">All Personnel</option>
+                            <option value="School Nurse">School Nurse</option>
+                            <option value="Clinic Staff">Clinic Staff</option>
+                        </select>
+                    </div>
 
-                    <input
-                        type="text"
-                        class="filter-select"
-                        id="dateFilter"
-                        placeholder="Select date"
-                        value="<?= htmlspecialchars($dateFilter) ?>"
-                        readonly
-                    >
+                    <div class="activity-filter-group date-filter-group">
+                        <i class="bx bx-calendar"></i>
+
+                        <input
+                            type="text"
+                            class="filter-select"
+                            id="dateFilter"
+                            placeholder="Select date"
+                            value="<?= htmlspecialchars($dateFilter) ?>"
+                            readonly
+                        >
+                    </div>
 
                 </div>
 

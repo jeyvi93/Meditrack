@@ -81,6 +81,7 @@ unset($_SESSION['error']);
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/navbar.css">
     <link rel="stylesheet" href="../assets/css/book_appointment.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
@@ -158,10 +159,12 @@ unset($_SESSION['error']);
                         <div class="input-box">
                             <i class='bx bx-calendar'></i>
                             <input
-                                type="date"
+                                type="text"
+                                id="appointmentDate"
                                 name="appointment_date"
-                                min="<?= date('Y-m-d') ?>"
-                                required>
+                                placeholder="dd/mm/yyyy"
+                                required
+                                readonly>
                         </div>
                     </div>
 
@@ -283,6 +286,7 @@ unset($_SESSION['error']);
 <?php endif; ?>
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="../assets/js/book_appointment.js"></script>
 </body>
 </html>

@@ -308,9 +308,10 @@ function pageUrl($page, $queryParams) {
 
                     </form>
 
-                    <div class="filters-wrapper">
+                    <!-- FILTERS -->
+                    <div class="consultation-filters-wrapper">
 
-                        <div class="filter-group">
+                        <div class="consultation-filter-group">
                             <select class="filter-select" id="patientFilter">
 
                                 <option value="all"
@@ -336,14 +337,14 @@ function pageUrl($page, $queryParams) {
                             </select>
                         </div>
 
-                        <div class="filter-group date-filter-group">
+                        <div class="consultation-filter-group date-filter-group">
                             <i class="bx bx-calendar"></i>
 
                             <input
                                 type="text"
                                 class="filter-select"
                                 id="dateFilter"
-                                placeholder="dd/mm/yyyy"
+                                placeholder="Select date"
                                 value="<?= htmlspecialchars($dateFilter) ?>"
                                 readonly
                             >

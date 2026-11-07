@@ -3,18 +3,29 @@
 // ==========================================
 
 const appointmentDate = document.getElementById('appointmentDate');
-const appointmentTime = document.getElementById('appointmentTime');
+const appointmentTime = document.querySelector('select[name="appointment_time"]');
 
-// Disable Sundays in the appointment date picker
-if (appointmentDate) {
-    appointmentDate.addEventListener('input', function () {
-        if (!this.value) return;
+// Initialize Flatpickr and disable Sundays
+if (appointmentDate && typeof flatpickr !== "undefined") {
+    flatpickr(appointmentDate, {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d/m/Y",
+        minDate: "today",
 
-        const selectedDate = new Date(this.value + 'T00:00:00');
+        disable: [
+            function(date) {
+                return date.getDay() === 0;
+            }
+        ],
 
-        if (selectedDate.getDay() === 0) {
-            this.value = '';
-            alert('Appointments are not available on Sundays. Please select another date.');
+        onChange: function(selectedDates, dateStr, instance) {
+            updateAvailableTimeSlots();
+        },
+
+        onReady: function(selectedDates, dateStr, instance) {
+            instance.altInput.placeholder = "dd/mm/yyyy";
+            instance.altInput.readOnly = true;
         }
     });
 }

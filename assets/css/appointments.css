@@ -576,29 +576,38 @@ body { background-color: var(--bg-light); color: var(--text-main); }
     color: #475569;
 }
 
-/* FLATPICKR - RESCHEDULE CALENDAR */
+/* ==========================================
+   MEDITRACK - MODERN RESCHEDULE CALENDAR
+========================================== */
+
+/* RESCHEDULE DATE INPUT */
 #resDate.flatpickr-input {
-    background: #ffffff;
+    background: var(--white);
     cursor: pointer;
 }
 
+/* Calendar Container */
 .flatpickr-calendar {
-    width: 250px !important;
-    min-width: 250px !important;
-    max-width: 250px !important;
-    padding: 4px !important;
+    width: 290px !important;
+    min-width: 290px !important;
+    max-width: calc(100vw - 24px) !important;
+    padding: 8px !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 14px !important;
+    background: var(--white) !important;
+    box-shadow: 0 10px 30px rgba(30, 64, 175, 0.14) !important;
     box-sizing: border-box !important;
-    overflow: visible !important;
+    font-family: 'Inter', sans-serif !important;
+    overflow: hidden !important;
 }
 
+/* Calendar Layout */
 .flatpickr-innerContainer,
-.flatpickr-rContainer {
-    width: 100% !important;
-    min-width: 0 !important;
-}
-
+.flatpickr-rContainer,
 .flatpickr-days {
     width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
 }
 
 .dayContainer {
@@ -608,60 +617,168 @@ body { background-color: var(--bg-light); color: var(--text-main); }
     justify-content: space-around !important;
 }
 
-.flatpickr-day {
-    flex-basis: 14.2857% !important;
-    max-width: 14.2857% !important;
-    height: 28px !important;
-    line-height: 28px !important;
-    margin: 0 !important;
-    border-radius: 3px !important;
-    font-size: 11px !important;
-}
-
+/* Header */
 .flatpickr-months {
-    background: #1e40af !important;
+    background: var(--primary-blue) !important;
+    border-radius: 9px 9px 0 0 !important;
+    padding: 5px 0 !important;
 }
 
-.flatpickr-months .flatpickr-month,
-.flatpickr-current-month,
+.flatpickr-months .flatpickr-month {
+    height: 38px !important;
+    color: #ffffff !important;
+    fill: #ffffff !important;
+}
+
+.flatpickr-current-month {
+    padding-top: 8px !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+}
+
 .flatpickr-current-month input.cur-year,
 .flatpickr-current-month .flatpickr-monthDropdown-months {
     color: #ffffff !important;
-    fill: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    background: var(--primary-blue) !important;
 }
 
 .flatpickr-months .flatpickr-prev-month,
 .flatpickr-months .flatpickr-next-month {
+    top: 7px !important;
     fill: #ffffff !important;
 }
 
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: #bfdbfe !important;
+}
+
+/* Weekdays */
 .flatpickr-weekdays {
-    background: #f3f4f6 !important;
+    height: 34px !important;
+    background: #eff6ff !important;
 }
 
 span.flatpickr-weekday {
-    color: #374151 !important;
+    color: var(--primary-blue) !important;
     font-size: 11px !important;
+    font-weight: 700 !important;
 }
 
+/* Individual Dates */
+.flatpickr-day {
+    flex-basis: 14.2857% !important;
+    max-width: 14.2857% !important;
+    height: 34px !important;
+    line-height: 34px !important;
+    margin: 0 !important;
+    border-radius: 8px !important;
+    color: var(--text-main) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    transition: background 0.15s ease, color 0.15s ease !important;
+}
+
+.flatpickr-day:hover {
+    background: #dbeafe !important;
+    border-color: #dbeafe !important;
+}
+
+/* Selected Date */
 .flatpickr-day.selected,
 .flatpickr-day.selected:hover {
-    background: #1e40af !important;
-    border-color: #1e40af !important;
+    background: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
     color: #ffffff !important;
 }
 
+/* Today */
 .flatpickr-day.today {
-    border-color: #1e40af !important;
+    border: 1px solid var(--accent-blue) !important;
 }
 
-.flatpickr-day.flatpickr-disabled {
-    color: #c5cbd3 !important;
+.flatpickr-day.today.selected {
+    border-color: var(--primary-blue) !important;
+}
+
+/* Disabled Dates */
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+    color: #cbd5e1 !important;
     background: transparent !important;
     border-color: transparent !important;
+    cursor: not-allowed !important;
 }
 
-/* RESCHEDULE DATE INPUT */
+/* Other Month Dates */
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: #94a3b8 !important;
+}
+
+/* ==========================================
+   MOBILE RESPONSIVENESS
+========================================== */
+
+@media (max-width: 480px) {
+
+    .flatpickr-calendar {
+        width: 280px !important;
+        min-width: 280px !important;
+        max-width: calc(100vw - 24px) !important;
+        padding: 6px !important;
+        border-radius: 12px !important;
+    }
+
+    .flatpickr-months .flatpickr-month {
+        height: 36px !important;
+    }
+
+    .flatpickr-current-month {
+        font-size: 13px !important;
+    }
+
+    .flatpickr-weekdays {
+        height: 32px !important;
+    }
+
+    span.flatpickr-weekday {
+        font-size: 10px !important;
+    }
+
+    .flatpickr-day {
+        height: 32px !important;
+        line-height: 32px !important;
+        font-size: 11px !important;
+        border-radius: 7px !important;
+    }
+}
+
+@media (max-width: 360px) {
+
+    .flatpickr-calendar {
+        width: 260px !important;
+        min-width: 260px !important;
+        max-width: calc(100vw - 20px) !important;
+    }
+
+    .flatpickr-day {
+        height: 29px !important;
+        line-height: 29px !important;
+        font-size: 10px !important;
+    }
+
+    .flatpickr-weekdays {
+        height: 29px !important;
+    }
+}
+
+/* RESCHEDULE DATE INPUT WRAPPER */
 .res-date-wrapper {
     position: relative;
     width: 100%;
@@ -679,7 +796,7 @@ span.flatpickr-weekday {
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #1e40af;
+    color: var(--primary-blue);
     pointer-events: none;
     font-size: 14px;
 }

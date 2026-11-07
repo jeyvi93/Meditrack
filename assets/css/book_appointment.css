@@ -600,3 +600,195 @@
         line-height: 1.4;
     }
 }
+
+/* ==========================================
+   FLATPICKR - MEDITrack APPOINTMENT CALENDAR
+========================================== */
+
+.flatpickr-calendar {
+    width: 290px !important;
+    max-width: calc(100vw - 24px) !important;
+    padding: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    background: #ffffff !important;
+    box-shadow: 0 10px 30px rgba(30, 64, 175, 0.14) !important;
+    box-sizing: border-box !important;
+    font-family: 'Inter', sans-serif !important;
+    overflow: hidden !important;
+}
+
+/* Calendar Header */
+.flatpickr-months {
+    background: #1e40af !important;
+    border-radius: 9px 9px 0 0 !important;
+    padding: 5px 0 !important;
+}
+
+.flatpickr-months .flatpickr-month {
+    height: 38px !important;
+    color: #ffffff !important;
+    fill: #ffffff !important;
+}
+
+.flatpickr-current-month {
+    padding-top: 8px !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+}
+
+.flatpickr-current-month input.cur-year,
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    background: #1e40af !important;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    top: 7px !important;
+    fill: #ffffff !important;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: #bfdbfe !important;
+}
+
+/* Weekday Header */
+.flatpickr-weekdays {
+    height: 34px !important;
+    background: #eff6ff !important;
+}
+
+span.flatpickr-weekday {
+    color: #1e40af !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+}
+
+/* Calendar Layout */
+.flatpickr-innerContainer,
+.flatpickr-rContainer,
+.flatpickr-days {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+}
+
+.dayContainer {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    justify-content: space-around !important;
+}
+
+/* Individual Dates */
+.flatpickr-day {
+    flex-basis: 14.2857% !important;
+    max-width: 14.2857% !important;
+    height: 34px !important;
+    line-height: 34px !important;
+    margin: 0 !important;
+    border-radius: 8px !important;
+    color: #334155 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    transition: background 0.15s ease, color 0.15s ease !important;
+}
+
+.flatpickr-day:hover {
+    background: #dbeafe !important;
+    border-color: #dbeafe !important;
+}
+
+/* Selected Date */
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: #1e40af !important;
+    border-color: #1e40af !important;
+    color: #ffffff !important;
+}
+
+/* Today */
+.flatpickr-day.today {
+    border: 1px solid #3b82f6 !important;
+}
+
+.flatpickr-day.today.selected {
+    border-color: #1e40af !important;
+}
+
+/* Disabled Dates - Sundays and Past Dates */
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+    color: #cbd5e1 !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    cursor: not-allowed !important;
+}
+
+/* Previous and Next Month Dates */
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: #94a3b8 !important;
+}
+
+/* ==========================================
+   MOBILE RESPONSIVENESS
+========================================== */
+
+@media (max-width: 480px) {
+
+    .flatpickr-calendar {
+        width: 280px !important;
+        max-width: calc(100vw - 24px) !important;
+        padding: 6px !important;
+        border-radius: 12px !important;
+    }
+
+    .flatpickr-months .flatpickr-month {
+        height: 36px !important;
+    }
+
+    .flatpickr-current-month {
+        font-size: 13px !important;
+    }
+
+    .flatpickr-weekdays {
+        height: 32px !important;
+    }
+
+    span.flatpickr-weekday {
+        font-size: 10px !important;
+    }
+
+    .flatpickr-day {
+        height: 32px !important;
+        line-height: 32px !important;
+        font-size: 11px !important;
+        border-radius: 7px !important;
+    }
+}
+
+@media (max-width: 360px) {
+
+    .flatpickr-calendar {
+        width: 260px !important;
+        max-width: calc(100vw - 20px) !important;
+    }
+
+    .flatpickr-day {
+        height: 29px !important;
+        line-height: 29px !important;
+        font-size: 10px !important;
+    }
+
+    .flatpickr-weekdays {
+        height: 29px !important;
+    }
+}
