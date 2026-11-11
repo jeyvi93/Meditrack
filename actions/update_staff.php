@@ -37,116 +37,31 @@ if ($role === 'Administrator') {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+    // CSRF TOKEN VALIDATION
+    $submittedToken = $_POST['csrf_token'] ?? '';
+    $sessionToken = $_SESSION['csrf_token'] ?? '';
+
+    if (
+        empty($submittedToken) ||
+        empty($sessionToken) ||
+        !hash_equals($sessionToken, $submittedToken)
+    ) {
+        $_SESSION['error'] = "Invalid or expired form submission. Please try again.";
+        header("Location: ../clinic/staffs.php");
+        exit();
+    }
+
     // ==========================
     // STAFF ID
     // ==========================
 
-    $staff_id = trim($_POST['staff_id_number'] ?? '');
+    $staffId = (int)($_POST['id'] ?? 0);
 
-
-
-    // ==========================
-    // PERSONAL INFORMATION
-    // ==========================
-
-    $last_name = trim($_POST['last_name'] ?? '');
-    $first_name = trim($_POST['first_name'] ?? '');
-    $middle_name = trim($_POST['middle_name'] ?? '');
-    $date_of_birth = $_POST['date_of_birth'] ?? '';
-    $sex = $_POST['sex'] ?? '';
-    $position = $_POST['position'] ?? '';
-    $designation = trim($_POST['designation'] ?? '');
-    $department = $_POST['department'] ?? '';
-    $contact_number = trim($_POST['contact_number'] ?? '');
-    $address = trim($_POST['address'] ?? '');
-
-
-    // ==========================
-    // NAME VALIDATION
-    // ==========================
-
-    if ($first_name === '' || $last_name === '') {
-        $_SESSION['error'] = "First name and last name are required.";
+    if ($staffId <= 0) {
+        $_SESSION['error'] = "Invalid staff record.";
         header("Location: ../clinic/staffs.php");
         exit();
     }
-
-    if (
-        !preg_match("/^[A-Za-zÀ-ÿ\s.,'-]+$/", $first_name) ||
-        !preg_match("/^[A-Za-zÀ-ÿ\s.,'-]+$/", $last_name) ||
-        ($middle_name !== '' &&
-            !preg_match("/^[A-Za-zÀ-ÿ\s.,'-]+$/", $middle_name))
-    ) {
-        $_SESSION['error'] = "Names should contain letters, spaces, and common name punctuation only.";
-        header("Location: ../clinic/staffs.php");
-        exit();
-    }
-
-
-    // ==========================
-    // DATE OF BIRTH VALIDATION
-    // ==========================
-
-    if ($date_of_birth === '') {
-        $_SESSION['error'] = "Date of birth is required.";
-        header("Location: ../clinic/staffs.php");
-        exit();
-    }
-
-
-    // ==========================
-    // POSITION / DESIGNATION / DEPARTMENT
-    // ==========================
-
-    $allowedPositions = [
-        "Teaching Staff",
-        "Non-Teaching Staff"
-    ];
-
-    if (!in_array($position, $allowedPositions, true)) {
-        $_SESSION['error'] = "Please select a valid position.";
-        header("Location: ../clinic/staffs.php");
-        exit();
-    }
-
-    if ($designation === '') {
-        $_SESSION['error'] = "Designation is required.";
-        header("Location: ../clinic/staffs.php");
-        exit();
-    }
-
-    $allowedDepartments = [
-        "Technology",
-        "Education",
-        "Business",
-        "Clinic",
-        "Library",
-        "Guidance Office",
-        "Cashier",
-        "Registrar",
-        "Utility",
-        "Admin Office",
-        "SASO",
-        "CSU"
-    ];
-
-    if (!in_array($department, $allowedDepartments, true)) {
-        $_SESSION['error'] = "Please select a valid department.";
-        header("Location: ../clinic/staffs.php");
-        exit();
-    }
-
-
-    // ==========================
-    // CONTACT NUMBER
-    // ==========================
-
-    if (!preg_match('/^09[0-9]{9}$/', $contact_number)) {
-        $_SESSION['error'] = "Contact number must contain exactly 11 digits and start with 09.";
-        header("Location: ../clinic/staffs.php");
-        exit();
-    }
-
 
     // ==========================
     // HEALTH INFORMATION
@@ -156,6 +71,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ? trim($_POST['blood_type'])
     : null;
 
+    // BLOOD TYPE VALIDATION
+    $allowedBloodTypes = [
+        'A+', 'A-', 'B+', 'B-',
+        'O+', 'O-', 'AB+', 'AB-'
+    ];
+
+    if (
+        $blood_type !== null &&
+        !in_array($blood_type, $allowedBloodTypes, true)
+    ) {
+        $_SESSION['error'] = "Please select a valid blood type.";
+        header("Location: ../clinic/edit_staff.php?id=" . $staffId);
+        exit();
+    }
+
     $height = trim($_POST['height'] ?? '') !== ''
         ? trim($_POST['height'])
         : null;
@@ -163,6 +93,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $weight = trim($_POST['weight'] ?? '') !== ''
         ? trim($_POST['weight'])
         : null;
+    
+    // ==========================
+    // HEIGHT / WEIGHT VALIDATION
+    // ==========================
+
+    if (
+        ($height !== null && (!is_numeric($height) || $height <= 0 || $height > 999.99)) ||
+        ($weight !== null && (!is_numeric($weight) || $weight <= 0 || $weight > 999.99))
+    ) {
+        $_SESSION['error'] = "Height and weight must be valid positive numbers.";
+        header("Location: ../clinic/edit_staff.php?id=" . $staffId);
+        exit();
+    }
 
     $allergies = trim($_POST['allergies'] ?? '') ?: null;
     $medical_history = trim($_POST['medical_history'] ?? '') ?: null;
@@ -186,6 +129,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $emergency_relationship = trim($_POST['emergency_relationship'] ?? '');
     $emergency_contact = trim($_POST['emergency_contact'] ?? '');
 
+    // ==========================
+    // REQUIRED EMERGENCY CONTACT
+    // ==========================
+
+    if (
+        $emergency_name === '' ||
+        $emergency_relationship === '' ||
+        $emergency_contact === ''
+    ) {
+        $_SESSION['error'] = "All emergency contact fields are required.";
+        header("Location: ../clinic/edit_staff.php?id=" . $staffId);
+        exit();
+    }
+
 
     // Emergency name validation if provided
     if (
@@ -193,7 +150,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         !preg_match("/^[A-Za-zÀ-ÿ\s.,'-]+$/", $emergency_name)
     ) {
         $_SESSION['error'] = "Emergency contact name should contain letters, spaces, and common name punctuation only.";
-        header("Location: ../clinic/staffs.php");
+        header("Location: ../clinic/edit_staff.php?id=" . $staffId);
         exit();
     }
 
@@ -204,7 +161,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         !preg_match("/^[A-Za-zÀ-ÿ\s-]+$/", $emergency_relationship)
     ) {
         $_SESSION['error'] = "Emergency relationship should contain letters and spaces only.";
-        header("Location: ../clinic/staffs.php");
+        header("Location: ../clinic/edit_staff.php?id=" . $staffId);
         exit();
     }
 
@@ -215,7 +172,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         !preg_match('/^09[0-9]{9}$/', $emergency_contact)
     ) {
         $_SESSION['error'] = "Emergency contact must contain exactly 11 digits and start with 09.";
-        header("Location: ../clinic/staffs.php");
+        header("Location: ../clinic/edit_staff.php?id=" . $staffId);
         exit();
     }
 
@@ -224,32 +181,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ==========================
 
     $oldSql = "
-        SELECT
-            last_name,
-            first_name, 
-            middle_name,
-            date_of_birth,
-            sex,
-            position,
-            designation,
-            department,
-            contact_number,
-            address,
-            blood_type,
-            height,
-            weight,
-            allergies,
-            medical_history,
-            current_medications,
-            vaccines,
-            philhealth_number,
-            insurance_number,
-            insurance_company,
-            emergency_name,
-            emergency_relationship,
-            emergency_contact
+        SELECT *
         FROM staffs
-        WHERE staff_id_number = ?
+        WHERE id = ? AND is_archived = 0
+        LIMIT 1
     ";
 
     $oldStmt = mysqli_prepare($conn, $oldSql);
@@ -261,7 +196,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    mysqli_stmt_bind_param($oldStmt, "s", $staff_id);
+    mysqli_stmt_bind_param($oldStmt, "i", $staffId);
     mysqli_stmt_execute($oldStmt);
 
     $oldResult = mysqli_stmt_get_result($oldStmt);
@@ -281,16 +216,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ==========================
 
     $fieldLabels = [
-        'last_name'              => 'last name',
-        'first_name'             => 'first name',
-        'middle_name'            => 'middle name',
-        'date_of_birth'          => 'date of birth',
-        'sex'                    => 'sex',
-        'position'               => 'position',
-        'designation'            => 'designation',
-        'department'             => 'department',
-        'contact_number'         => 'contact number',
-        'address'                => 'address',
         'blood_type'             => 'blood type',
         'height'                 => 'height',
         'weight'                 => 'weight',
@@ -300,23 +225,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'vaccines'               => 'vaccines',
         'philhealth_number'      => 'PhilHealth number',
         'insurance_number'       => 'insurance number',
-        'insurance_company'     => 'insurance company',
+        'insurance_company'      => 'insurance company',
         'emergency_name'         => 'emergency contact name',
         'emergency_relationship' => 'emergency relationship',
         'emergency_contact'      => 'emergency contact number'
     ];
 
     $newValues = [
-        'last_name'              => $last_name,
-        'first_name'             => $first_name,
-        'middle_name'            => $middle_name,
-        'date_of_birth'          => $date_of_birth,
-        'sex'                    => $sex,
-        'position'               => $position,
-        'designation'            => $designation,
-        'department'             => $department,
-        'contact_number'         => $contact_number,
-        'address'                => $address,
         'blood_type'             => $blood_type,
         'height'                 => $height,
         'weight'                 => $weight,
@@ -339,7 +254,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $oldValue = $oldStaff[$field] ?? '';
         $newValue = $newValues[$field] ?? '';
 
-        // Normalize decimal values to avoid false changes
         if (in_array($field, ['height', 'weight'], true)) {
 
             $oldValue = ($oldValue === '' || $oldValue === null)
@@ -367,17 +281,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ==========================
 
     $sql = "UPDATE staffs SET
-
-        last_name = ?,
-        first_name = ?,
-        middle_name = ?,
-        date_of_birth = ?,
-        sex = ?,
-        position = ?,
-        designation = ?,
-        department = ?,
-        contact_number = ?,
-        address = ?,
         blood_type = ?,
         height = ?,
         weight = ?,
@@ -391,7 +294,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         emergency_name = ?,
         emergency_relationship = ?,
         emergency_contact = ?
-        WHERE staff_id_number = ?";
+        WHERE id = ? AND is_archived = 0";
 
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -403,24 +306,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-
     // ==========================
     // BIND PARAMETERS
     // ==========================
 
     mysqli_stmt_bind_param(
         $stmt,
-        "sssssssssssddsssssssssss",
-        $last_name,
-        $first_name,
-        $middle_name,
-        $date_of_birth,
-        $sex,
-        $position,
-        $designation,
-        $department,
-        $contact_number,
-        $address,
+        "sddssssssssssi",
         $blood_type,
         $height,
         $weight,
@@ -434,7 +326,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $emergency_name,
         $emergency_relationship,
         $emergency_contact,
-        $staff_id
+        $staffId
     );
 
 
@@ -447,7 +339,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         /* Clinic Activity Log */
         if (!empty($changes)) {
 
-            $staffName = trim($last_name . ', ' . $first_name);
+            $staffName = trim(
+                $oldStaff['last_name'] . ', ' . $oldStaff['first_name']
+            );
+
+            $staff_id = $oldStaff['staff_id_number'];
 
             $description = "Updated staff profile for {$staffName}. "
                         . "Staff ID: {$staff_id}. "

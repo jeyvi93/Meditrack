@@ -163,12 +163,7 @@ $offset = ($currentPage - 1) * $recordsPerPage;
 // ==========================
 
 $sql = "
-    SELECT staffs.*,
-           EXISTS (
-               SELECT 1
-               FROM users
-               WHERE users.staff_id = staffs.id
-           ) AS has_account
+    SELECT *
     FROM staffs
     $whereSql
     ORDER BY last_name ASC, first_name ASC, middle_name ASC
@@ -250,12 +245,6 @@ function pageUrl($page, $queryParams) {
             <h1>School Staff Profiles</h1>
             <p>Manage and monitor staff information and records.</p>
         </div>
-
-        <?php if ($role !== 'Clinic Staff'): ?>
-            <button class="btn-primary" onclick="window.location.href='add_staff.php'" >
-                <i class='bx bx-user-plus'></i> Add New Staff
-            </button>
-        <?php endif; ?>
     </header>
 
     <!-- FILTER + SEARCH -->
@@ -494,89 +483,28 @@ function pageUrl($page, $queryParams) {
             <!-- Edit Button -->
             <?php if ($role !== 'Clinic Staff'): ?>
             <button
+                type="button"
                 class="icon-btn edit"
                 title="Edit"
-                onclick='openEditStaffModal({
-
-                    id: <?= json_encode($staff["staff_id_number"]) ?>,
-                    first_name: <?= json_encode($staff["first_name"]) ?>,
-                    middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
-                    last_name: <?= json_encode($staff["last_name"]) ?>,
-                    dob: <?= json_encode($staff["date_of_birth"]) ?>,
-                    age: <?= json_encode(date_diff(date_create($staff["date_of_birth"]), date_create("today"))->y) ?>,
-
-                    sex: <?= json_encode($staff["sex"]) ?>,
-                    position: <?= json_encode($staff["position"]) ?>,
-                    designation: <?= json_encode($staff["designation"]) ?>,
-                    department: <?= json_encode($staff["department"]) ?>,
-
-                    contact: <?= json_encode($staff["contact_number"]) ?>,
-                    address: <?= json_encode($staff["address"]) ?>,
-
-                    blood: <?= json_encode($staff["blood_type"]) ?>,
-                    height: <?= json_encode($staff["height"]) ?>,
-                    weight: <?= json_encode($staff["weight"]) ?>,
-                    allergies: <?= json_encode($staff["allergies"]) ?>,
-                    history: <?= json_encode($staff["medical_history"]) ?>,
-                    medications: <?= json_encode($staff["current_medications"]) ?>,
-                    vaccines: <?= json_encode($staff["vaccines"]) ?>,
-
-                    philhealth: <?= json_encode($staff["philhealth_number"]) ?>,
-                    insuranceNumber: <?= json_encode($staff["insurance_number"]) ?>,
-                    insuranceCompany: <?= json_encode($staff["insurance_company"]) ?>,
-
-                    emergencyName: <?= json_encode($staff["emergency_name"]) ?>,
-                    relationship: <?= json_encode($staff["emergency_relationship"]) ?>,
-                    emergencyNumber: <?= json_encode($staff["emergency_contact"]) ?>
-
-                })'>
-
+                onclick="window.location.href='edit_staff.php?id=<?= (int) $staff['id'] ?>'">
                 <i class="bx bx-edit"></i>
-
             </button>
             <?php endif; ?>
 
-
-            
             <?php if ($role !== 'Clinic Staff'): ?>
-
-                <?php if ((int) $staff['has_account'] === 1): ?>
-
-                    <!-- Archive Button -->
-                    <button
-                        type="button"
-                        class="icon-btn archive"
-                        title="Archive"
-                        onclick='openArchiveStaffModal({
-                            id: <?= json_encode($staff["staff_id_number"]) ?>,
-                            first_name: <?= json_encode($staff["first_name"] ?? "") ?>,
-                            middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
-                            last_name: <?= json_encode($staff["last_name"] ?? "") ?>
-                        })'>
-
-                        <i class="bx bx-archive"></i>
-
-                    </button>
-
-                <?php else: ?>
-
-                    <!-- Existing Delete Button -->
-                    <button
-                        class="icon-btn delete"
-                        title="Delete"
-                        onclick='openDeleteStaffModal({
-                            id: <?= json_encode($staff["staff_id_number"]) ?>,
-                            first_name: <?= json_encode($staff["first_name"] ?? "") ?>,
-                            middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
-                            last_name: <?= json_encode($staff["last_name"] ?? "") ?>
-                        })'>
-
-                        <i class="bx bx-trash"></i>
-
-                    </button>
-
-                <?php endif; ?>
-
+                <!-- Archive Button -->
+                <button
+                    type="button"
+                    class="icon-btn archive"
+                    title="Archive"
+                    onclick='openArchiveStaffModal({
+                        id: <?= json_encode($staff["staff_id_number"]) ?>,
+                        first_name: <?= json_encode($staff["first_name"] ?? "") ?>,
+                        middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
+                        last_name: <?= json_encode($staff["last_name"] ?? "") ?>
+                    })'>
+                    <i class="bx bx-archive"></i>
+                </button>
             <?php endif; ?>
 
         </div>
@@ -858,355 +786,6 @@ function pageUrl($page, $queryParams) {
                 </div>
 
             </div>
-        </div>
-
-    </div>
-</div>
-
-<!-- EDIT STAFF MODAL -->
-<div id="editStaffModal" class="modal">
-    <form
-     action="../actions/update_staff.php"
-     method="POST"
-      class="modal-content modal-container edit-mode">
-
-        <span class="close" onclick="closeEditStaffModal()">&times;</span>
-
-        <!-- HEADER SUMMARY -->
-        <div class="staff-summary">
-
-            <div class="profile-avatar p-avatar">
-                <i class='bx bx-user'></i>
-            </div>
-
-            <div class="summary-info">
-
-                <div class="name-fields">
-
-                    <input
-                        type="text"
-                        id="e_lastName"
-                        name="last_name"
-                        placeholder="Last Name"
-                        pattern="[A-Za-zÀ-ÿ\s.,'-]+"
-                        title="Last name should contain letters, spaces, and common name punctuation only."
-                        oninput="this.value = this.value.replace(/[0-9]/g, '')"
-                        required
-                    >
-
-                    <input
-                        type="text"
-                        id="e_firstName"
-                        name="first_name"
-                        placeholder="First Name"
-                        pattern="[A-Za-zÀ-ÿ\s.,'-]+"
-                        title="First name should contain letters, spaces, and common name punctuation only."
-                        oninput="this.value = this.value.replace(/[0-9]/g, '')"
-                        required
-                    >
-
-                    <input
-                        type="text"
-                        id="e_middleName"
-                        name="middle_name"
-                        placeholder="Middle Name"
-                        pattern="[A-Za-zÀ-ÿ\s.,'-]+"
-                        title="Middle name should contain letters, spaces, and common name punctuation only."
-                        oninput="this.value = this.value.replace(/[0-9]/g, '')"
-                    >
-                </div>
-
-                    <!-- Staff ID display -->
-                    <input type="hidden" id="e_staffId" name="staff_id_number">
-                    <input type="text" id="e_staffIdDisplay" readonly>
-                
-            </div>
-        </div>
-
-        <!-- PERSONAL INFO -->
-        <div class="info-section">
-            <div class="info-title">Personal Information</div>
-
-            <div class="info-grid">
-
-                <div class="data-group">
-                    <label>Date of Birth</label>
-                    <input
-                        type="date"
-                        id="e_dob"
-                        name="date_of_birth"
-                        required
-                    >
-                </div>
-
-                <div class="data-group">
-                    <label>Age</label>
-                    <input type="number" id="e_age" readonly>
-                </div>
-
-                <div class="data-group">
-                    <label>Sex</label>
-                    <select id="e_sex" name="sex">
-                        <option>Male</option>
-                        <option>Female</option>
-                    </select>
-                </div>
-
-                <div class="data-group">
-                    <label>Position</label>
-                    <select id="e_position" name="position" required>
-                        <option value="">Select Position</option>
-                        <option value="Teaching Staff">Teaching Staff</option>
-                        <option value="Non-Teaching Staff">Non-Teaching Staff</option>
-                    </select>
-                </div>
-
-                <div class="data-group">
-                    <label>Designation</label>
-                    <input
-                        type="text"
-                        id="e_designation"
-                        name="designation"
-                        placeholder="Instructor"
-                        required
->
-                </div>
-
-                <div class="data-group">
-                    <label>Department</label>
-                    <select id="e_department" name="department" required>
-                        <option value="">Select Department</option>
-                        <option value="Technology">Technology</option>
-                        <option value="Education">Education</option>
-                        <option value="Business">Business</option>
-                        <option value="Clinic">Clinic</option>
-                        <option value="Library">Library</option>
-                        <option value="Guidance Office">Guidance Office</option>
-                        <option value="Cashier">Cashier</option>
-                        <option value="Registrar">Registrar</option>
-                        <option value="Utility">Utility</option>
-                        <option value="Admin Office">Admin Office</option>
-                        <option value="SASO">SASO</option>
-                        <option value="CSU">CSU</option>
-                    </select>
-                </div>
-
-                <div class="data-group">
-                    <label>Contact Number</label>
-                    <input
-                        type="tel"
-                        id="e_contact"
-                        name="contact_number"
-                        placeholder="09XXXXXXXXX"
-                        maxlength="11"
-                        minlength="11"
-                        pattern="09[0-9]{9}"
-                        inputmode="numeric"
-                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                        title="Contact number must contain exactly 11 digits and start with 09."
-                        required
-                    >
-                </div>
-
-                <div class="data-group full-width">
-                    <label>Address</label>
-                    <input type="text" id="e_address" name="address">
-                </div>
-
-            </div>
-        </div>
-
-        <!-- HEALTH INFO -->
-        <div class="info-section">
-            <div class="info-title">Health Information</div>
-
-            <div class="info-grid">
-
-                <div class="data-group">
-                    <label>Blood Type</label>
-                    <select id="e_blood" name="blood_type">
-                        <option value="">Select Blood Type</option>
-                        <option value="A+">A+</option>
-                        <option value="A-">A-</option>
-                        <option value="B+">B+</option>
-                        <option value="B-">B-</option>
-                        <option value="O+">O+</option>
-                        <option value="O-">O-</option>
-                        <option value="AB+">AB+</option>
-                        <option value="AB-">AB-</option>
-                    </select>
-                </div>
-
-                <div class="data-group">
-                    <label>Height</label>
-                    <input
-                        type="number"
-                        id="e_height"
-                        name="height"
-                        min="1"
-                        step="0.01"
-                    >
-                </div>
-
-                <div class="data-group">
-                    <label>Weight</label>
-                    <input
-                        type="number"
-                        id="e_weight"
-                        name="weight"
-                        min="1"
-                        step="0.01"
-                    >
-                </div>
-
-                <div class="data-group">
-                    <label>Allergies</label>
-                    <input type="text" id="e_allergies" name="allergies">
-                </div>
-
-                <div class="data-group">
-                    <label>Medical History</label>
-                    <input type="text" id="e_history" name="medical_history">
-                </div>
-
-                <div class="data-group">
-                    <label>Medications</label>
-                    <input type="text" id="e_medications" name="current_medications">
-                </div>
-
-                <div class="data-group full-width">
-                    <label>Vaccines</label>
-                    <input type="text" id="e_vaccines" name="vaccines">
-                </div>
-
-            </div>
-        </div>
-
-        <!-- INSURANCE INFORMATION -->
-        <div class="info-section">
-
-            <div class="info-title">Insurance Information</div>
-
-            <div class="info-grid">
-
-                <div class="data-group">
-                    <label>PhilHealth Number</label>
-                    <input
-                        type="text"
-                        id="e_philhealth"
-                        name="philhealth_number">
-                </div>
-
-                <div class="data-group">
-                    <label>Insurance Number</label>
-                    <input
-                        type="text"
-                        id="e_insuranceNumber"
-                        name="insurance_number">
-                </div>
-
-                <div class="data-group full-width">
-                    <label>Insurance Company</label>
-                    <input
-                        type="text"
-                        id="e_insuranceCompany"
-                        name="insurance_company">
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- EMERGENCY INFO -->
-        <div class="info-section">
-            <div class="info-title">Emergency Contact</div>
-
-            <div class="info-grid">
-
-                <div class="data-group">
-                    <label>Name</label>
-                    <input
-                        type="text"
-                        id="e_emergencyName"
-                        name="emergency_name"
-                        placeholder="Guardian Full Name"
-                        pattern="[A-Za-zÀ-ÿ\s.,'-]+"
-                        title="Contact name should contain letters, spaces, and common name punctuation only."
-                    >
-                </div>
-
-                <div class="data-group">
-                    <label>Relationship</label>
-                    <input
-                        type="text"
-                        id="e_relationship"
-                        name="emergency_relationship"
-                        placeholder="e.g. Mother"
-                        pattern="[A-Za-zÀ-ÿ\s-]+"
-                        title="Relationship should contain letters and spaces only."
-                    >
-                </div>
-
-                <div class="data-group">
-                    <label>Contact Number</label>
-                    <input
-                        type="tel"
-                        id="e_emergencyNumber"
-                        name="emergency_contact"
-                        placeholder="09XXXXXXXXX"
-                        maxlength="11"
-                        minlength="11"
-                        pattern="09[0-9]{9}"
-                        inputmode="numeric"
-                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                        title="Phone number must contain exactly 11 digits and start with 09."
-                    >
-                </div>
-
-            </div>
-        </div>
-
-        <!-- ACTION BUTTONS -->
-        <div class="modal-actions">
-            <button type="button" class="btn-secondary" onclick="closeEditStaffModal()">Cancel</button>
-            <button type="submit" class="btn-primary">Save Changes</button>
-        </div>
-
-    </form>
-</div>
-
-<!-- DELETE STAFF MODAL -->
-<div id="deleteStaffModal" class="modal">
-    <div class="modal-content modal-container delete-mode">
-
-        <span class="close" onclick="closeDeleteStaffModal()">&times;</span>
-
-        <!-- ICON / WARNING -->
-        <div class="delete-icon">
-            <i class='bx bx-error-circle'></i>
-        </div>
-
-        <div class="delete-text">
-            <h2>Delete Staff?</h2>
-            <p>
-                Are you sure you want to delete
-                <strong id="d_staffName">this staff member</strong>?
-                This action cannot be undone.
-            </p>
-        </div>
-
-        <!-- HIDDEN ID HOLDER -->
-        <input type="hidden" id="d_staffId">
-
-        <!-- ACTION BUTTONS -->
-        <div class="modal-actions">
-            <button class="btn-secondary" onclick="closeDeleteStaffModal()">
-                Cancel
-            </button>
-
-            <button class="btn-danger" onclick="confirmDeleteStaff()">
-                Yes, Delete
-            </button>
         </div>
 
     </div>

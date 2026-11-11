@@ -271,111 +271,6 @@ window.addEventListener("click", function (e) {
 
 });
 
-
-// =========================
-// EDIT STAFF MODAL
-// =========================
-
-function openEditStaffModal(data) {
-
-    document.getElementById("editStaffModal").classList.add("active");
-
-    // Hidden input submitted to PHP
-    document.getElementById("e_staffId").value = data.id;
-
-    // Display only
-    document.getElementById("e_staffIdDisplay").value = data.id;
-
-    document.getElementById("e_lastName").value = data.last_name || "";
-    document.getElementById("e_firstName").value = data.first_name || "";
-    document.getElementById("e_middleName").value = data.middle_name || "";
-
-    document.getElementById("e_dob").value = data.dob;
-    document.getElementById("e_age").value = data.age;
-    document.getElementById("e_sex").value = data.sex;
-    document.getElementById("e_position").value = data.position;
-    document.getElementById("e_designation").value = data.designation;
-    document.getElementById("e_department").value = data.department;
-    document.getElementById("e_contact").value = data.contact;
-    document.getElementById("e_address").value = data.address;
-
-    document.getElementById("e_blood").value = data.blood || "";
-    document.getElementById("e_height").value = data.height ?? "";
-    document.getElementById("e_weight").value = data.weight ?? "";
-    document.getElementById("e_allergies").value = data.allergies ?? "";
-    document.getElementById("e_history").value = data.history ?? "";
-    document.getElementById("e_medications").value = data.medications ?? "";
-    document.getElementById("e_vaccines").value = data.vaccines ?? "";
-
-    document.getElementById("e_philhealth").value = data.philhealth ?? "";
-    document.getElementById("e_insuranceNumber").value = data.insuranceNumber ?? "";
-    document.getElementById("e_insuranceCompany").value = data.insuranceCompany ?? "";
-
-    document.getElementById("e_emergencyName").value = data.emergencyName;
-    document.getElementById("e_relationship").value = data.relationship;
-    document.getElementById("e_emergencyNumber").value = data.emergencyNumber;
-
-}
-
-function closeEditStaffModal() {
-
-    document.getElementById("editStaffModal").classList.remove("active");
-
-}
-
-window.addEventListener("click", function (e) {
-
-    if (e.target === document.getElementById("editStaffModal")) {
-        closeEditStaffModal();
-    }
-
-});
-
-
-// =========================
-// DELETE STAFF MODAL
-// =========================
-
-function openDeleteStaffModal(data) {
-
-    document.getElementById("d_staffId").value = data.id;
-        const fullName = [
-            data.last_name,
-            [
-                data.first_name,
-                data.middle_name
-            ].filter(name => name && name.trim() !== "").join(" ")
-        ].filter(name => name && name.trim() !== "").join(", ");
-
-    document.getElementById("d_staffName").textContent = fullName;
-
-    document.getElementById("deleteStaffModal").classList.add("active");
-
-}
-
-function closeDeleteStaffModal() {
-
-    document.getElementById("deleteStaffModal").classList.remove("active");
-
-}
-
-function confirmDeleteStaff() {
-
-    const id = document.getElementById("d_staffId").value;
-
-    window.location.href =
-        "../actions/delete_staff.php?id=" + encodeURIComponent(id);
-
-}
-
-window.addEventListener("click", function (e) {
-
-    if (e.target === document.getElementById("deleteStaffModal")) {
-        closeDeleteStaffModal();
-    }
-
-});
-
 // =========================
 // ARCHIVE STAFF MODAL
 // =========================
@@ -432,30 +327,6 @@ window.addEventListener("click", function (e) {
 });
 
 
-// =========================
-// AUTO COMPUTE AGE
-// =========================
-
-document.getElementById("e_dob").addEventListener("change", function () {
-
-    const dob = new Date(this.value);
-    const today = new Date();
-
-    let age = today.getFullYear() - dob.getFullYear();
-
-    const month = today.getMonth() - dob.getMonth();
-
-    if (
-        month < 0 ||
-        (month === 0 && today.getDate() < dob.getDate())
-    ) {
-        age--;
-    }
-
-    document.getElementById("e_age").value = age;
-
-});
-
 function closeMessageModal() {
 
     document
@@ -463,23 +334,3 @@ function closeMessageModal() {
         .classList.remove("active");
 
 }
-
-// REMOVE EMOJIS FROM EDIT STAFF MODAL
-document.addEventListener("input", function (event) {
-
-    const input = event.target;
-
-    if (!input.closest("#editStaffModal")) {
-        return;
-    }
-
-    if (!input.matches('input[type="text"], input[type="tel"], textarea')) {
-        return;
-    }
-
-    input.value = input.value.replace(
-        /[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\p{Regional_Indicator}\uFE0F\u200D\u20E3]/gu,
-        ""
-    );
-
-});

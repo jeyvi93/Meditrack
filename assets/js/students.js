@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const input = event.target;
 
-        if (!input.closest("#editStudentModal")) {
+        if (!input.closest("#editStudentForm")) {
             return;
         }
 
@@ -161,36 +161,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
-    // =====================
-    // AUTO AGE
-    // =====================
-
-    const dobInput = document.getElementById("e_dob");
-
-    if (dobInput) {
-
-        dobInput.addEventListener("change", function () {
-
-            const dob = new Date(this.value);
-            const today = new Date();
-
-            let age = today.getFullYear() - dob.getFullYear();
-
-            const month = today.getMonth() - dob.getMonth();
-
-            if (
-                month < 0 ||
-                (month === 0 && today.getDate() < dob.getDate())
-            ) {
-                age--;
-            }
-
-            document.getElementById("e_age").value = age;
-
-        });
-
-    }
-
 });
 
 // =====================
@@ -245,98 +215,6 @@ function openStudentModal(data) {
 function closeStudentModal() {
 
     document.getElementById("studentModal").style.display = "none";
-
-}
-
-
-// =====================
-// EDIT MODAL
-// =====================
-
-function openEditStudentModal(data) {
-
-    document.getElementById("editStudentModal").classList.add("active");
-
-    document.getElementById("e_studentId").value = data.id;
-    document.getElementById("e_studentIdDisplay").value = data.id;
-
-    document.getElementById("e_lastName").value = data.last_name;
-    document.getElementById("e_firstName").value = data.first_name;
-    document.getElementById("e_middleName").value = data.middle_name ?? "";
-    document.getElementById("e_dob").value = data.dob;
-    document.getElementById("e_age").value = data.age;
-    document.getElementById("e_sex").value = data.sex;
-
-    document.getElementById("e_course").value = data.course;
-    document.getElementById("e_year").value = data.year;
-    document.getElementById("e_department").value = data.department;
-
-    document.getElementById("e_contact").value = data.contact;
-    document.getElementById("e_address").value = data.address;
-
-    document.getElementById("e_blood").value = data.blood || "";
-    document.getElementById("e_height").value = data.height ?? "";
-    document.getElementById("e_weight").value = data.weight ?? "";
-    document.getElementById("e_allergies").value = data.allergies ?? "";
-    document.getElementById("e_history").value = data.history ?? "";
-    document.getElementById("e_medications").value = data.medications ?? "";
-    document.getElementById("e_vaccines").value = data.vaccines ?? "";
-
-    document.getElementById("e_philhealth").value = data.philhealth ?? "";
-    document.getElementById("e_insuranceNumber").value = data.insuranceNumber ?? "";
-    document.getElementById("e_insuranceCompany").value = data.insuranceCompany ?? "";
-
-    document.getElementById("e_emergencyName").value = data.emergencyName;
-    document.getElementById("e_relationship").value = data.relationship;
-    document.getElementById("e_emergencyNumber").value = data.emergencyNumber;
-
-
-}
-
-function closeEditStudentModal() {
-
-    document.getElementById("editStudentModal").classList.remove("active");
-
-}
-
-
-// =====================
-// DELETE MODAL
-// =====================
-
-function openDeleteStudentModal(student) {
-
-    const middleName = student.middle_name
-        ? student.middle_name.trim()
-        : "";
-
-    const fullName = [
-        student.last_name,
-        [
-            student.first_name,
-            student.middle_name
-        ].filter(name => name && name.trim() !== "").join(" ")
-    ].filter(name => name && name.trim() !== "").join(", ");
-
-    document.getElementById("d_studentId").value = student.id;
-    document.getElementById("d_studentName").textContent = fullName;
-
-    document.getElementById("deleteStudentModal").classList.add("active");
-
-}
-
-function closeDeleteStudentModal() {
-
-    document.getElementById("deleteStudentModal").classList.remove("active");
-
-}
-
-function confirmDeleteStudent() {
-
-    const id = document.getElementById("d_studentId").value;
-
-    window.location.href =
-        "../actions/delete_student.php?id=" + encodeURIComponent(id);
 
 }
 
@@ -396,14 +274,6 @@ window.addEventListener("click", function (e) {
 
     if (e.target === document.getElementById("studentModal")) {
         closeStudentModal();
-    }
-
-    if (e.target === document.getElementById("editStudentModal")) {
-        closeEditStudentModal();
-    }
-
-    if (e.target === document.getElementById("deleteStudentModal")) {
-        closeDeleteStudentModal();
     }
 
     if (e.target === document.getElementById("archiveStudentModal")) {

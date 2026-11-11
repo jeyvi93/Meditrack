@@ -34,25 +34,22 @@ if ($role === 'Administrator') {
 
 }
 
+if ($role !== 'School Nurse') {
+    header("Location: ../clinic/students.php");
+    exit();
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Student ID (Hidden Input)
-    $student_id = $_POST['student_id_number'];
+    $student_id = filter_input(INPUT_POST, 'student_id', FILTER_VALIDATE_INT);
 
-    // Name Information
+        if (!$student_id || $student_id <= 0) {
+            $_SESSION['error'] = "Invalid student record.";
+            header("Location: ../clinic/students.php");
+            exit();
+        }
 
-    $last_name = trim($_POST['last_name'] ?? '');
-    $first_name = trim($_POST['first_name'] ?? '');
-    $middle_name = trim($_POST['middle_name'] ?? '');
-
-    // Personal Information
-    $date_of_birth = $_POST['date_of_birth'];
-    $sex = $_POST['sex'];
-    $course = $_POST['course'];
-    $year_level = $_POST['year_level'];
-    $department = $_POST['department'];
-    $contact_number = $_POST['contact_number'];
-    $address = $_POST['address'];
 
     // Health Information
     $blood_type = trim($_POST['blood_type'] ?? '') !== ''
@@ -97,9 +94,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         : null;
 
     // Emergency Contact
-    $emergency_name = $_POST['emergency_name'];
-    $emergency_relationship = $_POST['emergency_relationship'];
-    $emergency_contact = $_POST['emergency_contact'];
+    $emergency_name = trim($_POST['emergency_name'] ?? '');
+    $emergency_relationship = trim($_POST['emergency_relationship'] ?? '');
+    $emergency_contact = trim($_POST['emergency_contact'] ?? '');
 
     // ==========================
     // GET ORIGINAL STUDENT INFORMATION
@@ -107,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $oldSql = "
         SELECT
-            last_name, first_name, middle_name,
+            last_name, student_id_number, first_name, middle_name,
             date_of_birth, sex, course, year_level,
             department, contact_number, address,
             blood_type, height, weight, allergies,
@@ -116,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             insurance_company, emergency_name,
             emergency_relationship, emergency_contact
         FROM students
-        WHERE student_id_number = ?
+        WHERE id = ? AND is_archived = 0
     ";
 
     $oldStmt = mysqli_prepare($conn, $oldSql);
@@ -128,7 +125,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    mysqli_stmt_bind_param($oldStmt, "s", $student_id);
+    mysqli_stmt_bind_param($oldStmt, "i", $student_id);
     mysqli_stmt_execute($oldStmt);
 
     $oldResult = mysqli_stmt_get_result($oldStmt);
@@ -142,21 +139,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: ../clinic/students.php");
         exit();
     }
+
+    // Get readonly information directly from the database
+    $last_name = $oldStudent['last_name'];
+    $first_name = $oldStudent['first_name'];
+    $middle_name = $oldStudent['middle_name'];
+
+    $date_of_birth = $oldStudent['date_of_birth'];
+    $sex = $oldStudent['sex'];
+    $course = $oldStudent['course'];
+    $year_level = $oldStudent['year_level'];
+    $department = $oldStudent['department'];
+    $contact_number = $oldStudent['contact_number'];
+    $address = $oldStudent['address'];
+
     // ==========================
     // COMPARE OLD AND NEW VALUES
     // ==========================
 
     $fieldLabels = [
-        'last_name' => 'last name',
-        'first_name' => 'first name',
-        'middle_name' => 'middle name',
-        'date_of_birth' => 'date of birth',
-        'sex' => 'sex',
-        'course' => 'course',
-        'year_level' => 'year level',
-        'department' => 'department',
-        'contact_number' => 'contact number',
-        'address' => 'address',
         'blood_type' => 'blood type',
         'height' => 'height',
         'weight' => 'weight',
@@ -173,16 +174,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ];
 
     $newValues = [
-        'last_name' => $last_name,
-        'first_name' => $first_name,
-        'middle_name' => $middle_name,
-        'date_of_birth' => $date_of_birth,
-        'sex' => $sex,
-        'course' => $course,
-        'year_level' => $year_level,
-        'department' => $department,
-        'contact_number' => $contact_number,
-        'address' => $address,
         'blood_type' => $blood_type,
         'height' => $height,
         'weight' => $weight,
@@ -247,17 +238,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $sql = "UPDATE students SET
-
-        last_name = ?,
-        first_name = ?,
-        middle_name = ?,
-        date_of_birth = ?,
-        sex = ?,
-        course = ?,
-        year_level = ?,
-        department = ?,
-        contact_number = ?,
-        address = ?,
         blood_type = ?,
         height = ?,
         weight = ?,
@@ -271,7 +251,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         emergency_name = ?,
         emergency_relationship = ?,
         emergency_contact = ?
-        WHERE student_id_number = ?";
+        WHERE id = ? AND is_archived = 0";
 
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -283,17 +263,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     mysqli_stmt_bind_param(
         $stmt,
-        "ssssssissssddsssssssssss",
-        $last_name,
-        $first_name,
-        $middle_name,
-        $date_of_birth,
-        $sex,
-        $course,
-        $year_level,
-        $department,
-        $contact_number,
-        $address,
+        "sssssssssssssi",
         $blood_type,
         $height,
         $weight,
@@ -316,12 +286,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (!empty($changes)) {
 
             $studentName = trim(
-                $last_name . ', ' . $first_name . ' ' . $middle_name
-            );
+            $oldStudent['last_name'] . ', ' .
+            $oldStudent['first_name'] . ' ' .
+            ($oldStudent['middle_name'] ?? '')
+        );
 
-            $description = "Updated student profile for {$studentName}. "
-                        . "Student ID: {$student_id}. "
-                        . implode('; ', $changes) . ".";
+        $description = "Updated student profile for {$studentName}. "
+                    . "Student ID: {$oldStudent['student_id_number']}. "
+                    . implode('; ', $changes) . ".";
 
             logClinicActivity(
                 $conn,

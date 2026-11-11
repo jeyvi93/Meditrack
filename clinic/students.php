@@ -13,6 +13,11 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
     exit();
 }
 
+if (($_SESSION['role'] ?? '') !== 'School Nurse') {
+    header("Location: ../index.php");
+    exit();
+}
+
 $role = $_SESSION['role'] ?? '';
 
 // ==========================
@@ -127,12 +132,7 @@ $offset = ($currentPage - 1) * $recordsPerPage;
 // ==========================
 
 $sql = "
-    SELECT students.*,
-           EXISTS (
-               SELECT 1
-               FROM users
-               WHERE users.student_id = students.id
-           ) AS has_account
+    SELECT *
     FROM students
     $whereSql
     ORDER BY last_name ASC, first_name ASC, middle_name ASC
@@ -207,12 +207,6 @@ function pageUrl($page, $queryParams) {
                 <h1>Student Profiles</h1>
                 <p>Manage and monitor student medical records.</p>
             </div>
-
-            <?php if ($role !== 'Clinic Staff'): ?>
-                <button class="btn-primary" onclick="window.location.href='add_student.php'">
-                    <i class='bx bx-user-plus'></i> Add New Student
-                </button>
-            <?php endif; ?>
         </header>
 
         <!-- FILTER + SEARCH -->
@@ -394,82 +388,30 @@ onclick='openStudentModal({
 
 <?php if ($role !== 'Clinic Staff'): ?>
 <button
-class="icon-btn edit"
-title="Edit"
-onclick='openEditStudentModal({
-    id: <?= json_encode($student["student_id_number"]) ?>,
-    first_name: <?= json_encode($student["first_name"]) ?>,
-    middle_name: <?= json_encode($student["middle_name"] ?? "") ?>,
-    last_name: <?= json_encode($student["last_name"]) ?>,
-    dob: <?= json_encode($student["date_of_birth"]) ?>,
-    age: <?= json_encode(date_diff(date_create($student["date_of_birth"]), date_create("today"))->y) ?>,
-    sex: <?= json_encode($student["sex"]) ?>,
-    course: <?= json_encode($student["course"]) ?>,
-    year: <?= json_encode($student["year_level"]) ?>,
-    department: <?= json_encode($student["department"]) ?>,
-    contact: <?= json_encode($student["contact_number"]) ?>,
-    address: <?= json_encode($student["address"]) ?>,
-
-    blood: <?= json_encode($student["blood_type"]) ?>,
-    height: <?= json_encode($student["height"]) ?>,
-    weight: <?= json_encode($student["weight"]) ?>,
-    allergies: <?= json_encode($student["allergies"]) ?>,
-    history: <?= json_encode($student["medical_history"]) ?>,
-    medications: <?= json_encode($student["current_medications"]) ?>,
-    vaccines: <?= json_encode($student["vaccines"]) ?>,
-
-    emergencyName: <?= json_encode($student["emergency_name"]) ?>,
-    relationship: <?= json_encode($student["emergency_relationship"]) ?>,
-    emergencyNumber: <?= json_encode($student["emergency_contact"]) ?>,
-
-    philhealth: <?= json_encode($student["philhealth_number"]) ?>,
-    insuranceNumber: <?= json_encode($student["insurance_number"]) ?>,
-    insuranceCompany: <?= json_encode($student["insurance_company"]) ?>
-})'>
+    type="button"
+    class="icon-btn edit"
+    title="Edit"
+    onclick="window.location.href='edit_student.php?id=<?= (int) $student['id'] ?>'">
     <i class="bx bx-edit"></i>
 </button>
-
 <?php endif; ?>
 
             <?php if ($role !== 'Clinic Staff'): ?>
 
-                <?php if ((int) $student['has_account'] === 1): ?>
+                <button
+                    type="button"
+                    class="icon-btn archive"
+                    title="Archive"
+                    onclick='openArchiveStudentModal({
+                        id: <?= (int) $student["id"] ?>,
+                        first_name: <?= json_encode($student["first_name"]) ?>,
+                        middle_name: <?= json_encode($student["middle_name"] ?? "") ?>,
+                        last_name: <?= json_encode($student["last_name"]) ?>
+                    })'>
 
-                    <!-- Archive Button -->
-                    <button
-                        type="button"
-                        class="icon-btn archive"
-                        title="Archive"
-                        onclick='openArchiveStudentModal({
-                            id: <?= (int) $student["id"] ?>,
-                            first_name: <?= json_encode($student["first_name"]) ?>,
-                            middle_name: <?= json_encode($student["middle_name"] ?? "") ?>,
-                            last_name: <?= json_encode($student["last_name"]) ?>
-                        })'>
+                    <i class="bx bx-archive"></i>
 
-                        <i class="bx bx-archive"></i>
-
-                    </button>
-
-                <?php else: ?>
-
-                    <!-- Existing Delete Button -->
-                    <button
-                        type="button"
-                        class="icon-btn delete"
-                        title="Delete"
-                        onclick='openDeleteStudentModal({
-                            id: <?= (int) $student["id"] ?>,
-                            first_name: <?= json_encode($student["first_name"]) ?>,
-                            middle_name: <?= json_encode($student["middle_name"] ?? "") ?>,
-                            last_name: <?= json_encode($student["last_name"]) ?>
-                        })'>
-
-                        <i class="bx bx-trash"></i>
-
-                    </button>
-
-                <?php endif; ?>
+                </button>
 
             <?php endif; ?>
 
@@ -762,341 +704,6 @@ onclick='openEditStudentModal({
         </div>
 
 
-
-    </div>
-</div>
-
-<!-- EDIT STUDENT MODAL -->
-<div id="editStudentModal" class="modal">
-
-<form
-    action="../actions/update_student.php"
-    method="POST"
-    class="modal-content modal-container edit-mode">
-
-    <span class="close" onclick="closeEditStudentModal()">&times;</span>
-
-    <!-- Hidden database identifier -->
-    <input type="hidden" id="e_studentId" name="student_id_number">
-
-    <!-- HEADER -->
-    <div class="student-summary">
-
-        <div class="profile-avatar p-avatar">
-            <i class='bx bx-user'></i>
-        </div>
-
-        <div class="summary-info">
-
-            <div class="name-fields">
-
-                <input
-                    type="text"
-                    id="e_lastName"
-                    name="last_name"
-                    placeholder="Last Name"
-                    pattern="[A-Za-zÀ-ÿ\s.'-]+"
-                    title="Last name should contain letters, spaces, and common name punctuation only."
-                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
-                    required>
-
-                <input
-                    type="text"
-                    id="e_firstName"
-                    name="first_name"
-                    placeholder="First Name"
-                    pattern="[A-Za-zÀ-ÿ\s.'-]+"
-                    title="First name should contain letters, spaces, and common name punctuation only."
-                    oninput="this.value = this.value.replace(/[0-9]/g, '')"
-                    required>
-
-                <input
-                    type="text"
-                    id="e_middleName"
-                    name="middle_name"
-                    placeholder="Middle Name"
-                    pattern="[A-Za-zÀ-ÿ\s.'-]*"
-                    title="Middle name should contain letters, spaces, and common name punctuation only."
-                    oninput="this.value = this.value.replace(/[0-9]/g, '')">
-
-            </div>
-
-            <!-- Student ID display -->
-            <input
-                type="text"
-                id="e_studentIdDisplay"
-                disabled>
-
-        </div>
-
-    </div>
-
-    <!-- PERSONAL INFORMATION -->
-    <div class="info-section">
-
-        <div class="info-title">Personal Information</div>
-
-        <div class="info-grid">
-
-            <div class="data-group">
-                <label>Date of Birth</label>
-                <input type="date" id="e_dob" name="date_of_birth">
-            </div>
-
-            <div class="data-group">
-                <label>Age</label>
-                <input type="number" id="e_age" readonly>
-            </div>
-
-            <div class="data-group">
-                <label>Sex</label>
-                <select id="e_sex" name="sex">
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                </select>
-            </div>
-
-            <div class="data-group">
-                <label>Course</label>
-                <input type="text" id="e_course" name="course">
-            </div>
-
-            <div class="data-group">
-                <label>Year Level</label>
-                <input
-                type="number"
-                id="e_year"
-                name="year_level"
-                min="1"
-                max="4"
-                required>
-            </div>
-
-            <div class="data-group">
-                <label>Department</label>
-                <select id="e_department" name="department" required>
-                    <option value="Technology">Technology</option>
-                    <option value="Education">Education</option>
-                    <option value="Business">Business</option>
-                </select>
-            </div>
-
-            <div class="data-group">
-                <label>Contact Number</label>
-                <input
-                    type="tel"
-                    id="e_contact"
-                    name="contact_number"
-                    maxlength="11"
-                    minlength="11"
-                    pattern="09[0-9]{9}"
-                    inputmode="numeric"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                    title="Contact number must contain exactly 11 digits and start with 09."
-                    required>
-            </div>
-
-            <div class="data-group full-width">
-                <label>Address</label>
-                <input type="text" id="e_address" name="address">
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- HEALTH INFORMATION -->
-    <div class="info-section">
-
-        <div class="info-title">Health Information</div>
-
-        <div class="info-grid">
-
-            <div class="data-group">
-                <label>Blood Type</label>
-                <select id="e_blood" name="blood_type">
-                    <option value="">Select Blood Type</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                </select>
-            </div>
-
-            <div class="data-group">
-                <label>Height (cm)</label>
-                <input type="number" step="0.01" id="e_height" name="height">
-            </div>
-
-            <div class="data-group">
-                <label>Weight (kg)</label>
-                <input type="number" step="0.01" id="e_weight" name="weight">
-            </div>
-
-            <div class="data-group">
-                <label>Allergies</label>
-                <input type="text" id="e_allergies" name="allergies">
-            </div>
-
-            <div class="data-group">
-                <label>Medical History</label>
-                <input type="text" id="e_history" name="medical_history">
-            </div>
-
-            <div class="data-group">
-                <label>Medications</label>
-                <input type="text" id="e_medications" name="current_medications">
-            </div>
-
-            <div class="data-group full-width">
-                <label>Vaccines</label>
-                <input type="text" id="e_vaccines" name="vaccines">
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- INSURANCE INFORMATION -->
-<div class="info-section">
-
-    <div class="info-title">Insurance Information</div>
-
-    <div class="info-grid">
-
-        <div class="data-group">
-            <label>PhilHealth Number</label>
-            <input
-                type="text"
-                id="e_philhealth"
-                name="philhealth_number">
-        </div>
-
-        <div class="data-group">
-            <label>Insurance Number</label>
-            <input
-                type="text"
-                id="e_insuranceNumber"
-                name="insurance_number">
-        </div>
-
-        <div class="data-group full-width">
-            <label>Insurance Company</label>
-            <input
-                type="text"
-                id="e_insuranceCompany"
-                name="insurance_company">
-        </div>
-
-    </div>
-
-</div>
-
-    <!-- EMERGENCY CONTACT -->
-    <div class="info-section">
-
-        <div class="info-title">Emergency Contact</div>
-
-        <div class="info-grid">
-
-            <div class="data-group">
-                <label>Name</label>
-                <input
-                type="text"
-                id="e_emergencyName"
-                name="emergency_name"
-                pattern="[A-Za-zÀ-ÿ\s.,'-]+"
-                title="Contact name should contain letters, spaces, and common name punctuation only."
-                oninput="this.value = this.value.replace(/[0-9]/g, '')"
-                required>
-            </div>
-
-            <div class="data-group">
-                <label>Relationship</label>
-                <input
-                type="text"
-                id="e_relationship"
-                name="emergency_relationship"
-                pattern="[A-Za-zÀ-ÿ\s-]+"
-                title="Relationship should contain letters and spaces only."
-                oninput="this.value = this.value.replace(/[0-9]/g, '')"
-                required>
-            </div>
-
-            <div class="data-group">
-                <label>Contact Number</label>
-                <input
-                type="tel"
-                id="e_emergencyNumber"
-                name="emergency_contact"
-                maxlength="11"
-                minlength="11"
-                pattern="09[0-9]{9}"
-                inputmode="numeric"
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                title="Contact number must contain exactly 11 digits and start with 09."
-                required>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="modal-actions">
-        <button type="button"
-                class="btn-secondary"
-                onclick="closeEditStudentModal()">
-            Cancel
-        </button>
-
-        <button type="submit"
-                class="btn-primary">
-            Save Changes
-        </button>
-    </div>
-
-</form>
-
-</div>
-
-<!-- DELETE STUDENT MODAL -->
-<div id="deleteStudentModal" class="modal">
-    <div class="modal-content modal-container delete-mode">
-
-        <span class="close" onclick="closeDeleteStudentModal()">&times;</span>
-
-        <!-- ICON / WARNING -->
-        <div class="delete-icon">
-            <i class='bx bx-error-circle'></i>
-        </div>
-
-        <div class="delete-text">
-            <h2>Delete Student?</h2>
-            <p>
-                Are you sure you want to delete
-                <strong id="d_studentName">this student</strong>?
-                This action cannot be undone.
-            </p>
-        </div>
-
-        <!-- HIDDEN ID HOLDER -->
-        <input type="hidden" id="d_studentId">
-
-        <!-- ACTION BUTTONS -->
-        <div class="modal-actions">
-            <button class="btn-secondary" onclick="closeDeleteStudentModal()">
-                Cancel
-            </button>
-
-            <button class="btn-danger" onclick="confirmDeleteStudent()">
-                Yes, Delete
-            </button>
-        </div>
 
     </div>
 </div>
