@@ -151,6 +151,78 @@ document.addEventListener("DOMContentLoaded", function () {
 
     togglePhilHealth();
 
+    // PATIENT ID LOOKUP
+    const patientIdInput = document.getElementById("patientIdNumber");
+    const retrievePatientBtn = document.getElementById("retrievePatientBtn");
+    const patientLookupMessage = document.getElementById("patientLookupMessage");
+
+    if (patientIdInput && retrievePatientBtn) {
+
+        retrievePatientBtn.addEventListener("click", function () {
+
+            const idNumber = patientIdInput.value.trim();
+
+            if (!idNumber) {
+                patientLookupMessage.textContent = "Please enter a Student / Staff ID.";
+                patientLookupMessage.style.color = "red";
+                return;
+            }
+
+            retrievePatientBtn.disabled = true;
+            retrievePatientBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Retrieving...';
+
+            patientLookupMessage.textContent = "";
+
+            fetch("../actions/get_referral_patient.php?id_number=" + encodeURIComponent(idNumber))
+                .then(response => response.json())
+                .then(data => {
+
+                    if (!data.success) {
+                        patientLookupMessage.textContent = data.message;
+                        patientLookupMessage.style.color = "red";
+                        return;
+                    }
+
+                    const patient = data.patient;
+
+                    document.getElementById("lastName").value = patient.last_name || "";
+                    document.getElementById("firstName").value = patient.first_name || "";
+                    document.getElementById("middleName").value = patient.middle_name || "";
+                    document.getElementById("dobInput").value = patient.date_of_birth || "";
+                    document.getElementById("ageDisplay").value = patient.age ?? "";
+                    document.getElementById("sex").value = patient.sex || "";
+                    document.getElementById("contact").value = patient.contact_number || "";
+                    document.getElementById("address").value = patient.address || "";
+
+                    // PHILHEALTH INFORMATION
+                    const philhealthNumber = patient.philhealth_number || "";
+
+                    if (philhealthNumber.trim() !== "") {
+                        phYes.checked = true;
+                        document.getElementById("philhealthInput").value = philhealthNumber;
+                    } else {
+                        phNo.checked = true;
+                        document.getElementById("philhealthInput").value = "";
+                    }
+
+                    togglePhilHealth();
+
+                    patientLookupMessage.textContent = "Patient information retrieved successfully.";
+                    patientLookupMessage.style.color = "green";
+
+                })
+                .catch(error => {
+                    console.error("Patient lookup error:", error);
+                    patientLookupMessage.textContent = "Unable to retrieve patient information. Please try again.";
+                    patientLookupMessage.style.color = "red";
+                })
+                .finally(() => {
+                    retrievePatientBtn.disabled = false;
+                    retrievePatientBtn.innerHTML = '<i class="fas fa-search"></i> Retrieve';
+                });
+        });
+    }
+
     // ======================
     // NAME INPUT VALIDATION
     // ======================

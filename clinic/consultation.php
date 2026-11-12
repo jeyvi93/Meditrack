@@ -92,6 +92,9 @@ if ($batchQuery) {
         <!-- CONSULTATION FORM -->
         <form id="consultationForm" novalidate>
 
+            <input type="hidden" name="appointment_id" id="appointmentId" value="">
+            <input type="hidden" name="appointment_mode" id="appointmentMode" value="Walk-in">
+
             <!-- DATE & TIME -->
             <div class="input-grid two-cols">
                 <div class="input-group">
@@ -136,8 +139,9 @@ if ($batchQuery) {
                             <input
                                 type="text"
                                 id="patientIdNumber"
-                                name="patient_id_number"
                                 placeholder="Enter Student / Staff ID"
+                                inputmode="numeric"
+                                oninput="this.value = this.value.replace(/[^0-9-]/g, '')"
                                 required
                             >
 
@@ -316,13 +320,26 @@ if ($batchQuery) {
                     <h2>Clinical Assessment</h2>
 
                 </div>
+                
+                <!-- REASON FOR APPOINTMENT -->
+                <div class="input-group appointment-reason-group" id="appointmentReasonGroup" style="display: none;">
+                    <label for="appointmentReason">
+                        Reason for Appointment
+                    </label>
+                    <textarea
+                        id="appointmentReason"
+                        name="appointment_reason"
+                        rows="2"
+                        maxlength="255"
+                        readonly
+                    ></textarea>
+                </div>
 
                 <!-- COMPLAINT -->
                 <div class="input-group">
                     <label for="complaint">
                         Complaint
                     </label>
-
                     <select
                         id="complaint"
                         name="complaint"

@@ -579,18 +579,10 @@ $rejected = $rejectedStmt->get_result();
                                         <button
                                             type="button"
                                             class="btn-icon btn-complete"
-                                            title="Mark Completed"
-                                            onclick='openCompleteModal(
-                                                <?= htmlspecialchars(
-                                                    json_encode($row["full_name"]),
-                                                    ENT_QUOTES,
-                                                    "UTF-8"
-                                                ); ?>,
-                                                <?= (int) $row["id"]; ?>
-                                            )'>
-
+                                            title="Create Consultation Log"
+                                            onclick="window.location.href='../actions/complete_appointment.php?appointment_id=<?= (int) $row['id']; ?>'"
+                                        >
                                             <i class="fas fa-check"></i>
-
                                         </button>
                                     </form>
 
@@ -1191,56 +1183,6 @@ $rejected = $rejectedStmt->get_result();
     </div>
     
     
-    <!-- COMPLETE APPOINTMENT MODAL -->
-    <div id="completeModal" class="modal-overlay">
-        <div class="modal-box">
-
-            <div class="modal-header">
-                <h2>Complete Appointment</h2>
-                <button
-                    type="button"
-                    class="close-btn"
-                    onclick="closeCompleteModal()">
-                    ×
-                </button>
-            </div>
-
-            <form
-                id="completeForm"
-                action="../actions/complete_appointment.php"
-                method="POST">
-
-                <input
-                    type="hidden"
-                    name="appointment_id"
-                    id="completeAppointmentId">
-
-                <div class="form-group">
-                    <label>Patient Name</label>
-                    <input
-                        type="text"
-                        id="completePatientName"
-                        readonly>
-                </div>
-
-                <p class="complete-confirmation-text">Are you sure you want to mark this appointment as completed?</p>
-
-                <div class="modal-actions">
-                    <button
-                        type="button"
-                        class="btn-cancel"
-                        onclick="closeCompleteModal()">
-                        Cancel
-                    </button>
-
-                    <button type="submit" class="btn-primary">
-                        Confirm Completed
-                    </button>
-                </div>
-
-            </form>
-        </div>
-    </div>
 
     <?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
 

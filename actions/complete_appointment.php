@@ -7,8 +7,6 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once "../config/database.php";
-require_once __DIR__ . '/../config/firebase_messaging.php';
-require_once "../includes/clinic_activity_logger.php";
 
 $role = $_SESSION['role'] ?? '';
 
@@ -30,162 +28,61 @@ if ($role === 'Administrator') {
 
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "GET") {
 
-    $appointment_id = $_POST['appointment_id'];
+    $appointment_id = (int) ($_GET['appointment_id'] ?? 0);
 
-    /* Get patient ID, name, and current status */
-    $patientSql = "
-        SELECT
-            a.user_id,
-
-            COALESCE(
-                NULLIF(TRIM(CONCAT_WS(' ',
-                    NULLIF(TRIM(s.first_name), ''),
-                    NULLIF(TRIM(s.last_name), '')
-                )), ''),
-
-                NULLIF(TRIM(CONCAT_WS(' ',
-                    NULLIF(TRIM(st.first_name), ''),
-                    NULLIF(TRIM(st.last_name), '')
-                )), ''),
-
-                'Unknown patient'
-            ) AS patient_name,
-
-            a.status
-
-        FROM appointments a
-        JOIN users u ON a.user_id = u.id
-        LEFT JOIN students s ON u.student_id = s.id
-        LEFT JOIN staffs st ON u.staff_id = st.id
-        WHERE a.id = ?
-    ";
-
-    $patientStmt = mysqli_prepare($conn, $patientSql);
-
-    mysqli_stmt_bind_param(
-        $patientStmt,
-        "i",
-        $appointment_id
-    );
-
-    mysqli_stmt_execute($patientStmt);
-
-    $patientResult = mysqli_stmt_get_result($patientStmt);
-    $appointment = mysqli_fetch_assoc($patientResult);
-
-    mysqli_stmt_close($patientStmt);
-
-    if (!$appointment) {
-        $_SESSION['error'] = "Appointment not found.";
-        mysqli_close($conn);
+    if ($appointment_id <= 0) {
+        $_SESSION['error'] = "Invalid appointment.";
         header("Location: ../clinic/appointments.php");
         exit();
     }
 
-    $patientId = $appointment['user_id'];
-    $patientName = $appointment['patient_name'] ?? 'Unknown patient';
-    $currentStatus = $appointment['status'];
+    $stmt = $conn->prepare("
+        SELECT status
+        FROM appointments
+        WHERE id = ?
+        LIMIT 1
+    ");
 
-    if ($currentStatus === 'Completed') {
+    if (!$stmt) {
+        $_SESSION['error'] = "Unable to verify appointment.";
+        header("Location: ../clinic/appointments.php");
+        exit();
+    }
+
+    $stmt->bind_param("i", $appointment_id);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+    $appointment = $result->fetch_assoc();
+
+    $stmt->close();
+    $conn->close();
+
+    if (!$appointment) {
+        $_SESSION['error'] = "Appointment not found.";
+        header("Location: ../clinic/appointments.php");
+        exit();
+    }
+
+    if ($appointment['status'] === 'Completed') {
         $_SESSION['success'] = "Appointment Already Completed";
         $_SESSION['success_message'] = "This appointment has already been completed.";
-        mysqli_close($conn);
         header("Location: ../clinic/appointments.php#completed");
         exit();
     }
 
-    $sql = "UPDATE appointments
-            SET status = 'Completed'
-            WHERE id = ?";
-
-    $stmt = mysqli_prepare($conn, $sql);
-
-    mysqli_stmt_bind_param($stmt, "i", $appointment_id);
-
-    if (mysqli_stmt_execute($stmt)) {
-
-        /* Notification */
-        $notificationSql = "
-            INSERT INTO notifications
-            (user_id, appointment_id, title, message)
-            VALUES (?, ?, ?, ?)
-        ";
-
-        $title = "Appointment Completed";
-        $message = "Your appointment has been marked as completed.";
-
-        $notificationStmt = mysqli_prepare($conn, $notificationSql);
-
-        if ($notificationStmt) {
-
-            mysqli_stmt_bind_param(
-                $notificationStmt,
-                "iiss",
-                $patientId,
-                $appointment_id,
-                $title,
-                $message
-            );
-
-            mysqli_stmt_execute($notificationStmt);
-            mysqli_stmt_close($notificationStmt);
-        }
-
-        /* Send Firebase push notification */
-        if ($patientId !== null) {
-            sendFirebasePushToUser(
-                $conn,
-                (int) $patientId,
-                "Appointment Completed",
-                "Your appointment has been marked as completed."
-            );
-        }
-
-        /* Activity Log */
-        $activitySql = "
-            INSERT INTO activity_logs
-            (user_id, activity_type, action, description)
-            VALUES (?, 'Appointment', 'Completed', ?)
-        ";
-
-        $description = $patientName . "'s appointment was marked as completed.";
-
-        $activityStmt = mysqli_prepare($conn, $activitySql);
-
-        if ($activityStmt) {
-            mysqli_stmt_bind_param(
-                $activityStmt,
-                "is",
-                $_SESSION['user_id'],
-                $description
-            );
-
-            mysqli_stmt_execute($activityStmt);
-            mysqli_stmt_close($activityStmt);
-
-        }
-
-        /* Clinic Activity Log */
-            logClinicActivity(
-                $conn,
-                'Completed',
-                'Appointments',
-                "{$patientName}'s appointment was marked as completed."
-            );
-
-        $_SESSION['success'] = "Appointment Completed!";
-        $_SESSION['success_message'] = "The appointment has been completed.";
-
-    } else {
-        $_SESSION['error'] = "Failed to update appointment.";
+    if ($appointment['status'] !== 'Approved') {
+        $_SESSION['error'] = "Only approved appointments can be completed.";
+        header("Location: ../clinic/appointments.php");
+        exit();
     }
 
-    mysqli_stmt_close($stmt);
-    mysqli_close($conn);
-
-    header("Location: ../clinic/appointments.php#completed");
+    header(
+        "Location: ../clinic/consultation.php?appointment_id="
+        . $appointment_id
+    );
     exit();
 }
 ?>

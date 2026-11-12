@@ -466,12 +466,6 @@ if (resDate) {
 window.addEventListener("focus", updateRescheduleTimeSlots);
 
 
-function closeRescheduleModal(){
-
-    document.getElementById("rescheduleModal").style.display="none";
-
-}
-
 
 
 // ===============================
@@ -518,35 +512,6 @@ function openCancelModal(name,id){
 
 }
 
-
- // ===============================
-// COMPLETE APPOINTMENT MODAL
-// ===============================
-function openCompleteModal(name, id) {
-
-    document.getElementById("completeModal").style.display = "flex";
-
-    document.getElementById("completePatientName").value = name;
-
-    document.getElementById("completeAppointmentId").value = id;
-
-}
-
-function closeCompleteModal() {
-
-    document.getElementById("completeModal").style.display = "none";
-
-}
-
-
-function closeCancelModal(){
-
-    document.getElementById("cancelModal").style.display="none";
-
-}
-
-
-
 // ===============================
 // CLICK OUTSIDE TO CLOSE
 // ===============================
@@ -557,7 +522,6 @@ window.addEventListener("click",function(e){
         "rejectModal",
         "rescheduleModal",
         "cancelModal",
-        "completeModal"
     ];
 
 

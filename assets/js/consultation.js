@@ -444,6 +444,11 @@ consultationForm.addEventListener("submit", function (e) {
 
     const formData = new FormData(consultationForm);
 
+    formData.append(
+        "patient_id_number",
+        document.getElementById("patientIdNumber").value.trim()
+    );
+
     fetch("../actions/save_consultation.php", {
         method: "POST",
         body: formData
@@ -504,6 +509,40 @@ function toggleOtherComplaint() {
 
 // AUTO-SET DATE AND TIME
 document.addEventListener("DOMContentLoaded", function () {
+
+    // LOAD APPOINTMENT DETAILS
+    const params = new URLSearchParams(window.location.search);
+    const appointmentId = params.get("appointment_id");
+
+    if (appointmentId) {
+
+        fetch(`../actions/get_appointment_consultation.php?appointment_id=${encodeURIComponent(appointmentId)}`)
+            .then(response => response.json())
+            .then(data => {
+
+                if (!data.success) {
+                    alert(data.message || "Unable to load appointment details.");
+                    return;
+                }
+
+                document.getElementById("appointmentId").value = data.appointment_id;
+                document.getElementById("appointmentMode").value = "Appointment";
+
+                // Display the appointment reason
+                document.getElementById("appointmentReason").value = data.purpose || "";
+                document.getElementById("appointmentReasonGroup").style.display = "block";
+
+                // Retrieve the patient's existing profile
+                document.getElementById("patientIdNumber").value = data.id_number;
+
+                document.getElementById("retrievePatientBtn").click();
+
+            })
+            .catch(error => {
+                console.error("Appointment loading error:", error);
+                alert("Unable to load appointment details.");
+            });
+    }
 
     const dateInput = document.getElementById("consultationDate");
     const timeInput = document.getElementById("consultationTime");

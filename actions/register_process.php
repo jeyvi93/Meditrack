@@ -7,10 +7,6 @@ require_once "../includes/email_sender.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Get form data
-    $last_name = trim($_POST['last_name'] ?? '');
-    $first_name = trim($_POST['first_name'] ?? '');
-    $middle_name = trim($_POST['middle_name'] ?? '');
-
     $email = trim($_POST['email'] ?? '');
     $role = $_POST['role'] ?? '';
     $id_number = trim($_POST['id_number'] ?? '');
@@ -19,37 +15,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     // Save non-password inputs for form repopulation
-    $_SESSION['old_last_name'] = $last_name;
-    $_SESSION['old_first_name'] = $first_name;
-    $_SESSION['old_middle_name'] = $middle_name;
     $_SESSION['old_email'] = $email;
     $_SESSION['old_role'] = $role;
     $_SESSION['old_id_number'] = $id_number;
-
-
-    // Validate name fields
-    $nameFields = [
-        'last_name' => $last_name,
-        'first_name' => $first_name,
-        'middle_name' => $middle_name
-    ];
-
-    foreach ($nameFields as $field => $name) {
-
-        // Middle name is optional
-        if ($field === 'middle_name' && $name === '') {
-            continue;
-        }
-
-        if (!preg_match("/^[A-Za-zÀ-ÿ .'-]+$/", $name)) {
-            $_SESSION['error'] = "Please enter a valid name using letters only.";
-            $_SESSION['error_field'] = $field;
-
-            header("Location: ../patient/register.php");
-            exit();
-        }
-    }
-
 
     // Validate email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -124,9 +92,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_close($check_email);
 
 
-    // Variables for existing profile
+    // Variable for existing profile
     $profile_id = null;
-    $profile_name = null;
 
 
     // STUDENT REGISTRATION
@@ -134,9 +101,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $check = mysqli_prepare(
             $conn,
-            "SELECT id, last_name, first_name, middle_name
+            "SELECT id, last_name, first_name
             FROM students
-            WHERE student_id_number = ?"
+            WHERE student_id_number = ? AND is_archived = 0"
         );
 
         mysqli_stmt_bind_param($check, "s", $id_number);
@@ -161,33 +128,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $profile_id = $student['id'];
         $profile_last_name = trim($student['last_name']);
         $profile_first_name = trim($student['first_name']);
-        $profile_middle_name = trim($student['middle_name'] ?? '');
 
         mysqli_stmt_close($check);
-
-        // Verify submitted names against the student record
-        $namesMatch =
-            strcasecmp($last_name, $profile_last_name) === 0 &&
-            strcasecmp($first_name, $profile_first_name) === 0;
-
-        $middleNameRequired = $profile_middle_name !== '';
-
-        if (
-            !$namesMatch ||
-            ($middleNameRequired &&
-                strcasecmp($middle_name, $profile_middle_name) !== 0) ||
-            (!$middleNameRequired && $middle_name !== '' &&
-                strcasecmp($middle_name, $profile_middle_name) !== 0)
-        ) {
-            $_SESSION['error'] = "The name does not match the student ID record.";
-            $_SESSION['error_field'] = 'last_name';
-
-            mysqli_close($conn);
-
-            header("Location: ../patient/register.php");
-            exit();
-        }
-
+        
         // Check if student already has an account
         $check_account = mysqli_prepare(
             $conn,
@@ -219,9 +162,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $check = mysqli_prepare(
             $conn,
-            "SELECT id, last_name, first_name, middle_name
+            "SELECT id, last_name, first_name
             FROM staffs
-            WHERE staff_id_number = ?"
+            WHERE staff_id_number = ? AND is_archived = 0"
         );
 
         mysqli_stmt_bind_param($check, "s", $id_number);
@@ -246,32 +189,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $profile_id = $staff['id'];
         $profile_last_name = trim($staff['last_name']);
         $profile_first_name = trim($staff['first_name']);
-        $profile_middle_name = trim($staff['middle_name'] ?? '');
 
         mysqli_stmt_close($check);
-
-        // Verify submitted names against the staff record
-        $namesMatch =
-            strcasecmp($last_name, $profile_last_name) === 0 &&
-            strcasecmp($first_name, $profile_first_name) === 0;
-
-        $middleNameRequired = $profile_middle_name !== '';
-
-        if (
-            !$namesMatch ||
-            ($middleNameRequired &&
-                strcasecmp($middle_name, $profile_middle_name) !== 0) ||
-            (!$middleNameRequired && $middle_name !== '' &&
-                strcasecmp($middle_name, $profile_middle_name) !== 0)
-        ) {
-            $_SESSION['error'] = "The name does not match the staff ID record.";
-            $_SESSION['error_field'] = 'last_name';
-
-            mysqli_close($conn);
-
-            header("Location: ../patient/register.php");
-            exit();
-        }
 
         // Check if staff already has an account
         $check_account = mysqli_prepare(
@@ -298,8 +217,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_close($check_account);
     }
 
-    // Build account name using first and last name only
-    $full_name = $first_name . ' ' . $last_name;
+    // Build account name using the existing clinic profile
+    $full_name = $profile_first_name . ' ' . $profile_last_name;
 
     // Hash password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -473,9 +392,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
         // Clear saved form values after successful registration
-        unset($_SESSION['old_last_name']);
-        unset($_SESSION['old_first_name']);
-        unset($_SESSION['old_middle_name']);
         unset($_SESSION['old_email']);
         unset($_SESSION['old_role']);
         unset($_SESSION['old_id_number']);

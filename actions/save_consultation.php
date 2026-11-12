@@ -4,6 +4,9 @@ session_start();
 require_once "../config/database.php";
 require_once "../includes/clinic_activity_logger.php";
 
+require_once "../includes/activity_logger.php";
+require_once "../config/firebase_messaging.php";
+
 header("Content-Type: application/json");
 
 
@@ -83,7 +86,9 @@ $position = $_POST['position'] ?? null;
 $complaint = $_POST['complaint'] ?? null;
 $treatment_given = $_POST['treatment'] ?? null;
 $remarks = $_POST['remarks'] ?? null;
-
+$appointment_id = (int) ($_POST['appointment_id'] ?? 0);
+$appointment_mode = $_POST['appointment_mode'] ?? 'Walk-in';
+$appointment_reason = null;
 
 // ==========================
 // MEDICINES
@@ -92,6 +97,28 @@ $remarks = $_POST['remarks'] ?? null;
 $medicines = $_POST['medicines'] ?? [];
 $quantities = $_POST['medicine_quantities'] ?? [];
 
+// ==========================
+// START TRANSACTION
+// ==========================
+
+$conn->begin_transaction();
+
+try {
+
+// ==========================
+// APPOINTMENT VALIDATION
+// ==========================
+
+if (!in_array($appointment_mode, ['Appointment', 'Walk-in'], true)) {
+    throw new Exception("Invalid appointment mode.");
+}
+
+if (
+    ($appointment_mode === 'Appointment' && $appointment_id <= 0) ||
+    ($appointment_mode === 'Walk-in' && $appointment_id > 0)
+) {
+    throw new Exception("Invalid appointment information.");
+}
 
 // ==========================
 // BASIC VALIDATION
@@ -105,13 +132,7 @@ if (
     $last_name === '' ||
     $first_name === ''
 ) {
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Please complete the required fields."
-    ]);
-
-    exit();
+    throw new Exception("Please complete the required fields.");
 }
 
 // ==========================
@@ -235,38 +256,116 @@ if ($patient_type === 'student') {
     $year_level = null;
 }
 
-// ==========================
-// START TRANSACTION
-// ==========================
+    // VERIFY APPOINTMENT BEFORE SAVING CONSULTATION
+    if ($appointment_mode === 'Appointment') {
 
-$conn->begin_transaction();
+        $appointmentStmt = $conn->prepare("
+            SELECT
+                a.id,
+                a.user_id,
+                a.purpose,
+                a.status,
+                u.student_id,
+                u.staff_id,
+                s.student_id_number,
+                st.staff_id_number
+            FROM appointments a
+            INNER JOIN users u ON a.user_id = u.id
+            LEFT JOIN students s ON u.student_id = s.id
+            LEFT JOIN staffs st ON u.staff_id = st.id
+            WHERE a.id = ?
+            FOR UPDATE
+        ");
 
-try {
+        if (!$appointmentStmt) {
+            throw new Exception("Unable to verify appointment.");
+        }
 
+        $appointmentStmt->bind_param("i", $appointment_id);
+        $appointmentStmt->execute();
 
+        $appointmentResult = $appointmentStmt->get_result();
+        $appointment = $appointmentResult->fetch_assoc();
+
+        $appointmentStmt->close();
+
+        if (!$appointment) {
+            throw new Exception("Appointment not found.");
+        }
+
+        if ($appointment['status'] !== 'Approved') {
+            throw new Exception("This appointment is no longer approved.");
+        }
+
+        $appointmentPatientId = $appointment['student_id_number']
+            ?: $appointment['staff_id_number'];
+
+        if (
+            !$appointmentPatientId ||
+            $appointmentPatientId !== $patient_id_number
+        ) {
+            throw new Exception("The selected patient does not match this appointment.");
+        }
+
+        $appointment_reason = $appointment['purpose'];
+
+        $patientUserId = (int) $appointment['user_id'];
+
+        // PREVENT DUPLICATE APPOINTMENT CONSULTATIONS
+        $duplicateStmt = $conn->prepare("
+            SELECT id
+            FROM consultations
+            WHERE appointment_id = ?
+            LIMIT 1
+        ");
+
+        if (!$duplicateStmt) {
+            throw new Exception("Unable to check existing consultation.");
+        }
+
+        $duplicateStmt->bind_param("i", $appointment_id);
+        $duplicateStmt->execute();
+
+        $duplicateResult = $duplicateStmt->get_result();
+        $existingConsultation = $duplicateResult->fetch_assoc();
+
+        $duplicateStmt->close();
+
+        if ($existingConsultation) {
+            throw new Exception("A consultation has already been recorded for this appointment.");
+        }
+    }
+   
     // ==========================
     // INSERT CONSULTATION
     // ==========================
 
     $sql = "
         INSERT INTO consultations (
-            date,
-            time,
-            patient_type,
-            patient_id_number,
-            full_name,
-            age,
-            sex,
-            contact_number,
-            department,
-            course,
-            year_level,
-            position,
-            complaint,
-            treatment_given,
-            remarks
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        appointment_id,
+        appointment_mode,
+        appointment_reason,
+        date,
+        time,
+        patient_type,
+        full_name,
+        age,
+        sex,
+        contact_number,
+        department,
+        course,
+        year_level,
+        position,
+        complaint,
+        treatment_given,
+        remarks
+    )
+        VALUES (
+        NULLIF(?, 0),
+        ?,
+        ?,
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    )
     ";
 
     $stmt = $conn->prepare($sql);
@@ -279,11 +378,13 @@ try {
 
 
     $stmt->bind_param(
-        "sssssisssssssss",
+        "issssssisssssssss",
+        $appointment_id,
+        $appointment_mode,
+        $appointment_reason,
         $date,
         $time,
         $patient_type,
-        $patient_id_number,
         $full_name,
         $age,
         $sex,
@@ -508,6 +609,111 @@ try {
         $updateStmt->close();
     }
 
+    // MARK APPOINTMENT AS COMPLETED
+    if ($appointment_mode === 'Appointment') {
+
+        $completeStmt = $conn->prepare("
+            UPDATE appointments
+            SET status = 'Completed'
+            WHERE id = ?
+            AND status = 'Approved'
+        ");
+
+        if (!$completeStmt) {
+            throw new Exception("Unable to update appointment status.");
+        }
+
+        $completeStmt->bind_param("i", $appointment_id);
+        $completeStmt->execute();
+
+        if ($completeStmt->affected_rows !== 1) {
+            $completeStmt->close();
+            throw new Exception("Appointment could not be completed. Please try again.");
+        }
+
+        $completeStmt->close();
+    }
+
+    // ==========================
+    // COMMIT
+    // ==========================
+
+    $conn->commit();
+
+    // PATIENT NOTIFICATION
+    if ($appointment_mode === 'Appointment') {
+
+        try {
+            $title = 'Appointment Completed';
+            $message = 'Your appointment has been marked as completed.';
+
+            $notificationStmt = $conn->prepare("
+                INSERT INTO notifications (
+                    user_id,
+                    appointment_id,
+                    title,
+                    message
+                )
+                VALUES (?, ?, ?, ?)
+            ");
+
+            if (!$notificationStmt) {
+                throw new Exception("Unable to prepare patient notification.");
+            }
+
+            $notificationStmt->bind_param(
+                "iiss",
+                $patientUserId,
+                $appointment_id,
+                $title,
+                $message
+            );
+
+            if (!$notificationStmt->execute()) {
+                throw new Exception("Unable to save patient notification.");
+            }
+
+            $notificationStmt->close();
+
+        } catch (Throwable $notificationError) {
+            error_log(
+                "Patient notification failed: " .
+                $notificationError->getMessage()
+            );
+        }
+    }
+
+    // FIREBASE PUSH NOTIFICATION
+    if ($appointment_mode === 'Appointment') {
+
+        sendFirebasePushToUser(
+            $conn,
+            $patientUserId,
+            'Appointment Completed',
+            'Your consultation has been completed. You can now view your consultation details.'
+        );
+    }
+
+    // PATIENT ACTIVITY LOG
+    if ($appointment_mode === 'Appointment') {
+
+        try {
+            logActivity(
+                $conn,
+                $patientUserId,
+                'Appointment',
+                'Completed',
+                'Your appointment has been completed and a consultation record has been created.'
+            );
+
+        } catch (Throwable $activityError) {
+            error_log(
+                "Patient activity logging failed: " .
+                $activityError->getMessage()
+            );
+        }
+    }
+
     // ==========================
     // CLINIC ACTIVITY LOG
     // ==========================
@@ -516,19 +722,16 @@ try {
         ? implode(', ', $dispensedMedicines)
         : 'No medicines dispensed';
 
-    logClinicActivity(
-        $conn,
-        'Created',
-        'Consultations',
-        "Recorded consultation for {$full_name}. Medicines dispensed: {$medicineDetails}."
-    );
-
-    // ==========================
-    // COMMIT
-    // ==========================
-
-    $conn->commit();
-
+    try {
+        logClinicActivity(
+            $conn,
+            'Created',
+            'Consultations',
+            "Recorded consultation for {$full_name}. Medicines dispensed: {$medicineDetails}."
+        );
+    } catch (Throwable $logError) {
+        error_log("Clinic activity logging failed: " . $logError->getMessage());
+    }
 
     echo json_encode([
         "success" => true,

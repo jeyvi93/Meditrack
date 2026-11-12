@@ -61,6 +61,28 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                         <h2>Referral Information</h2>
                     </div>
                     <div class="input-grid three-cols">
+
+                        <div class="input-group">
+                            <label for="patientIdNumber">Student / Staff ID Number</label>
+
+                            <div class="id-lookup-group">
+                                <input
+                                    type="text"
+                                    id="patientIdNumber"
+                                    name="patient_id_number"
+                                    placeholder="Enter Student / Staff ID"
+                                    inputmode="numeric"
+                                    oninput="this.value = this.value.replace(/[^0-9-]/g, '')"
+                                    required
+                                >
+
+                                <button type="button" id="retrievePatientBtn">
+                                    <i class="fas fa-search"></i> Retrieve
+                                </button>
+                            </div>
+
+                            <small id="patientLookupMessage"></small>
+                        </div>
                         <div class="input-group">
                             <label>Referred Date</label>
                             <input type="date" id="refDate" name="referred_date" value="<?= date('Y-m-d') ?>" required>
@@ -98,11 +120,10 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                                 type="text"
                                 id="lastName"
                                 name="last_name"
-                                placeholder="Enter Last Name"
                                 pattern="[A-Za-zÀ-ÿ .'-]+"
                                 oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
-                                required
+                                readonly
                             >
                         </div>
 
@@ -112,11 +133,10 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                                 type="text"
                                 id="firstName"
                                 name="first_name"
-                                placeholder="Enter First Name"
                                 pattern="[A-Za-zÀ-ÿ .'-]+"
                                 oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
-                                required
+                                readonly
                             >
                         </div>
 
@@ -126,46 +146,39 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                                 type="text"
                                 id="middleName"
                                 name="middle_name"
-                                placeholder="Enter Middle Name"
                                 pattern="[A-Za-zÀ-ÿ .'-]+"
                                 oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
                                 title="Please enter a valid name using letters, spaces, periods, apostrophes, or hyphens."
+                                readonly
                             >
                         </div>
                         <div class="input-group">
                             <label>Date of Birth</label>
-                            <input type="date" id="dobInput" name="date_of_birth" required>
+                            <input type="text" id="dobInput" name="date_of_birth" readonly>
                         </div>
-                        <div class="input-group readonly">
+                        <div class="input-group">
                             <label>Age</label>
-                            <input type="number" id="ageDisplay" readonly placeholder="--">
+                            <input type="text" id="ageDisplay" readonly>
                         </div>
                     </div>
                     <div class="input-grid two-cols">
                         <div class="input-group">
                             <label>Sex</label>
-                            <select id="sex" name="sex" required>
-                                <option>Male</option>
-                                <option>Female</option>
-                            </select>
+                            <input type="text" id="sex" name="sex" readonly>
                         </div>
                         <div class="input-group">
                             <label>Contact Number</label>
                             <input
-                                type="tel"
+                                type="text"
                                 id="contact"
                                 name="contact_number"
-                                placeholder="09XXXXXXXXX"
-                                inputmode="numeric"
-                                maxlength="11"
-                                pattern="09[0-9]{9}"
-                                title="Enter an 11-digit Philippine mobile number starting with 09."
+                                readonly
                             >
                         </div>
                     </div>
                     <div class="input-group">
                         <label>Home Address</label>
-                        <input type="text" id="address" name="address" placeholder="Complete Street, City, Province">
+                        <input type="text" id="address" name="address" readonly>
                     </div>
                 </section>
 
