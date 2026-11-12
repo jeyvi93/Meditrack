@@ -136,43 +136,6 @@ $is_restock = ($mode === 'restock');
                 </div>
             </div>
         </main>
-
-<!-- ADD MEDICINE SUCCESS MODAL -->
-<div class="modal" id="addMedicineSuccessModal">
-
-    <div class="modal-overlay"></div>
-
-    <div class="modal-content success-modal-content">
-
-        <div class="success-icon">
-            <i class="bx bx-check"></i>
-        </div>
-
-        <div class="success-message">
-
-            <h2>Medicine Saved Successfully!</h2>
-
-            <p>
-                The medicine batch has been successfully added
-                to the inventory.
-            </p>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                type="button"
-                class="btn-primary"
-                onclick="closeAddMedicineSuccessModal()">
-                Done
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
     
 <script src="../includes/includes.js"></script>
 <script src="../assets/js/add_medicine.js"></script>

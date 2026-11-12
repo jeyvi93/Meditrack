@@ -447,9 +447,9 @@ function closeReportModal() {
     document.getElementById("reportModal").style.display = "none";
 }
 
-
 function generateInventoryReport() {
-    const rows = document.querySelectorAll("#all tbody tr");
+    const allRows = document.querySelectorAll("#all tbody tr");
+    const expiredRows = document.querySelectorAll("#expired tbody tr");
 
     let total = 0;
     let expired = 0;
@@ -461,34 +461,43 @@ function generateInventoryReport() {
 
     list.innerHTML = "";
 
-    rows.forEach(row => {
+    // ALL MEDICINES
+    allRows.forEach(row => {
         const name = row.querySelector("td strong")?.innerText.trim();
-        const status = row.dataset.status;
 
-        if (!name) return;
+        if (!name || row.classList.contains("js-search-empty")) return;
 
-        total++;
-
-        if (status === "Expired") expired++;
-        if (status === "Low Stock") low++;
-        if (status === "Near Expiry") near++;
-
-        // Find the quantity column in the inventory row.
         const cells = row.querySelectorAll("td");
-        const quantity = parseInt(cells[2]?.innerText.trim(), 10) || 0;
 
-        // Add the quantity to the medicine's existing total.
-        if (!medicineStocks.has(name)) {
-            medicineStocks.set(name, 0);
-        }
+        // Column 1 = Total Quantity
+        const quantity = parseInt(cells[1]?.innerText.trim(), 10) || 0;
 
-        medicineStocks.set(
-            name,
-            medicineStocks.get(name) + quantity
-        );
+        const status = row.dataset.status || "";
+
+        // Count actual stock units
+        total += quantity;
+
+        if (status === "Low Stock") low += quantity;
+        if (status === "Near Expiry") near += quantity;
+
+        medicineStocks.set(name, quantity);
     });
 
-    // Display one entry per medicine with its total stock.
+    // EXPIRED MEDICINES
+    expiredRows.forEach(row => {
+        const name = row.querySelector("td strong")?.innerText.trim();
+
+        if (!name || row.classList.contains("js-search-empty")) return;
+
+        const cells = row.querySelectorAll("td");
+
+        // Column 2 = Batch Quantity
+        const quantity = parseInt(cells[2]?.innerText.trim(), 10) || 0;
+
+        expired += quantity;
+    });
+
+    // MEDICINE STOCK BREAKDOWN
     medicineStocks.forEach((stock, name) => {
         const li = document.createElement("li");
         li.innerText = `${name} — ${stock} units`;
@@ -499,6 +508,188 @@ function generateInventoryReport() {
     document.getElementById("repExpired").innerText = expired;
     document.getElementById("repLow").innerText = low;
     document.getElementById("repNear").innerText = near;
+}
+
+// ===============================
+// VIEW MEDICINE BATCHES
+// ===============================
+
+function openMedicineBatches(medicineName) {
+
+    const modal = document.getElementById("medicineBatchesModal");
+    const title = document.getElementById("batchesMedicineName");
+    const tableBody = document.getElementById("medicineBatchesTableBody");
+
+    title.textContent = medicineName;
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="7" style="text-align:center;">
+                Loading batches...
+            </td>
+        </tr>
+    `;
+
+    modal.style.display = "flex";
+
+    fetch("../actions/get_medicine_batches.php?medicine_name=" + encodeURIComponent(medicineName))
+        .then(response => response.json())
+        .then(data => {
+
+            tableBody.innerHTML = "";
+
+            if (!data.success) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center;">
+                            ${data.message || "Unable to load batches."}
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            if (data.batches.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center;">
+                            No batches found.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            data.batches.forEach(batch => {
+
+                const row = document.createElement("tr");
+
+                const values = [
+                    batch.batch_number || "N/A",
+                    batch.quantity,
+                    batch.date_acquired || "N/A",
+                    batch.expiry_date || "N/A",
+                    batch.supplier || "N/A"
+                ];
+
+                values.forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                const statusCell = document.createElement("td");
+                const statusPill = document.createElement("span");
+
+                statusPill.classList.add("status-pill");
+
+                if (batch.status === "In Stock") {
+                    statusPill.classList.add("stat-in-stock");
+                } else if (batch.status === "Low Stock") {
+                    statusPill.classList.add("stat-low-stock");
+                } else if (batch.status === "Near Expiry") {
+                    statusPill.classList.add("stat-near-expiry");
+                }
+
+                statusPill.textContent = batch.status;
+                statusCell.appendChild(statusPill);
+                row.appendChild(statusCell);
+
+                
+                const actionCell = document.createElement("td");
+                actionCell.classList.add("action-cell");
+
+                // EDIT BUTTON
+                const editButton = document.createElement("button");
+                editButton.type = "button";
+                editButton.className = "btn-action primary";
+                editButton.title = "Edit Medicine";
+                editButton.innerHTML = '<i class="bx bx-edit"></i>';
+
+                editButton.addEventListener("click", function () {
+                    closeMedicineBatchesModal();
+                    openEditModal(batch.id);
+                });
+
+                actionCell.appendChild(editButton);
+
+
+                // STATUS-BASED ACTIONS
+
+                if (batch.status === "Near Expiry") {
+
+                    // DISPOSE NEAR EXPIRY
+                    const disposeButton = document.createElement("button");
+                    disposeButton.type = "button";
+                    disposeButton.className = "btn-dispose";
+                    disposeButton.title = "Dispose Near Expiry Medicine";
+                    disposeButton.innerHTML = '<i class="bx bx-trash"></i>';
+
+                    disposeButton.addEventListener("click", function () {
+                        closeMedicineBatchesModal();
+                        openNearExpiryDispose(batch.id);
+                    });
+
+                    actionCell.appendChild(disposeButton);
+
+                } else if (batch.status === "Low Stock") {
+
+                    // RESTOCK
+                    const restockButton = document.createElement("button");
+                    restockButton.type = "button";
+                    restockButton.className = "btn-action info";
+                    restockButton.title = "Restock Medicine";
+                    restockButton.innerHTML = '<i class="bx bx-package"></i>';
+
+                    restockButton.addEventListener("click", function () {
+                        openRestock(batch.id, batch.medicine_name || document.getElementById("batchesMedicineName").textContent);
+                    });
+
+                    actionCell.appendChild(restockButton);
+
+                } else {
+
+                    // QUARANTINE
+                    const quarantineButton = document.createElement("button");
+                    quarantineButton.type = "button";
+                    quarantineButton.className = "btn-action warning";
+                    quarantineButton.title = "Quarantine Medicine";
+                    quarantineButton.innerHTML = '<i class="bx bx-shield-quarter"></i>';
+
+                    quarantineButton.addEventListener("click", function () {
+                        closeMedicineBatchesModal();
+                        openQuarantineModal(batch.id);
+                    });
+
+                    actionCell.appendChild(quarantineButton);
+                }
+
+                row.appendChild(actionCell);
+
+
+                tableBody.appendChild(row);
+            });
+
+        })
+        .catch(error => {
+            console.error("Error loading medicine batches:", error);
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align:center;">
+                        An error occurred while loading batches.
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+
+// ===============================
+// CLOSE MEDICINE BATCHES MODAL
+// ===============================
+
+function closeMedicineBatchesModal() {
+    document.getElementById("medicineBatchesModal").style.display = "none";
 }
 
 

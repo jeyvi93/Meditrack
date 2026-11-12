@@ -132,9 +132,12 @@ addMedicineForm.addEventListener("submit", function (e) {
 
     if (data.success) {
 
-        document.getElementById(
-            "addMedicineSuccessModal"
-        ).style.display = "flex";
+        sessionStorage.setItem(
+            "medicineSuccessMessage",
+            data.message
+        );
+
+        window.location.href = "medicine.php";
 
     } else {
 
@@ -157,12 +160,3 @@ addMedicineForm.addEventListener("submit", function (e) {
     });
 
 });
-
-function closeAddMedicineSuccessModal() {
-
-    document.getElementById(
-        "addMedicineSuccessModal"
-    ).style.display = "none";
-
-    window.location.href = "medicine.php";
-}

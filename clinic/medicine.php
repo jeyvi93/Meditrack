@@ -16,12 +16,21 @@ $role = $_SESSION['role'] ?? '';
 
 $today = date("Y-m-d");
 
-$sql = "SELECT *
-        FROM medicines
-        WHERE status = 'Active'
-        AND expiry_date >= CURDATE()
-        AND is_quarantined = 0
-        ORDER BY medicine_name ASC";
+$sql = "
+    SELECT
+        medicine_name,
+        SUM(quantity) AS total_quantity,
+        COUNT(*) AS batch_count,
+        MIN(expiry_date) AS nearest_expiry,
+        MAX(low_stock_threshold) AS low_stock_threshold
+    FROM medicines
+    WHERE status = 'Active'
+    AND expiry_date >= CURDATE()
+    AND is_quarantined = 0
+    GROUP BY medicine_name
+    ORDER BY medicine_name ASC
+";
+
 $all_medicines = mysqli_query($conn, $sql);
 $expired_medicines = mysqli_query($conn, "
     SELECT *
@@ -190,6 +199,7 @@ $disposed_medicines = mysqli_query($conn, "
                     <button class="btn-report" onclick="openReportModal()"><i class="fas fa-file-export"></i> Report</button></div>
                 </div>
 
+                
                 <!-- ALL INVENTORY TAB -->
                 <div id="all" class="tab-pane active">
                     <div class="table-responsive">
@@ -197,134 +207,97 @@ $disposed_medicines = mysqli_query($conn, "
                             <thead>
                                 <tr>
                                     <th>Medicine Name</th>
-                                    <th>Batch No.</th>
-                                    <th>Quantity</th>
-                                    <th>Date Acquired</th>
-                                    <th>Expiration Date</th>
-                                    <th>Supplier</th>
+                                    <th>Total Quantity</th>
+                                    <th>Number of Batches</th>
+                                    <th>Nearest Expiration</th>
                                     <th>Status</th>
                                     <?php if ($role !== 'Clinic Staff'): ?>
                                         <th class="text-right">Actions</th>
                                     <?php endif; ?>
                                 </tr>
                             </thead>
+
                             <tbody>
 
-                                <?php if(mysqli_num_rows($all_medicines) > 0): ?>
+                                <?php if (mysqli_num_rows($all_medicines) > 0): ?>
 
-                                <?php while($row = mysqli_fetch_assoc($all_medicines)): ?>
+                                    <?php while ($row = mysqli_fetch_assoc($all_medicines)): ?>
 
-                                <?php
+                                        <?php
 
-                                if (strtotime($row['expiry_date']) < strtotime($today)) {
-                                    $status = "Expired";
-                                }
-                                elseif (strtotime($row['expiry_date']) <= strtotime("+30 days")) {
-                                    $status = "Near Expiry";
-                                }
-                                elseif ($row['quantity'] <= $row['low_stock_threshold']) {
-                                    $status = "Low Stock";
-                                }
-                                else {
-                                    $status = "In Stock";
-                                }
+                                        if (strtotime($row['nearest_expiry']) <= strtotime("+30 days")) {
+                                            $status = "Near Expiry";
+                                        } elseif ($row['total_quantity'] <= $row['low_stock_threshold']) {
+                                            $status = "Low Stock";
+                                        } else {
+                                            $status = "In Stock";
+                                        }
 
-                                ?>
+                                        ?>
 
-                                <tr data-status="<?= htmlspecialchars($status); ?>">
+                                        <tr data-status="<?= htmlspecialchars($status); ?>">
 
-                                    <td>
-                                        <strong><?= htmlspecialchars($row['medicine_name']); ?></strong>
-                                    </td>
+                                            <td>
+                                                <strong>
+                                                    <?= htmlspecialchars($row['medicine_name']); ?>
+                                                </strong>
+                                            </td>
 
-                                    <td>
-                                        <code class="batch">
-                                            <?= htmlspecialchars($row['batch_number']); ?>
-                                        </code>
-                                    </td>
+                                            <td>
+                                                <?= (int) $row['total_quantity']; ?>
+                                            </td>
 
-                                    <td><?= $row['quantity']; ?></td>
+                                            <td>
+                                                <?= (int) $row['batch_count']; ?>
+                                                <?= (int) $row['batch_count'] === 1 ? 'Batch' : 'Batches'; ?>
+                                            </td>
 
-                                    <td><?= date("M d, Y", strtotime($row['date_acquired'])); ?></td>
+                                            <td>
+                                                <?= date("M d, Y", strtotime($row['nearest_expiry'])); ?>
+                                            </td>
 
-                                    <td><?= date("M d, Y", strtotime($row['expiry_date'])); ?></td>
+                                            <td>
+                                                <span class="status-pill
+                                                    <?= $status === "In Stock" ? "stat-in-stock" : "" ?>
+                                                    <?= $status === "Low Stock" ? "stat-low-stock" : "" ?>
+                                                    <?= $status === "Near Expiry" ? "stat-near-expiry" : "" ?>">
+                                                    <?= htmlspecialchars($status); ?>
+                                                </span>
+                                            </td>
 
-                                    <td><?= htmlspecialchars($row['supplier']); ?></td>
+                                            <?php if ($role !== 'Clinic Staff'): ?>
 
-                                    <td>
+                                                <td class="action-cell">
 
-                                        <span class="status-pill
-                                        <?= $status == "In Stock" ? "stat-in-stock" : "" ?>
-                                        <?= $status == "Low Stock" ? "stat-low-stock" : "" ?>
-                                        <?= $status == "Near Expiry" ? "stat-near-expiry" : "" ?>
-                                        <?= $status == "Expired" ? "stat-expired" : "" ?>">
-                                            <?= $status ?>
-                                        </span>
+                                                    <button
+                                                        type="button"
+                                                        class="btn-action primary"
+                                                        onclick="openMedicineBatches('<?= htmlspecialchars($row['medicine_name'], ENT_QUOTES); ?>')"
+                                                        title="View Medicine Batches">
 
-                                    </td>
+                                                        <i class="bx bx-show"></i>
 
-                                    <?php if ($role !== 'Clinic Staff'): ?>
+                                                    </button>
 
-                                        <td class="action-cell">
-
-                                            <button 
-                                                class="btn-action primary"
-                                                onclick="openEditModal(<?= $row['id']; ?>)">
-                                                <i class="bx bx-edit" title="Edit Medicine"></i>
-                                            </button>
-
-                                            <?php if ($status == "Expired"): ?>
-
-                                                <button
-                                                    class="btn-dispose"
-                                                    onclick="openExpiredDispose(<?= $row['id']; ?>)">
-                                                    <i class="bx bx-trash" title="Dispose Medicine"></i>
-                                                </button>
-
-                                            <?php elseif ($status == "Near Expiry"): ?>
-
-                                                <button
-                                                    class="btn-dispose"
-                                                    onclick="openNearExpiryDispose(<?= $row['id']; ?>)">
-                                                    <i class="bx bx-trash" title="Dispose Near Expiry Medicine"></i>
-                                                </button>
-
-                                            <?php elseif ($status == "Low Stock"): ?>
-
-                                                <button
-                                                    class="btn-action info"
-                                                    onclick="openRestock(<?= $row['id']; ?>, '<?= htmlspecialchars($row['medicine_name'], ENT_QUOTES); ?>')"
-                                                    title="Restock Medicine">
-                                                    <i class="bx bx-package"></i>
-                                                </button>
-
-                                            <?php else: ?>
-
-                                                <button
-                                                    class="btn-action warning"
-                                                    onclick="openQuarantineModal(<?= $row['id']; ?>)">
-                                                    <i class="bx bx-shield-quarter" title="Quarantine Medicine"></i>
-                                                </button>
+                                                </td>
 
                                             <?php endif; ?>
 
-                                        </td>
-
-                                    <?php endif; ?>
-
-                                </tr>
+                                        </tr>
 
                                     <?php endwhile; ?>
 
-                                    <?php else: ?>
+                                <?php else: ?>
 
-                                <tr>
-                                    <td colspan="8" style="text-align:center;">
-                                        No medicines found.
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="<?= $role !== 'Clinic Staff' ? '6' : '5'; ?>"
+                                            style="text-align:center;">
+                                            No medicines found.
+                                        </td>
+                                    </tr>
 
                                 <?php endif; ?>
+
                             </tbody>
                         </table>
                     </div>
@@ -1153,9 +1126,70 @@ $disposed_medicines = mysqli_query($conn, "
     </div>
 </div>
 
+<!-- VIEW MEDICINE BATCHES MODAL -->
+<div id="medicineBatchesModal" class="modal">
+    <div class="modal-content medicine-batches-modal">
 
+        <div class="modal-header">
+            <div>
+                <h2 id="batchesMedicineName">Medicine Batches</h2>
+                <p>View and manage individual batches of this medicine.</p>
+            </div>
+
+            <button type="button" class="close-modal"
+                    onclick="closeMedicineBatchesModal()">
+                &times;
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Batch No.</th>
+                        <th>Quantity</th>
+                        <th>Date Acquired</th>
+                        <th>Expiration Date</th>
+                        <th>Supplier</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="medicineBatchesTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align:center;">
+                            Loading batches...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
 
     <script src="../includes/includes.js"></script>
     <script src="../assets/js/medicine.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const successMessage = sessionStorage.getItem("medicineSuccessMessage");
+
+        if (successMessage) {
+
+            document.getElementById("successModalTitle").textContent =
+                "Medicine Saved Successfully!";
+
+            document.getElementById("successModalMessage").textContent =
+                successMessage;
+
+            document.getElementById("successModal").style.display = "flex";
+
+            sessionStorage.removeItem("medicineSuccessMessage");
+        }
+
+    });
+    </script>
 </body>
 </html>

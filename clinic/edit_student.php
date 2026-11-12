@@ -59,7 +59,7 @@ unset($_SESSION['error']);
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/add_patient.css">
+    <link rel="stylesheet" href="../assets/css/edit_patient.css">
     <link rel="stylesheet" href="../assets/css/sidebar.css">
 
 </head>
@@ -405,7 +405,7 @@ unset($_SESSION['error']);
             </div>
         </main>
     
-<script src="../assets/js/add_patient.js"></script>
+<script src="../assets/js/edit_patient.js"></script>
 <script src="../includes/includes.js"></script>
 </body>
 </html>

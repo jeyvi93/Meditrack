@@ -174,64 +174,6 @@ body { background-color: var(--bg-light); color: var(--text-main); min-height: 1
     color: inherit;
 }
 
-/* ==========================
-   ALL MEDICINE TABLE
-========================== */
-
-#all .inventory-table {
-    width: 100%;
-    table-layout: fixed;
-}
-
-/* Medicine Name */
-#all .inventory-table th:nth-child(1),
-#all .inventory-table td:nth-child(1) {
-    width: 14%;
-}
-
-/* Batch No. */
-#all .inventory-table th:nth-child(2),
-#all .inventory-table td:nth-child(2) {
-    width: 15%;
-}
-
-/* Quantity */
-#all .inventory-table th:nth-child(3),
-#all .inventory-table td:nth-child(3) {
-    width: 9%;
-    text-align: center;
-}
-
-/* Date Acquired */
-#all .inventory-table th:nth-child(4),
-#all .inventory-table td:nth-child(4) {
-    width: 12%;
-}
-
-/* Expiration Date */
-#all .inventory-table th:nth-child(5),
-#all .inventory-table td:nth-child(5) {
-    width: 12%;
-}
-
-/* Supplier */
-#all .inventory-table th:nth-child(6),
-#all .inventory-table td:nth-child(6) {
-    width: 12%;
-}
-
-/* Status */
-#all .inventory-table th:nth-child(7),
-#all .inventory-table td:nth-child(7) {
-    width: 14%;
-}
-
-/* Actions */
-#all .inventory-table th:nth-child(8),
-#all .inventory-table td:nth-child(8) {
-    width: 12%;
-}
-
 /* TABLE ELEMENTS */
 .batch { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.85rem; }
 .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
@@ -380,6 +322,17 @@ body { background-color: var(--bg-light); color: var(--text-main); min-height: 1
     align-items: center;
     justify-content: center;
     z-index: 999;
+
+    background: rgba(15, 23, 42, 0.30);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+/* MODAL OVERLAY */
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: transparent;
 }
 
 /* DARK BACKDROP */
@@ -1086,4 +1039,77 @@ body { background-color: var(--bg-light); color: var(--text-main); min-height: 1
 
 .btn-confirm-return:hover {
     background: #1d4ed8;
+}
+
+
+/* ==========================
+   MEDICINE BATCHES MODAL
+========================== */
+
+.medicine-batches-modal {
+    width: 950px;
+    max-width: 95%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.medicine-batches-modal .modal-header p {
+    margin-top: 5px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.medicine-batches-modal .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.medicine-batches-modal .inventory-table {
+    min-width: 750px;
+}
+
+.medicine-batches-modal .inventory-table th,
+.medicine-batches-modal .inventory-table td {
+    white-space: nowrap;
+}
+
+.medicine-batches-modal .inventory-table td:last-child {
+    text-align: right;
+}
+
+@media (max-width: 600px) {
+    .medicine-batches-modal {
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .medicine-batches-modal .modal-header {
+        padding: 14px 16px;
+    }
+
+    .medicine-batches-modal .modal-header h2 {
+        font-size: 1rem;
+    }
+}
+
+/* VIEW BATCHES MODAL CLOSE BUTTON */
+.medicine-batches-modal .close-modal {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-size: 25px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.medicine-batches-modal .close-modal:hover {
+    color: #f10000;
 }
