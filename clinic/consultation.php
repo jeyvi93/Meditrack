@@ -127,27 +127,34 @@ if ($batchQuery) {
                 </div>
 
                 <div class="input-grid two-cols">
+
+                    <!-- PATIENT ID NUMBER -->
+                    <div class="input-group">
+                        <label for="patientIdNumber">Student / Staff ID Number</label>
+
+                        <div class="id-lookup-group">
+                            <input
+                                type="text"
+                                id="patientIdNumber"
+                                name="patient_id_number"
+                                placeholder="Enter Student / Staff ID"
+                                required
+                            >
+
+                            <button type="button" id="retrievePatientBtn">
+                                <i class="fas fa-search"></i> Retrieve
+                            </button>
+                        </div>
+
+                        <small id="patientLookupMessage"></small>
+                    </div>
                     <!-- PATIENT TYPE -->
                     <div class="input-group">
                         <label for="patientType">
                             Patient Type
                         </label>
-                        <select
-                            id="patientType"
-                            name="patient_type"
-                            onchange="togglePatientFields()"
-                            required
-                        >
-                            <option value="student">
-                                Student
-                            </option>
-                            <option value="tstaff">
-                                Teaching Staff
-                            </option>
-                            <option value="nstaff">
-                                Non-Teaching Staff
-                            </option>
-                        </select>
+                        <input type="text" id="patientTypeDisplay" readonly>
+                        <input type="hidden" id="patientType" name="patient_type">
                     </div>
 
                     <!-- FULL NAME -->
@@ -157,10 +164,9 @@ if ($batchQuery) {
                             type="text"
                             id="lastName"
                             name="last_name"
-                            placeholder="Enter Last Name"
                             pattern="[A-Za-zÀ-ÿ\s.'-]+"
                             oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
-                            required
+                            readonly
                         >
                     </div>
 
@@ -170,11 +176,10 @@ if ($batchQuery) {
                             type="text"
                             id="firstName"
                             name="first_name"
-                            placeholder="Enter First Name"
                             pattern="[A-Za-zÀ-ÿ\s.'-]+"
                             title="First name should contain letters and common name punctuation only."
                             oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
-                            required
+                            readonly
                         >
                     </div>
 
@@ -184,10 +189,10 @@ if ($batchQuery) {
                             type="text"
                             id="middleName"
                             name="middle_name"
-                            placeholder="Enter Middle Name"
                             pattern="[A-Za-zÀ-ÿ\s.'-]*"
                             title="Middle name should contain letters and common name punctuation only."
                             oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
+                            readonly
                         >
                     </div>
                 </div>
@@ -205,7 +210,7 @@ if ($batchQuery) {
                             min="1"
                             step="1"
                             inputmode="numeric"
-                            placeholder="Enter Age"
+                            readonly
                         >
                     </div>
 
@@ -213,19 +218,7 @@ if ($batchQuery) {
                         <label for="sex">
                             Sex
                         </label>
-                        <select
-                            id="sex"
-                            name="sex"
-                        >
-
-                            <option value="Male">
-                                Male
-                            </option>
-
-                            <option value="Female">
-                                Female
-                            </option>
-                        </select>
+                        <input type="text" id="sex" name="sex" readonly>    
                     </div>
 
                     <div class="input-group">
@@ -237,13 +230,13 @@ if ($batchQuery) {
                             type="tel"
                             id="contactNumber"
                             name="contact_number"
-                            placeholder="09XXXXXXXXX"
                             maxlength="11"
                             minlength="11"
                             pattern="09[0-9]{9}"
                             inputmode="numeric"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                             title="Contact number must contain exactly 11 digits and start with 09."
+                            readonly
                         >
                     </div>
                 </div>
@@ -259,21 +252,7 @@ if ($batchQuery) {
                             Department
                         </label>
 
-                        <select id="department" name="department" required>
-                            <option value="">Select Department</option>
-                                <option value="Technology">Technology</option>
-                                <option value="Education">Education</option>
-                                <option value="Business">Business</option>
-                                <option value="Clinic">Clinic</option>
-                                <option value="Library">Library</option>
-                                <option value="Guidance Office">Guidance Office</option>
-                                <option value="Cashier">Cashier</option>
-                                <option value="Registrar">Registrar</option>
-                                <option value="Utility">Utility</option>
-                                <option value="Admin Office">Admin Office</option>
-                                <option value="SASO">SASO</option>
-                                <option value="CSU">CSU</option>
-                        </select>
+                        <input type="text" id="department" name="department" readonly>
                 </div>
 
                 <!-- STUDENT FIELDS -->
@@ -290,9 +269,9 @@ if ($batchQuery) {
                             type="text"
                             id="course"
                             name="course"
-                            placeholder="e.g. BS Information Technology"
                             pattern="[A-Za-z0-9 .&-]+"
                             title="Course should contain valid letters, numbers, spaces, periods, or hyphens."
+                            readonly
                         >
                     </div>
 
@@ -301,27 +280,7 @@ if ($batchQuery) {
                             Year Level
                         </label>
 
-                        <select
-                            id="yearLevel"
-                            name="year_level"
-                        >
-
-                            <option value="1st Year">
-                                1st Year
-                            </option>
-
-                            <option value="2nd Year">
-                                2nd Year
-                            </option>
-
-                            <option value="3rd Year">
-                                3rd Year
-                            </option>
-
-                            <option value="4th Year">
-                                4th Year
-                            </option>
-                        </select>
+                        <input type="text" id="yearLevel" name="year_level" readonly>
                     </div>
                 </div>
 
@@ -340,9 +299,9 @@ if ($batchQuery) {
                             type="text"
                             id="position"
                             name="position"
-                            placeholder="e.g. Instructor I / Admin Assistant"
                             pattern="[A-Za-zÀ-ÿ0-9\s.,&'()/-]+"
                             title="Position should contain valid letters, numbers, spaces, and common punctuation."
+                            readonly
                         >
                     </div>
                 </div>

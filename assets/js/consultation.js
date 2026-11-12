@@ -1,16 +1,187 @@
         // Toggle Student/Staff Fields
         function togglePatientFields() {
+
             const type = document.getElementById('patientType').value;
             const studentFields = document.getElementById('studentFields');
             const staffFields = document.getElementById('staffFields');
 
-            if (type === 'student') {
-                studentFields.style.display = 'grid';
-                staffFields.style.display = 'none';
-            } else {
-                studentFields.style.display = 'none';
-                staffFields.style.display = 'block';
+            const studentInputs = studentFields.querySelectorAll('input, select, textarea');
+            const staffInputs = staffFields.querySelectorAll('input, select, textarea');
+
+            const isStudent = type === 'student';
+            const isStaff = type === 'tstaff' || type === 'nstaff';
+
+            studentFields.style.display = isStudent ? 'grid' : 'none';
+            staffFields.style.display = isStaff ? 'block' : 'none';
+
+            studentInputs.forEach(input => {
+                input.disabled = !isStudent;
+            });
+
+            staffInputs.forEach(input => {
+                input.disabled = !isStaff;
+            });
+        }
+
+        // ==========================
+        // RETRIEVE PATIENT BY ID
+        // ==========================
+
+        document.getElementById("retrievePatientBtn").addEventListener("click", function () {
+
+            const idInput = document.getElementById("patientIdNumber");
+            const message = document.getElementById("patientLookupMessage");
+            const retrieveBtn = this;
+
+            const idNumber = idInput.value.trim();
+
+            // Clear previous patient lookup message
+            message.textContent = "";
+
+            // Clear previously retrieved patient information
+            const patientFields = [
+                "patientTypeDisplay",
+                "lastName",
+                "firstName",
+                "middleName",
+                "age",
+                "sex",
+                "contactNumber",
+                "department",
+                "course",
+                "yearLevel",
+                "position"
+            ];
+
+            patientFields.forEach(id => {
+                const field = document.getElementById(id);
+
+                if (field) {
+                    field.value = "";
+                    field.readOnly = false;
+                    field.classList.remove("invalid");
+                }
+            });
+
+            // Reset patient type
+            document.getElementById("patientType").value = "";
+
+            // Hide both additional field sections
+            togglePatientFields();
+
+            if (!idNumber) {
+                message.textContent = "Please enter a Student or Staff ID.";
+                message.style.color = "#dc2626";
+                idInput.focus();
+                return;
             }
+
+            retrieveBtn.disabled = true;
+            retrieveBtn.textContent = "Retrieving...";
+            message.textContent = "";
+
+            fetch(`../actions/get_consultation_patient.php?id_number=${encodeURIComponent(idNumber)}`)
+                .then(response => response.json())
+                .then(data => {
+
+                    if (!data.success) {
+                        message.textContent = data.message;
+                        message.style.color = "#dc2626";
+                        return;
+                    }
+
+                    const patient = data.patient;
+
+                    // Make retrieved patient information read-only
+                    const patientFields = [
+                        "patientTypeDisplay",
+                        "lastName",
+                        "firstName",
+                        "middleName",
+                        "age",
+                        "sex",
+                        "contactNumber",
+                        "department",
+                        "course",
+                        "yearLevel",
+                        "position"
+                    ];
+
+                    patientFields.forEach(id => {
+                        const field = document.getElementById(id);
+
+                        if (field) {
+                            field.readOnly = true;
+                        }
+                    });
+
+                    // Patient type
+                    const patientTypeLabels = {
+                        student: "Student",
+                        tstaff: "Teaching Staff",
+                        nstaff: "Non-Teaching Staff"
+                    };
+
+                    document.getElementById("patientType").value = patient.patient_type;
+                    document.getElementById("patientTypeDisplay").value =
+                        patientTypeLabels[patient.patient_type] || "";
+
+                    togglePatientFields();
+
+                    // Personal information
+                    document.getElementById("lastName").value = patient.last_name || "";
+                    document.getElementById("firstName").value = patient.first_name || "";
+                    document.getElementById("middleName").value = patient.middle_name || "";
+                    document.getElementById("age").value = patient.age || "";
+                    document.getElementById("sex").value = patient.sex || "";
+                    document.getElementById("contactNumber").value = patient.contact_number || "";
+                    document.getElementById("department").value = patient.department || "";
+
+                    // Student information
+                    if (patient.patient_type === "student") {
+                        document.getElementById("course").value = patient.course || "";
+                        document.getElementById("yearLevel").value =
+                            patient.year_level ? `${patient.year_level}${getYearSuffix(patient.year_level)} Year` : "";
+                    }
+
+                    // Staff information
+                    if (patient.patient_type === "tstaff" || patient.patient_type === "nstaff") {
+                        document.getElementById("position").value = patient.position || "";
+                    }
+
+                    // Refresh real-time validation
+                    document.querySelectorAll(
+                        "#lastName, #firstName, #middleName, #age, #sex, #contactNumber, #department, #course, #yearLevel, #position"
+                    ).forEach(input => {
+                        if (input) validateField(input);
+                    });
+
+                    message.textContent = "Patient record retrieved successfully.";
+                    message.style.color = "#16a34a";
+
+                })
+                .catch(error => {
+
+                    console.error(error);
+
+                    message.textContent = "Unable to retrieve patient record. Please try again.";
+                    message.style.color = "#dc2626";
+
+                })
+                .finally(() => {
+
+                    retrieveBtn.disabled = false;
+                    retrieveBtn.innerHTML = '<i class="fas fa-search"></i> Retrieve';
+
+                });
+
+        });
+
+        function getYearSuffix(year) {
+            if (year === 1) return "st";
+            if (year === 2) return "nd";
+            if (year === 3) return "rd";
+            return "th";
         }
 
 // Add Dynamic Medicine Rows

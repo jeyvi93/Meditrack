@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $date = $_POST['consultation_date'] ?? null;
 $time = $_POST['consultation_time'] ?? null;
 $patient_type = $_POST['patient_type'] ?? null;
+$patient_id_number = trim($_POST['patient_id_number'] ?? '');
 $last_name = trim($_POST['last_name'] ?? '');
 $first_name = trim($_POST['first_name'] ?? '');
 $middle_name = trim($_POST['middle_name'] ?? '');
@@ -100,6 +101,7 @@ if (
     empty($date) ||
     empty($time) ||
     empty($patient_type) ||
+    $patient_id_number === '' ||
     $last_name === '' ||
     $first_name === ''
 ) {
@@ -110,6 +112,127 @@ if (
     ]);
 
     exit();
+}
+
+// ==========================
+// VERIFY PATIENT RECORD
+// ==========================
+
+$patient = null;
+
+if ($patient_type === 'student') {
+
+    $stmt = $conn->prepare("
+        SELECT
+            student_id_number,
+            first_name,
+            middle_name,
+            last_name,
+            date_of_birth,
+            sex,
+            contact_number,
+            department,
+            course,
+            year_level
+        FROM students
+        WHERE student_id_number = ?
+          AND is_archived = 0
+        LIMIT 1
+    ");
+
+} elseif (in_array($patient_type, ['tstaff', 'nstaff'], true)) {
+
+    $stmt = $conn->prepare("
+        SELECT
+            staff_id_number,
+            first_name,
+            middle_name,
+            last_name,
+            date_of_birth,
+            sex,
+            contact_number,
+            department,
+            position
+        FROM staffs
+        WHERE staff_id_number = ?
+          AND is_archived = 0
+        LIMIT 1
+    ");
+
+} else {
+    throw new Exception("Invalid patient type.");
+}
+
+if (!$stmt) {
+    throw new Exception("Failed to prepare patient verification query.");
+}
+
+$stmt->bind_param("s", $patient_id_number);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$patient = $result->fetch_assoc();
+
+$stmt->close();
+
+if (!$patient) {
+    throw new Exception(
+        "No active patient record found. Please retrieve the patient again."
+    );
+}
+
+// Verify staff category
+if ($patient_type !== 'student') {
+
+    $actualPosition = strtolower(trim($patient['position']));
+
+    if (
+        ($patient_type === 'tstaff' && $actualPosition !== 'teaching staff') ||
+        ($patient_type === 'nstaff' && $actualPosition !== 'non-teaching staff')
+    ) {
+        throw new Exception("Patient type does not match the staff record.");
+    }
+}
+
+// Use verified database information
+$last_name = $patient['last_name'];
+$first_name = $patient['first_name'];
+$middle_name = $patient['middle_name'] ?? '';
+
+$full_name = $last_name . ', ' . $first_name;
+
+if ($middle_name !== '') {
+    $full_name .= ' ' . $middle_name;
+}
+
+$birthDate = new DateTime($patient['date_of_birth']);
+$age = $birthDate->diff(new DateTime())->y;
+
+$sex = $patient['sex'];
+$contact_number = $patient['contact_number'];
+$department = $patient['department'];
+
+if ($patient_type === 'student') {
+
+    $course = $patient['course'];
+
+    $year = (int) $patient['year_level'];
+
+    $suffix = match ($year) {
+        1 => 'st',
+        2 => 'nd',
+        3 => 'rd',
+        default => 'th'
+    };
+
+    $year_level = $year . $suffix . ' Year';
+    $position = null;
+
+} else {
+
+    $position = $patient['position'];
+    $course = null;
+    $year_level = null;
 }
 
 // ==========================
@@ -130,6 +253,7 @@ try {
             date,
             time,
             patient_type,
+            patient_id_number,
             full_name,
             age,
             sex,
@@ -142,7 +266,7 @@ try {
             treatment_given,
             remarks
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ";
 
     $stmt = $conn->prepare($sql);
@@ -155,10 +279,11 @@ try {
 
 
     $stmt->bind_param(
-        "ssssisssssssss",
+        "sssssisssssssss",
         $date,
         $time,
         $patient_type,
+        $patient_id_number,
         $full_name,
         $age,
         $sex,

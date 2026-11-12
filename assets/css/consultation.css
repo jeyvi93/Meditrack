@@ -274,3 +274,71 @@ body { background-color: var(--bg-light); color: var(--text-main); }
     color: #6c757d;
     margin-left: 4px;
 }
+
+.id-lookup-group button {
+    flex: 0 0 100px;
+    min-width: 100px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #2563eb;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.id-lookup-group button:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+.id-lookup-group button:focus-visible {
+    outline: 2px solid rgba(37, 99, 235, 0.2);
+    outline-offset: 2px;
+}
+
+.id-lookup-group button:active {
+    background: #dbeafe;
+}
+
+.id-lookup-group {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+}
+
+.id-lookup-group input {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    height: 40px;
+}
+
+.id-lookup-group button {
+    flex: 0 0 90px;
+    width: 90px;
+    min-width: 90px;
+    height: 40px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+/* Keep lookup message below the input and button */
+#patientLookupMessage {
+    display: block;
+    width: 100%;
+    min-height: 16px;
+    margin-top: 5px;
+}
