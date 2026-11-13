@@ -1,932 +1,943 @@
-    <?php
-    session_start();
+<?php
+session_start();
 
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+$successMessage = $_SESSION['success'] ?? '';
+$successDescription = $_SESSION['success_message'] ?? '';
+$errorMessage = $_SESSION['error'] ?? '';
+
+unset($_SESSION['success'], $_SESSION['success_message'], $_SESSION['error']);
+
+require_once "../config/database.php";
+
+if (($_SESSION['role'] ?? '') === 'Administrator') {
+    header("Location: ../admin/accounts.php");
+    exit();
+}
+
+if (($_SESSION['role'] ?? '') === 'Clinic Staff') {
+    header("Location: ../clinic/dashboard.php");
+    exit();
+}
+
+if (($_SESSION['role'] ?? '') === 'School Nurse') {
+    header("Location: ../clinic/dashboard.php");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+
+$stmt = $conn->prepare("
+    SELECT 
+        a.id,
+        a.appointment_date,
+        a.appointment_time,
+        a.proposed_date,
+        a.proposed_time,
+        a.reschedule_reason,
+        a.reschedule_status,
+        a.purpose,
+        a.status,
+        a.reason,
+        a.note,
+        c.date AS consultation_date,
+        c.time AS consultation_time
+    FROM appointments a
+    LEFT JOIN consultations c ON c.appointment_id = a.id
+    WHERE a.user_id = ?
+    ORDER BY a.appointment_date ASC, a.appointment_time ASC
+");
+
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+
+$result = $stmt->get_result();
+
+$appointments = [];
+
+while ($row = $result->fetch_assoc()) {
+    $appointments[] = $row;
+}
+
+$stmt->close();
+
+$pendingAppointments = [];
+$approvedAppointments = [];
+$completedAppointments = [];
+$cancelledAppointments = [];
+
+foreach ($appointments as $appointment) {
+    $status = strtolower(trim($appointment['status'] ?? ''));
+
+    if ($status === 'pending') {
+        $pendingAppointments[] = $appointment;
+    } elseif ($status === 'approved') {
+        $approvedAppointments[] = $appointment;
+    } elseif ($status === 'completed') {
+        $completedAppointments[] = $appointment;
+    } elseif ($status === 'rejected' || $status === 'cancelled') {
+        $cancelledAppointments[] = $appointment;
     }
+}
 
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: ../index.php");
-        exit();
-    }
+// Pending: newest scheduled appointment first
+usort($pendingAppointments, function ($a, $b) {
+    return strcmp(
+        $b['appointment_date'] . ' ' . $b['appointment_time'],
+        $a['appointment_date'] . ' ' . $a['appointment_time']
+    );
+});
 
-    $successMessage = $_SESSION['success'] ?? '';
-    $successDescription = $_SESSION['success_message'] ?? '';
-    $errorMessage = $_SESSION['error'] ?? '';
+// Approved: nearest upcoming appointment first
+usort($approvedAppointments, function ($a, $b) {
+    return strcmp(
+        $a['appointment_date'] . ' ' . $a['appointment_time'],
+        $b['appointment_date'] . ' ' . $b['appointment_time']
+    );
+});
 
-    unset($_SESSION['success'], $_SESSION['success_message'], $_SESSION['error']);
+// Completed: latest actual consultation first
+usort($completedAppointments, function ($a, $b) {
+    return strcmp(
+        ($b['consultation_date'] ?? $b['appointment_date']) . ' ' .
+        ($b['consultation_time'] ?? $b['appointment_time']),
+        ($a['consultation_date'] ?? $a['appointment_date']) . ' ' .
+        ($a['consultation_time'] ?? $a['appointment_time'])
+    );
+});
 
-    require_once "../config/database.php";
+// Rejected / Cancelled: most recent appointment first
+usort($cancelledAppointments, function ($a, $b) {
+    return strcmp(
+        $b['appointment_date'] . ' ' . $b['appointment_time'],
+        $a['appointment_date'] . ' ' . $a['appointment_time']
+    );
+});
+?>
 
-    if (($_SESSION['role'] ?? '') === 'Administrator') {
-        header("Location: ../admin/accounts.php");
-        exit();
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="csrf-token" content="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
 
-    if (($_SESSION['role'] ?? '') === 'Clinic Staff') {
-        header("Location: ../clinic/dashboard.php");
-        exit();
-    }
+    <title>My Appointments | MediTrack</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/navbar.css">
+    <link rel="stylesheet" href="../assets/css/view_appointments.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
 
-    if (($_SESSION['role'] ?? '') === 'School Nurse') {
-        header("Location: ../clinic/dashboard.php");
-        exit();
-    }
+<div class="bg-gradient"></div>
 
-    $user_id = $_SESSION['user_id'];
+<?php include '../includes/navbar.php'; ?>
 
-    $stmt = $conn->prepare("
-        SELECT 
-            a.id,
-            a.appointment_date,
-            a.appointment_time,
-            a.proposed_date,
-            a.proposed_time,
-            a.reschedule_reason,
-            a.reschedule_status,
-            a.purpose,
-            a.status,
-            a.reason,
-            a.note,
-            c.date AS consultation_date,
-            c.time AS consultation_time
-        FROM appointments a
-        LEFT JOIN consultations c ON c.appointment_id = a.id
-        WHERE a.user_id = ?
-        ORDER BY a.appointment_date ASC, a.appointment_time ASC
-    ");
+<main class="main-wrapper">
+    <section class="booking-section">
+        
+        <div class="page-header">
+            <h1><span class="text-accent">Appointments</span></h1>
+            <p>View and manage your clinic visits and medical requests.</p>
+            <?php
+            $notificationRoles = [
+                'Student',
+                'Teaching Staff',
+                'Non-Teaching Staff'
+            ];
+            ?>
 
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
+            <?php if (in_array($_SESSION['role'] ?? '', $notificationRoles, true)): ?>
+                <p
+                    id="notificationStatus"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+            <?php endif; ?>
+        </div>
 
-    $result = $stmt->get_result();
-
-    $appointments = [];
-
-    while ($row = $result->fetch_assoc()) {
-        $appointments[] = $row;
-    }
-
-    $stmt->close();
-
-    $pendingAppointments = [];
-    $approvedAppointments = [];
-    $completedAppointments = [];
-    $cancelledAppointments = [];
-
-    foreach ($appointments as $appointment) {
-        $status = strtolower(trim($appointment['status'] ?? ''));
-
-        if ($status === 'pending') {
-            $pendingAppointments[] = $appointment;
-        } elseif ($status === 'approved') {
-            $approvedAppointments[] = $appointment;
-        } elseif ($status === 'completed') {
-            $completedAppointments[] = $appointment;
-        } elseif ($status === 'rejected' || $status === 'cancelled') {
-            $cancelledAppointments[] = $appointment;
-        }
-    }
-
-    // Pending: newest scheduled appointment first
-    usort($pendingAppointments, function ($a, $b) {
-        return strcmp(
-            $b['appointment_date'] . ' ' . $b['appointment_time'],
-            $a['appointment_date'] . ' ' . $a['appointment_time']
-        );
-    });
-
-    // Approved: nearest upcoming appointment first
-    usort($approvedAppointments, function ($a, $b) {
-        return strcmp(
-            $a['appointment_date'] . ' ' . $a['appointment_time'],
-            $b['appointment_date'] . ' ' . $b['appointment_time']
-        );
-    });
-
-    // Completed: latest actual consultation first
-    usort($completedAppointments, function ($a, $b) {
-        return strcmp(
-            ($b['consultation_date'] ?? $b['appointment_date']) . ' ' .
-            ($b['consultation_time'] ?? $b['appointment_time']),
-            ($a['consultation_date'] ?? $a['appointment_date']) . ' ' .
-            ($a['consultation_time'] ?? $a['appointment_time'])
-        );
-    });
-
-    // Rejected / Cancelled: most recent appointment first
-    usort($cancelledAppointments, function ($a, $b) {
-        return strcmp(
-            $b['appointment_date'] . ' ' . $b['appointment_time'],
-            $a['appointment_date'] . ' ' . $a['appointment_time']
-        );
-    });
-    ?>
-
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-        <meta name="csrf-token" content="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
-
-        <title>My Appointments | MediTrack</title>
-        <link rel="stylesheet" href="../assets/css/style.css">
-        <link rel="stylesheet" href="../assets/css/navbar.css">
-        <link rel="stylesheet" href="../assets/css/view_appointments.css">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
-        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    </head>
-    <body>
-
-    <div class="bg-gradient"></div>
-
-    <?php include '../includes/navbar.php'; ?>
-
-    <main class="main-wrapper">
-        <section class="booking-section">
-            
-            <div class="page-header">
-                <h1><span class="text-accent">Appointments</span></h1>
-                <p>View and manage your clinic visits and medical requests.</p>
-                <?php
-                $notificationRoles = [
-                    'Student',
-                    'Teaching Staff',
-                    'Non-Teaching Staff'
-                ];
-                ?>
-
-                <?php if (in_array($_SESSION['role'] ?? '', $notificationRoles, true)): ?>
-                    <p
-                        id="notificationStatus"
-                        role="status"
-                        aria-live="polite"
-                    ></p>
-                <?php endif; ?>
-            </div>
-
-            <div class="booking-grid">
-                <!-- Left Side: Information Card (Same as Book Page) -->
-                <div class="info-side">
-                    <div class="status-card">
-                        <div class="status-icon"><i class='bx bxs-time-five'></i></div>
-                        <div>
-                            <h4>Appointment Status</h4>
-                            <p>Track your requests from pending to completion.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="reminder-list">
-                        <h5>Quick Guide:</h5>
-                        <ul>
-                            <li><i class='bx bx-check-double'></i> <b>Pending:</b> Waiting for clinic review.</li>
-                            <li><i class='bx bx-check-double'></i> <b>Approved:</b> Your slot is confirmed.</li>
-                            <li><i class='bx bx-check-double'></i> <b>History:</b> Record of past visits.</li>
-                        </ul>
+        <div class="booking-grid">
+            <!-- Left Side: Information Card (Same as Book Page) -->
+            <div class="info-side">
+                <div class="status-card">
+                    <div class="status-icon"><i class='bx bxs-time-five'></i></div>
+                    <div>
+                        <h4>Appointment Status</h4>
+                        <p>Track your requests from pending to completion.</p>
                     </div>
                 </div>
+                
+                <div class="reminder-list">
+                    <h5>Quick Guide:</h5>
+                    <ul>
+                        <li><i class='bx bx-check-double'></i> <b>Pending:</b> Waiting for clinic review.</li>
+                        <li><i class='bx bx-check-double'></i> <b>Approved:</b> Your slot is confirmed.</li>
+                        <li><i class='bx bx-check-double'></i> <b>History:</b> Record of past visits.</li>
+                    </ul>
+                </div>
+            </div>
 
-                <!-- Right Side: The Content (Your Tab Contents) -->
-                <div class="appointment-card">
-                    
-                    <!-- TAB NAVIGATION -->
-                    <div class="appointment-tabs">
-                        <button class="tab-btn active" onclick="switchTab(event, 'pending')">Pending</button>
-                        <button class="tab-btn" onclick="switchTab(event, 'approved')">Approved</button>
-                        <button class="tab-btn" onclick="switchTab(event, 'completed')">History</button>
-                        <button class="tab-btn" onclick="switchTab(event, 'cancelled')">Rejected / Cancelled</button>
-                    </div>
+            <!-- Right Side: The Content (Your Tab Contents) -->
+            <div class="appointment-card">
+                
+                <!-- TAB NAVIGATION -->
+                <div class="appointment-tabs">
+                    <button class="tab-btn active" onclick="switchTab(event, 'pending')">Pending</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'approved')">Approved</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'completed')">History</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'cancelled')">Rejected / Cancelled</button>
+                </div>
 
-                    <!-- PENDING -->
-                    <div id="pending" class="tab-content active">
+                <!-- PENDING -->
+                <div id="pending" class="tab-content active">
 
-                        <div class="appointments-list-wrapper">
+                    <div class="appointments-list-wrapper">
 
-                            <?php if (empty($pendingAppointments)): ?>
+                        <?php if (empty($pendingAppointments)): ?>
 
-                                <div class="empty-appointments">
-                                    <div class="empty-icon pending-icon">
-                                        <i class='bx bx-time-five'></i>
-                                    </div>
-
-                                    <h3>No Pending Appointments</h3>
-
-                                    <p>
-                                        You don't have any appointment requests waiting for review.
-                                        New requests will appear here after you submit an appointment.
-                                    </p>
-
-                                    <a href="book_appointment.php" class="empty-action">
-                                        <i class='bx bx-plus'></i>
-                                        Book an Appointment
-                                    </a>
+                            <div class="empty-appointments">
+                                <div class="empty-icon pending-icon">
+                                    <i class='bx bx-time-five'></i>
                                 </div>
 
-                            <?php else: ?>
+                                <h3>No Pending Appointments</h3>
 
-                                <?php foreach ($pendingAppointments as $appointment): ?>
+                                <p>
+                                    You don't have any appointment requests waiting for review.
+                                    New requests will appear here after you submit an appointment.
+                                </p>
 
-                                    <div class="inner-card">
+                                <a href="book_appointment.php" class="empty-action">
+                                    <i class='bx bx-plus'></i>
+                                    Book an Appointment
+                                </a>
+                            </div>
 
-                                        <div class="card-date-info">
-                                            <span class="day">
-                                                <?= date('d', strtotime($appointment['appointment_date'])) ?>
-                                            </span>
+                        <?php else: ?>
 
-                                            <span class="month">
-                                                <?= strtoupper(date('M', strtotime($appointment['appointment_date']))) ?>
-                                            </span>
-                                        </div>
+                            <?php foreach ($pendingAppointments as $appointment): ?>
 
-                                        <div class="card-text">
+                                <div class="inner-card">
 
-                                            <span class="status-pill pending">
-                                                Pending
-                                            </span>
+                                    <div class="card-date-info">
+                                        <span class="day">
+                                            <?= date('d', strtotime($appointment['appointment_date'])) ?>
+                                        </span>
 
-                                            <h3>
-                                                <?= htmlspecialchars($appointment['purpose']) ?>
-                                            </h3>
+                                        <span class="month">
+                                            <?= strtoupper(date('M', strtotime($appointment['appointment_date']))) ?>
+                                        </span>
+                                    </div>
 
-                                            <p>
-                                                <i class='bx bx-time'></i>
-                                                <?= date('h:i A', strtotime($appointment['appointment_time'])) ?>
-                                            </p>
+                                    <div class="card-text">
 
-                                        </div>
+                                        <span class="status-pill pending">
+                                            Pending
+                                        </span>
 
-                                        <button
-                                            type="button"
-                                            class="btn-cancel-mini"
-                                            onclick="openModal(<?= (int)$appointment['id'] ?>)">
-                                            Cancel
-                                        </button>
+                                        <h3>
+                                            <?= htmlspecialchars($appointment['purpose']) ?>
+                                        </h3>
+
+                                        <p>
+                                            <i class='bx bx-time'></i>
+                                            <?= date('h:i A', strtotime($appointment['appointment_time'])) ?>
+                                        </p>
 
                                     </div>
 
-                                <?php endforeach; ?>
+                                    <button
+                                        type="button"
+                                        class="btn-cancel-mini"
+                                        onclick="openModal(<?= (int)$appointment['id'] ?>)">
+                                        Cancel
+                                    </button>
 
-                            <?php endif; ?>
+                                </div>
 
-                        </div>
+                            <?php endforeach; ?>
+
+                        <?php endif; ?>
 
                     </div>
 
-                    <!-- APPROVED -->
-                    <div id="approved" class="tab-content">
+                </div>
 
-                        <div class="appointments-list-wrapper">
+                <!-- APPROVED -->
+                <div id="approved" class="tab-content">
 
-                            <?php if (empty($approvedAppointments)): ?>
+                    <div class="appointments-list-wrapper">
 
-                                <div class="empty-appointments">
-                                    <div class="empty-icon">
-                                        <i class='bx bx-calendar-check'></i>
-                                    </div>
+                        <?php if (empty($approvedAppointments)): ?>
 
-                                    <h3>No Approved Appointments</h3>
-
-                                    <p>
-                                        You don't have any approved appointments yet.
-                                        Once the clinic approves your request, it will appear here.
-                                    </p>
-
-                                    <a href="book_appointment.php" class="empty-action">
-                                        <i class='bx bx-plus'></i>
-                                        Book an Appointment
-                                    </a>
+                            <div class="empty-appointments">
+                                <div class="empty-icon">
+                                    <i class='bx bx-calendar-check'></i>
                                 </div>
 
-                            <?php else: ?>
+                                <h3>No Approved Appointments</h3>
 
-                                <?php foreach ($approvedAppointments as $appointment): ?>
+                                <p>
+                                    You don't have any approved appointments yet.
+                                    Once the clinic approves your request, it will appear here.
+                                </p>
 
-                                    <div class="inner-card">
+                                <a href="book_appointment.php" class="empty-action">
+                                    <i class='bx bx-plus'></i>
+                                    Book an Appointment
+                                </a>
+                            </div>
 
-                                        <div class="card-date-info <?= (($appointment['reschedule_status'] ?? '') === 'pending') ? 'reschedule-date' : 'confirmed' ?>">
-                                            <span class="day">
-                                                <?= date('d', strtotime($appointment['appointment_date'])) ?>
-                                            </span>
+                        <?php else: ?>
 
-                                            <span class="month">
-                                                <?= strtoupper(date('M', strtotime($appointment['appointment_date']))) ?>
-                                            </span>
-                                        </div>
+                            <?php foreach ($approvedAppointments as $appointment): ?>
 
-                                        <div class="card-text">
+                                <div class="inner-card">
 
-                                            <?php if (($appointment['reschedule_status'] ?? '') === 'pending'): ?>
+                                    <div class="card-date-info <?= (($appointment['reschedule_status'] ?? '') === 'pending') ? 'reschedule-date' : 'confirmed' ?>">
+                                        <span class="day">
+                                            <?= date('d', strtotime($appointment['appointment_date'])) ?>
+                                        </span>
 
-                                                <span class="status-pill reschedule-requested">
-                                                    Clinic Reschedule
-                                                </span>
+                                        <span class="month">
+                                            <?= strtoupper(date('M', strtotime($appointment['appointment_date']))) ?>
+                                        </span>
+                                    </div>
 
-                                            <?php else: ?>
-
-                                                <span class="status-pill confirmed">
-                                                    Approved
-                                                </span>
-
-                                            <?php endif; ?>
-
-                                            <h3>
-                                                <?= htmlspecialchars($appointment['purpose']) ?>
-                                            </h3>
-
-                                            <p>
-                                                <i class='bx bx-time'></i>
-                                                <?= date('h:i A', strtotime($appointment['appointment_time'])) ?>
-                                            </p>
-
-                                        </div>
+                                    <div class="card-text">
 
                                         <?php if (($appointment['reschedule_status'] ?? '') === 'pending'): ?>
 
-                                        <button
-                                            type="button"
-                                            class="btn-cancel-mini btn-take-action"
-                                            data-appointment-id="<?= (int)$appointment['id'] ?>"
-                                            data-original-date="<?= htmlspecialchars(date('F j, Y', strtotime($appointment['appointment_date'])), ENT_QUOTES, 'UTF-8') ?>"
-                                            data-original-time="<?= htmlspecialchars(date('g:i A', strtotime($appointment['appointment_time'])), ENT_QUOTES, 'UTF-8') ?>"
-                                            data-proposed-date="<?= htmlspecialchars(date('F j, Y', strtotime($appointment['proposed_date'])), ENT_QUOTES, 'UTF-8') ?>"
-                                            data-proposed-time="<?= htmlspecialchars(date('g:i A', strtotime($appointment['proposed_time'])), ENT_QUOTES, 'UTF-8') ?>"
-                                            data-reschedule-reason="<?= htmlspecialchars($appointment['reschedule_reason'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                            onclick="openRescheduleActionModal(this)">
-                                            Take Action
-                                        </button>
+                                            <span class="status-pill reschedule-requested">
+                                                Clinic Reschedule
+                                            </span>
 
-                                    <?php else: ?>
+                                        <?php else: ?>
 
-                                        <button
-                                            type="button"
-                                            class="btn-cancel-mini"
-                                            onclick="openModal(<?= (int)$appointment['id'] ?>)">
-                                            Cancel
-                                        </button>
+                                            <span class="status-pill confirmed">
+                                                Approved
+                                            </span>
 
-                                    <?php endif; ?>
+                                        <?php endif; ?>
+
+                                        <h3>
+                                            <?= htmlspecialchars($appointment['purpose']) ?>
+                                        </h3>
+
+                                        <p>
+                                            <i class='bx bx-time'></i>
+                                            <?= date('h:i A', strtotime($appointment['appointment_time'])) ?>
+                                        </p>
 
                                     </div>
 
-                                <?php endforeach; ?>
+                                    <?php if (($appointment['reschedule_status'] ?? '') === 'pending'): ?>
 
-                            <?php endif; ?>
+                                    <button
+                                        type="button"
+                                        class="btn-cancel-mini btn-take-action"
+                                        data-appointment-id="<?= (int)$appointment['id'] ?>"
+                                        data-original-date="<?= htmlspecialchars(date('F j, Y', strtotime($appointment['appointment_date'])), ENT_QUOTES, 'UTF-8') ?>"
+                                        data-original-time="<?= htmlspecialchars(date('g:i A', strtotime($appointment['appointment_time'])), ENT_QUOTES, 'UTF-8') ?>"
+                                        data-proposed-date="<?= htmlspecialchars(date('F j, Y', strtotime($appointment['proposed_date'])), ENT_QUOTES, 'UTF-8') ?>"
+                                        data-proposed-time="<?= htmlspecialchars(date('g:i A', strtotime($appointment['proposed_time'])), ENT_QUOTES, 'UTF-8') ?>"
+                                        data-reschedule-reason="<?= htmlspecialchars($appointment['reschedule_reason'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                        onclick="openRescheduleActionModal(this)">
+                                        Take Action
+                                    </button>
 
-                        </div>
+                                <?php else: ?>
+
+                                    <button
+                                        type="button"
+                                        class="btn-cancel-mini"
+                                        onclick="openModal(<?= (int)$appointment['id'] ?>)">
+                                        Cancel
+                                    </button>
+
+                                <?php endif; ?>
+
+                                </div>
+
+                            <?php endforeach; ?>
+
+                        <?php endif; ?>
 
                     </div>
 
-                    <!-- COMPLETED (TABLE) -->
-                    <div id="completed" class="tab-content">
+                </div>
 
-                        <div class="table-container">
+                <!-- COMPLETED (TABLE) -->
+                <div id="completed" class="tab-content">
 
-                            <table class="appointment-table">
+                    <div class="table-container">
 
-                                <thead>
+                        <table class="appointment-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <?php if (empty($completedAppointments)): ?>
+
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Purpose</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
+                                        <td colspan="4" style="text-align: center;">
+                                            No completed appointments yet.
+                                        </td>
                                     </tr>
-                                </thead>
 
-                                <tbody>
+                                <?php else: ?>
 
-                                    <?php if (empty($completedAppointments)): ?>
+                                    <?php foreach ($completedAppointments as $appointment): ?>
 
                                         <tr>
-                                            <td colspan="4" style="text-align: center;">
-                                                No completed appointments yet.
+                                            <td data-label="Date">
+                                                <?= date('M d, Y', strtotime($appointment['appointment_date'])) ?>
+                                            </td>
+
+                                            <td data-label="Purpose">
+                                                <?= htmlspecialchars($appointment['purpose']) ?>
+                                            </td>
+
+                                            <td data-label="Status">
+                                                <span class="status-pill completed">
+                                                    Completed
+                                                </span>
+                                            </td>
+
+                                            <td data-label="Action">
+                                                <button
+                                                    type="button"
+                                                    class="btn-view-details"
+                                                    onclick="openAppointmentDetails(<?= (int)$appointment['id'] ?>)">
+                                                    <i class='bx bx-file-find'></i>
+                                                    View Details
+                                                </button>
                                             </td>
                                         </tr>
 
-                                    <?php else: ?>
+                                    <?php endforeach; ?>
 
-                                        <?php foreach ($completedAppointments as $appointment): ?>
+                                <?php endif; ?>
 
-                                            <tr>
-                                                <td data-label="Date">
-                                                    <?= date('M d, Y', strtotime($appointment['appointment_date'])) ?>
-                                                </td>
+                            </tbody>
 
-                                                <td data-label="Purpose">
-                                                    <?= htmlspecialchars($appointment['purpose']) ?>
-                                                </td>
+                        </table>
 
-                                                <td data-label="Status">
-                                                    <span class="status-pill completed">
-                                                        Completed
+                    </div>
+
+                </div>
+
+                <!-- REJECTED / CANCELLED -->
+                <div id="cancelled" class="tab-content">
+
+                    <div class="table-container">
+
+                        <table class="appointment-table cancelled-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <?php if (empty($cancelledAppointments)): ?>
+
+                                    <tr>
+                                        <td colspan="4" style="text-align: center;">
+                                            No rejected or cancelled appointments.
+                                        </td>
+                                    </tr>
+
+                                <?php else: ?>
+
+                                    <?php foreach ($cancelledAppointments as $appointment): ?>
+
+                                        <tr>
+
+                                            <td data-label="Date">
+                                                <?= date('M d, Y', strtotime($appointment['appointment_date'])) ?>
+                                            </td>
+
+                                            <td data-label="Purpose">
+                                                <?= htmlspecialchars($appointment['purpose']) ?>
+                                            </td>
+
+                                            <td data-label="Status">
+
+                                                <?php if (strtolower($appointment['status']) === 'rejected'): ?>
+
+                                                    <span class="status-pill cancelled">
+                                                        Rejected
                                                     </span>
-                                                </td>
 
-                                                <td data-label="Action">
-                                                    <button
-                                                        type="button"
-                                                        class="btn-view-details"
-                                                        onclick="openAppointmentDetails(<?= (int)$appointment['id'] ?>)">
-                                                        <i class='bx bx-file-find'></i>
-                                                        View Details
-                                                    </button>
-                                                </td>
-                                            </tr>
+                                                <?php else: ?>
 
-                                        <?php endforeach; ?>
+                                                    <span class="status-pill cancelled">
+                                                        Cancelled
+                                                    </span>
 
-                                    <?php endif; ?>
+                                                <?php endif; ?>
 
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-                    </div>
-
-                    <!-- REJECTED / CANCELLED -->
-                    <div id="cancelled" class="tab-content">
-
-                        <div class="table-container">
-
-                            <table class="appointment-table cancelled-table">
-
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Purpose</th>
-                                        <th>Status</th>
-                                        <th>Details</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-
-                                    <?php if (empty($cancelledAppointments)): ?>
-
-                                        <tr>
-                                            <td colspan="4" style="text-align: center;">
-                                                No rejected or cancelled appointments.
                                             </td>
-                                        </tr>
 
-                                    <?php else: ?>
+                                            <td data-label="Details">
+                                                <div class="appointment-details">
 
-                                        <?php foreach ($cancelledAppointments as $appointment): ?>
+                                                    <div class="reason-text">
+                                                        <strong>Reason:</strong>
+                                                        <?= !empty($appointment['reason'])
+                                                            ? htmlspecialchars($appointment['reason'])
+                                                            : 'No reason provided.' ?>
+                                                    </div>
 
-                                            <tr>
+                                                    <?php if (!empty($appointment['note'])): ?>
 
-                                                <td data-label="Date">
-                                                    <?= date('M d, Y', strtotime($appointment['appointment_date'])) ?>
-                                                </td>
-
-                                                <td data-label="Purpose">
-                                                    <?= htmlspecialchars($appointment['purpose']) ?>
-                                                </td>
-
-                                                <td data-label="Status">
-
-                                                    <?php if (strtolower($appointment['status']) === 'rejected'): ?>
-
-                                                        <span class="status-pill cancelled">
-                                                            Rejected
-                                                        </span>
-
-                                                    <?php else: ?>
-
-                                                        <span class="status-pill cancelled">
-                                                            Cancelled
-                                                        </span>
+                                                        <div class="note-text">
+                                                            <strong>Note:</strong>
+                                                            <?= htmlspecialchars($appointment['note']) ?>
+                                                        </div>
 
                                                     <?php endif; ?>
 
-                                                </td>
+                                                </div>
+                                            </td>
 
-                                                <td data-label="Details">
-                                                    <div class="appointment-details">
+                                        </tr>
 
-                                                        <div class="reason-text">
-                                                            <strong>Reason:</strong>
-                                                            <?= !empty($appointment['reason'])
-                                                                ? htmlspecialchars($appointment['reason'])
-                                                                : 'No reason provided.' ?>
-                                                        </div>
+                                    <?php endforeach; ?>
 
-                                                        <?php if (!empty($appointment['note'])): ?>
+                                <?php endif; ?>
 
-                                                            <div class="note-text">
-                                                                <strong>Note:</strong>
-                                                                <?= htmlspecialchars($appointment['note']) ?>
-                                                            </div>
+                            </tbody>
 
-                                                        <?php endif; ?>
-
-                                                    </div>
-                                                </td>
-
-                                            </tr>
-
-                                        <?php endforeach; ?>
-
-                                    <?php endif; ?>
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
+                        </table>
 
                     </div>
 
                 </div>
+
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
+</main>
 
-    <form
-        id="cancelAppointmentForm"
-        method="POST"
-        action="../actions/student_cancel_appointment.php"
-        style="display: none;"
+<form
+    id="cancelAppointmentForm"
+    method="POST"
+    action="../actions/student_cancel_appointment.php"
+    style="display: none;"
+>
+    <input
+        type="hidden"
+        name="appointment_id"
+        id="cancelAppointmentId"
     >
-        <input
-            type="hidden"
-            name="appointment_id"
-            id="cancelAppointmentId"
-        >
 
-        <input
-            type="hidden"
-            name="reason"
-            id="cancelAppointmentReason"
-        >
-    </form>
-
-    <form
-        id="rescheduleResponseForm"
-        method="POST"
-        action="../actions/respond_reschedule_request.php"
-        style="display: none;"
+    <input
+        type="hidden"
+        name="reason"
+        id="cancelAppointmentReason"
     >
-        <input
-            type="hidden"
-            name="csrf_token"
-            value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>"
-        >
+</form>
 
-        <input
-            type="hidden"
-            name="appointment_id"
-            id="rescheduleAppointmentId"
-        >
-
-        <input
-            type="hidden"
-            name="action"
-            id="rescheduleResponseAction"
-        >
-    </form>
-
-    <?php if (in_array($_SESSION['role'] ?? '', $notificationRoles, true)): ?>
-    <!-- NOTIFICATION PERMISSION MODAL -->
-    <div
-        id="notificationPermissionModal"
-        class="modal-overlay hidden"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="notificationModalTitle"
-        aria-describedby="notificationModalDescription"
+<form
+    id="rescheduleResponseForm"
+    method="POST"
+    action="../actions/respond_reschedule_request.php"
+    style="display: none;"
+>
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>"
     >
-        <div class="modal-box notification-modal">
 
-            <div class="notification-modal-icon">
-                <i class='bx bx-bell'></i>
+    <input
+        type="hidden"
+        name="appointment_id"
+        id="rescheduleAppointmentId"
+    >
+
+    <input
+        type="hidden"
+        name="action"
+        id="rescheduleResponseAction"
+    >
+</form>
+
+<?php if (in_array($_SESSION['role'] ?? '', $notificationRoles, true)): ?>
+<!-- NOTIFICATION PERMISSION MODAL -->
+<div
+    id="notificationPermissionModal"
+    class="modal-overlay hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="notificationModalTitle"
+    aria-describedby="notificationModalDescription"
+>
+    <div class="modal-box notification-modal">
+
+        <div class="notification-modal-icon">
+            <i class='bx bx-bell'></i>
+        </div>
+
+        <h3 id="notificationModalTitle">
+            Stay Updated with MediTrack
+        </h3>
+
+        <p id="notificationModalDescription">
+            Get notified when your clinic appointment is approved,
+            rescheduled, rejected, or cancelled.
+        </p>
+
+        <div class="modal-btns">
+            <button
+                type="button"
+                id="maybeLaterNotificationsButton"
+                class="btn-no"
+            >
+                Maybe Later
+            </button>
+
+            <button
+                type="button"
+                id="enableNotificationModalButton"
+                class="btn-notification-enable"
+            >
+                Enable Notifications
+            </button>
+        </div>
+
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- RESCHEDULE ACTION MODAL -->
+<div id="rescheduleActionModal" class="modal-overlay hidden">
+    <div class="modal-box reschedule-modal">
+
+        <div class="reschedule-modal-icon">
+            <i class='bx bx-calendar-edit'></i>
+        </div>
+
+        <h3>Appointment Reschedule Request</h3>
+
+        <p class="reschedule-modal-description">
+            The clinic has requested to change your appointment schedule.
+            Please review the proposed schedule before proceeding.
+        </p>
+
+        <div class="reschedule-details">
+
+            <div class="schedule-item current-schedule">
+                <span class="schedule-label">
+                    <i class='bx bx-calendar'></i>
+                    Current Schedule
+                </span>
+
+                <p id="originalAppointmentSchedule"></p>
             </div>
 
-            <h3 id="notificationModalTitle">
-                Stay Updated with MediTrack
-            </h3>
+            <div class="schedule-item proposed-schedule">
+                <span class="schedule-label">
+                    <i class='bx bx-calendar-check'></i>
+                    Proposed Schedule
+                </span>
 
-            <p id="notificationModalDescription">
-                Get notified when your clinic appointment is approved,
-                rescheduled, rejected, or cancelled.
-            </p>
+                <p id="proposedAppointmentSchedule"></p>
+            </div>
 
-            <div class="modal-btns">
-                <button
-                    type="button"
-                    id="maybeLaterNotificationsButton"
-                    class="btn-no"
-                >
-                    Maybe Later
-                </button>
-
-                <button
-                    type="button"
-                    id="enableNotificationModalButton"
-                    class="btn-notification-enable"
-                >
-                    Enable Notifications
-                </button>
+            <div class="schedule-item">
+                <span class="schedule-label">
+                    <i class='bx bx-message-detail'></i>
+                    Reason for Reschedule
+                </span>
+                <p id="rescheduleReason"></p>
             </div>
 
         </div>
+
+        <button
+            type="button"
+            class="btn-accept-reschedule"
+            onclick="acceptReschedule()">
+            Accept Schedule
+        </button>
+
+        <button
+            type="button"
+            class="btn-cancel-reschedule"
+            onclick="cancelRescheduledAppointment()">
+            Cancel Appointment
+        </button>
+
+        <button
+            type="button"
+            class="btn-close-reschedule"
+            onclick="closeRescheduleActionModal()">
+            Close
+        </button>
+
     </div>
-    <?php endif; ?>
+</div>
 
-    <!-- RESCHEDULE ACTION MODAL -->
-    <div id="rescheduleActionModal" class="modal-overlay hidden">
-        <div class="modal-box reschedule-modal">
+<!-- APPOINTMENT CONSULTATION DETAILS MODAL -->
+<div id="appointmentDetailsModal" class="modal-overlay hidden">
+    <div class="modal-box appointment-details-modal">
 
-            <div class="reschedule-modal-icon">
-                <i class='bx bx-calendar-edit'></i>
-            </div>
-
-            <h3>Appointment Reschedule Request</h3>
-
-            <p class="reschedule-modal-description">
-                The clinic has requested to change your appointment schedule.
-                Please review the proposed schedule before proceeding.
-            </p>
-
-            <div class="reschedule-details">
-
-                <div class="schedule-item current-schedule">
-                    <span class="schedule-label">
-                        <i class='bx bx-calendar'></i>
-                        Current Schedule
-                    </span>
-
-                    <p id="originalAppointmentSchedule"></p>
-                </div>
-
-                <div class="schedule-item proposed-schedule">
-                    <span class="schedule-label">
-                        <i class='bx bx-calendar-check'></i>
-                        Proposed Schedule
-                    </span>
-
-                    <p id="proposedAppointmentSchedule"></p>
-                </div>
-
-                <div class="schedule-item">
-                    <span class="schedule-label">
-                        <i class='bx bx-message-detail'></i>
-                        Reason for Reschedule
-                    </span>
-                    <p id="rescheduleReason"></p>
-                </div>
-
-            </div>
-
-            <button
-                type="button"
-                class="btn-accept-reschedule"
-                onclick="acceptReschedule()">
-                Accept Schedule
-            </button>
-
-            <button
-                type="button"
-                class="btn-cancel-reschedule"
-                onclick="cancelRescheduledAppointment()">
-                Cancel Appointment
-            </button>
-
-            <button
-                type="button"
-                class="btn-close-reschedule"
-                onclick="closeRescheduleActionModal()">
-                Close
-            </button>
-
+        <div class="reschedule-modal-icon">
+            <i class='bx bx-file'></i>
         </div>
+
+        <h3>Consultation Details</h3>
+
+        <p class="reschedule-modal-description">
+            Here are the consultation details recorded by the clinic.
+        </p>
+
+        <div id="appointmentDetailsContent" class="appointment-details-content">
+            <p>Loading consultation details...</p>
+        </div>
+
+        <button
+            type="button"
+            class="btn-close-reschedule"
+            onclick="closeAppointmentDetails()">
+            Close
+        </button>
+
     </div>
+</div>
 
-    <!-- APPOINTMENT CONSULTATION DETAILS MODAL -->
-    <div id="appointmentDetailsModal" class="modal-overlay hidden">
-        <div class="modal-box appointment-details-modal">
+<!-- CANCEL MODAL -->
+<div id="cancelModal" class="modal-overlay hidden">
+    <div class="modal-box">
 
-            <div class="reschedule-modal-icon">
-                <i class='bx bx-file'></i>
-            </div>
+        <div class="message-icon warning">
+            <i class='bx bx-error-circle'></i>
+        </div>
 
-            <h3>Consultation Details</h3>
+        <h3>Cancel Appointment?</h3>
 
-            <p class="reschedule-modal-description">
-                Here are the consultation details recorded by the clinic.
-            </p>
+        <p>
+            This action cannot be undone. Please provide a reason for cancellation.
+        </p>
 
-            <div id="appointmentDetailsContent" class="appointment-details-content">
-                <p>Loading consultation details...</p>
-            </div>
+        <div class="cancel-reason">
+            <label for="cancelReason">Reason for cancellation</label>
 
-            <button
-                type="button"
-                class="btn-close-reschedule"
-                onclick="closeAppointmentDetails()">
-                Close
+            <select id="cancelReason">
+                <option value="">Select a reason</option>
+                <option value="Schedule conflict">Schedule conflict</option>
+                <option value="No longer needed">No longer needed</option>
+                <option value="Feeling better">Feeling better</option>
+                <option value="Booked by mistake">Booked by mistake</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="cancel-other hidden" id="cancelOtherWrapper">
+            <label for="otherReason">Please specify</label>
+
+            <textarea
+                id="otherReason"
+                rows="3"
+                placeholder="Enter your reason..."
+            ></textarea>
+        </div>
+
+        <div class="modal-btns">
+            <button class="btn-no" onclick="closeModal()">
+                No, Keep it
             </button>
 
+            <button class="btn-logout-confirm" onclick="confirmCancel()">
+                Yes, Cancel
+            </button>
         </div>
+
     </div>
+</div>
 
-    <!-- CANCEL MODAL -->
-    <div id="cancelModal" class="modal-overlay hidden">
-        <div class="modal-box">
+<!-- CANCEL PROCESSING MODAL -->
+<div id="cancelProcessingModal" class="modal-overlay hidden">
+    <div class="modal-box processing-modal">
 
-            <div class="message-icon warning">
-                <i class='bx bx-error-circle'></i>
-            </div>
+        <div class="processing-spinner"></div>
 
-            <h3>Cancel Appointment?</h3>
+        <h3>Canceling Appointment...</h3>
+
+        <p>
+            Please wait while we process your cancellation request.
+        </p>
+
+    </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div id="successModal" class="modal-overlay hidden">
+    <div class="modal-box success-modal">
+
+        <div class="message-icon success">
+            <i class='bx bx-check'></i>
+        </div>
+
+        <h3><?= htmlspecialchars($successMessage ?: 'Success!', ENT_QUOTES, 'UTF-8') ?></h3>
 
             <p>
-                This action cannot be undone. Please provide a reason for cancellation.
+                <?= htmlspecialchars(
+                    $successDescription ?: 'Your appointment has been updated successfully.',
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>
             </p>
 
-            <div class="cancel-reason">
-                <label for="cancelReason">Reason for cancellation</label>
-
-                <select id="cancelReason">
-                    <option value="">Select a reason</option>
-                    <option value="Schedule conflict">Schedule conflict</option>
-                    <option value="No longer needed">No longer needed</option>
-                    <option value="Feeling better">Feeling better</option>
-                    <option value="Booked by mistake">Booked by mistake</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-
-            <div class="cancel-other hidden" id="cancelOtherWrapper">
-                <label for="otherReason">Please specify</label>
-
-                <textarea
-                    id="otherReason"
-                    rows="3"
-                    placeholder="Enter your reason..."
-                ></textarea>
-            </div>
-
-            <div class="modal-btns">
-                <button class="btn-no" onclick="closeModal()">
-                    No, Keep it
-                </button>
-
-                <button class="btn-logout-confirm" onclick="confirmCancel()">
-                    Yes, Cancel
-                </button>
-            </div>
-
+        <div class="modal-btns single-btn">
+            <button class="btn-success" onclick="closeSuccessModal()">
+                Done
+            </button>
         </div>
+
     </div>
+</div>
 
-    <!-- CANCEL PROCESSING MODAL -->
-    <div id="cancelProcessingModal" class="modal-overlay hidden">
-        <div class="modal-box processing-modal">
+<script>
+    function switchTab(evt, tabName) {
+        var i, tabcontent, tablinks;
 
-            <div class="processing-spinner"></div>
+        tabcontent = document.getElementsByClassName("tab-content");
 
-            <h3>Canceling Appointment...</h3>
-
-            <p>
-                Please wait while we process your cancellation request.
-            </p>
-
-        </div>
-    </div>
-
-    <!-- SUCCESS MODAL -->
-    <div id="successModal" class="modal-overlay hidden">
-        <div class="modal-box success-modal">
-
-            <div class="message-icon success">
-                <i class='bx bx-check'></i>
-            </div>
-
-            <h3><?= htmlspecialchars($successMessage ?: 'Success!', ENT_QUOTES, 'UTF-8') ?></h3>
-
-                <p>
-                    <?= htmlspecialchars(
-                        $successDescription ?: 'Your appointment has been updated successfully.',
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
-                </p>
-
-            <div class="modal-btns single-btn">
-                <button class="btn-success" onclick="closeSuccessModal()">
-                    Done
-                </button>
-            </div>
-
-        </div>
-    </div>
-
-    <script>
-        function switchTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-
-            tabcontent = document.getElementsByClassName("tab-content");
-
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-
-            tablinks = document.getElementsByClassName("tab-btn");
-
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className =
-                    tablinks[i].className.replace(" active", "");
-            }
-
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
         }
 
-        // Open the requested appointment tab from a notification URL.
-        document.addEventListener("DOMContentLoaded", function () {
-            const allowedTabs = [
-                "pending",
-                "approved",
-                "completed",
-                "cancelled"
-            ];
+        tablinks = document.getElementsByClassName("tab-btn");
 
-            const requestedTab =
-                new URLSearchParams(window.location.search).get("tab");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className =
+                tablinks[i].className.replace(" active", "");
+        }
 
-            if (!allowedTabs.includes(requestedTab)) {
-                return;
-            }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
 
-            const tabNames = [
-                "pending",
-                "approved",
-                "completed",
-                "cancelled"
-            ];
+    // Open the requested appointment tab from a notification URL.
+    document.addEventListener("DOMContentLoaded", function () {
+        const allowedTabs = [
+            "pending",
+            "approved",
+            "completed",
+            "cancelled"
+        ];
 
-            const tabButtons = document.querySelectorAll(
-                ".appointment-tabs .tab-btn"
+        const requestedTab =
+            new URLSearchParams(window.location.search).get("tab");
+
+        if (!allowedTabs.includes(requestedTab)) {
+            return;
+        }
+
+        const tabNames = [
+            "pending",
+            "approved",
+            "completed",
+            "cancelled"
+        ];
+
+        const tabButtons = document.querySelectorAll(
+            ".appointment-tabs .tab-btn"
+        );
+
+        const index = tabNames.indexOf(requestedTab);
+
+        if (index !== -1 && tabButtons[index]) {
+            switchTab(
+                { currentTarget: tabButtons[index] },
+                requestedTab
             );
+        }
+    });
 
-            const index = tabNames.indexOf(requestedTab);
+    let selectedAppointmentId = null;
 
-            if (index !== -1 && tabButtons[index]) {
-                switchTab(
-                    { currentTarget: tabButtons[index] },
-                    requestedTab
-                );
-            }
-        });
+    let selectedRescheduleAppointmentId = null;
 
-        let selectedAppointmentId = null;
+    function openRescheduleActionModal(button) {
+        selectedRescheduleAppointmentId =
+            button.dataset.appointmentId;
 
-        let selectedRescheduleAppointmentId = null;
+        document.getElementById('originalAppointmentSchedule').textContent =
+            button.dataset.originalDate + ' at ' +
+            button.dataset.originalTime;
 
-        function openRescheduleActionModal(button) {
-            selectedRescheduleAppointmentId =
-                button.dataset.appointmentId;
+        document.getElementById('proposedAppointmentSchedule').textContent =
+            button.dataset.proposedDate + ' at ' +
+            button.dataset.proposedTime;
 
-            document.getElementById('originalAppointmentSchedule').textContent =
-                button.dataset.originalDate + ' at ' +
-                button.dataset.originalTime;
+        document.getElementById('rescheduleActionModal')
+            .classList.remove('hidden');
 
-            document.getElementById('proposedAppointmentSchedule').textContent =
-                button.dataset.proposedDate + ' at ' +
-                button.dataset.proposedTime;
+        document.getElementById('rescheduleReason').textContent =
+        button.dataset.rescheduleReason || 'No reason provided.';
+    }
 
-            document.getElementById('rescheduleActionModal')
-                .classList.remove('hidden');
+    function closeRescheduleActionModal() {
+        selectedRescheduleAppointmentId = null;
 
-            document.getElementById('rescheduleReason').textContent =
-            button.dataset.rescheduleReason || 'No reason provided.';
+        document.getElementById('rescheduleActionModal')
+            .classList.add('hidden');
+    }
+
+    function acceptReschedule() {
+        if (!selectedRescheduleAppointmentId) {
+            return;
         }
 
-        function closeRescheduleActionModal() {
-            selectedRescheduleAppointmentId = null;
+        document.getElementById('rescheduleAppointmentId').value =
+            selectedRescheduleAppointmentId;
 
-            document.getElementById('rescheduleActionModal')
-                .classList.add('hidden');
-        }
+        document.getElementById('rescheduleResponseAction').value =
+            'accept';
 
-        function acceptReschedule() {
-            if (!selectedRescheduleAppointmentId) {
-                return;
-            }
+        document.getElementById('rescheduleResponseForm').submit();
+    }
 
-            document.getElementById('rescheduleAppointmentId').value =
-                selectedRescheduleAppointmentId;
+    function cancelRescheduledAppointment() {
+    if (!selectedRescheduleAppointmentId) {
+        return;
+    }
 
-            document.getElementById('rescheduleResponseAction').value =
-                'accept';
+    const appointmentId = selectedRescheduleAppointmentId;
 
-            document.getElementById('rescheduleResponseForm').submit();
-        }
+    closeRescheduleActionModal();
+    openModal(appointmentId);
+}
 
-        function cancelRescheduledAppointment() {
+    function cancelRescheduledAppointment() {
         if (!selectedRescheduleAppointmentId) {
             return;
         }
@@ -937,264 +948,253 @@
         openModal(appointmentId);
     }
 
-        function cancelRescheduledAppointment() {
-            if (!selectedRescheduleAppointmentId) {
-                return;
+    function openModal(appointmentId) {
+
+        selectedAppointmentId = appointmentId;
+
+        // Reset reason fields every time the modal opens
+        document.getElementById('cancelReason').value = '';
+        document.getElementById('otherReason').value = '';
+        document.getElementById('cancelOtherWrapper')
+            .classList.add('hidden');
+
+        document.getElementById('cancelModal')
+            .classList.remove('hidden');
+    }
+
+
+    function closeModal() {
+
+        selectedAppointmentId = null;
+
+        document.getElementById('cancelModal')
+            .classList.add('hidden');
+    }
+
+
+    // Show "Other" text box
+    document.getElementById('cancelReason')
+        .addEventListener('change', function () {
+
+            const otherWrapper =
+                document.getElementById('cancelOtherWrapper');
+
+            if (this.value === 'Other') {
+                otherWrapper.classList.remove('hidden');
+            } else {
+                otherWrapper.classList.add('hidden');
             }
+        });
 
-            const appointmentId = selectedRescheduleAppointmentId;
 
-            closeRescheduleActionModal();
-            openModal(appointmentId);
+    function confirmCancel() {
+
+        if (!selectedAppointmentId) {
+            return;
         }
 
-        function openModal(appointmentId) {
+        const selectedReason =
+            document.getElementById('cancelReason').value;
 
-            selectedAppointmentId = appointmentId;
-
-            // Reset reason fields every time the modal opens
-            document.getElementById('cancelReason').value = '';
-            document.getElementById('otherReason').value = '';
-            document.getElementById('cancelOtherWrapper')
-                .classList.add('hidden');
-
-            document.getElementById('cancelModal')
-                .classList.remove('hidden');
+        if (!selectedReason) {
+            alert('Please select a reason for cancellation.');
+            return;
         }
 
+        let reason = selectedReason;
 
-        function closeModal() {
+        if (selectedReason === 'Other') {
 
-            selectedAppointmentId = null;
+            reason =
+                document.getElementById('otherReason')
+                .value
+                .trim();
 
-            document.getElementById('cancelModal')
-                .classList.add('hidden');
+            if (!reason) {
+                alert('Please specify your reason for cancellation.');
+                return;
+            }
         }
 
+        // Put the appointment ID into the hidden form
+        document.getElementById('cancelAppointmentId').value =
+            selectedAppointmentId;
 
-        // Show "Other" text box
-        document.getElementById('cancelReason')
-            .addEventListener('change', function () {
+        // Put the cancellation reason into the hidden form
+        document.getElementById('cancelAppointmentReason').value =
+            reason;
 
-                const otherWrapper =
-                    document.getElementById('cancelOtherWrapper');
+        // Close cancellation confirmation modal
+        document.getElementById('cancelModal')
+            .classList.add('hidden');
 
-                if (this.value === 'Other') {
-                    otherWrapper.classList.remove('hidden');
-                } else {
-                    otherWrapper.classList.add('hidden');
-                }
-            });
+        // Show processing modal
+        document.getElementById('cancelProcessingModal')
+            .classList.remove('hidden');
+
+        // Prevent duplicate submissions
+        const cancelButton = document.querySelector(
+            '#cancelModal .btn-logout-confirm'
+        );
+
+        if (cancelButton) {
+            cancelButton.disabled = true;
+            cancelButton.textContent = 'Canceling...';
+        }
+
+        // Submit the original form
+        document.getElementById('cancelAppointmentForm').submit();
+    }
 
 
-        function confirmCancel() {
+    function openLogoutModal() {
+        document.getElementById('logoutModal')
+            .classList.remove('hidden');
+    }
 
-            if (!selectedAppointmentId) {
-                return;
-            }
 
-            const selectedReason =
-                document.getElementById('cancelReason').value;
+    function closeLogoutModal() {
+        document.getElementById('logoutModal')
+            .classList.add('hidden');
+    }
 
-            if (!selectedReason) {
-                alert('Please select a reason for cancellation.');
-                return;
-            }
 
-            let reason = selectedReason;
+    function confirmLogout() {
+        window.location.href = "../auth/logout.php";
+    }
 
-            if (selectedReason === 'Other') {
+    function openSuccessModal() {
+        document.getElementById('successModal')
+            .classList.remove('hidden');
+    }
 
-                reason =
-                    document.getElementById('otherReason')
-                    .value
-                    .trim();
+    function closeSuccessModal() {
+        document.getElementById('successModal')
+            .classList.add('hidden');
+    }
 
-                if (!reason) {
-                    alert('Please specify your reason for cancellation.');
-                    return;
-                }
-            }
+    <?php if ($successMessage): ?>
+        document.addEventListener("DOMContentLoaded", function () {
+            openSuccessModal();
+        });
+    <?php endif; ?>
 
-            // Put the appointment ID into the hidden form
-            document.getElementById('cancelAppointmentId').value =
-                selectedAppointmentId;
+    // ===============================
+    // APPOINTMENT CONSULTATION DETAILS
+    // ===============================
 
-            // Put the cancellation reason into the hidden form
-            document.getElementById('cancelAppointmentReason').value =
-                reason;
+    async function openAppointmentDetails(appointmentId) {
+        const modal = document.getElementById('appointmentDetailsModal');
+        const content = document.getElementById('appointmentDetailsContent');
 
-            // Close cancellation confirmation modal
-            document.getElementById('cancelModal')
-                .classList.add('hidden');
+        modal.classList.remove('hidden');
+        content.replaceChildren();
 
-            // Show processing modal
-            document.getElementById('cancelProcessingModal')
-                .classList.remove('hidden');
+        const loading = document.createElement('p');
+        loading.textContent = 'Loading consultation details...';
+        content.appendChild(loading);
 
-            // Prevent duplicate submissions
-            const cancelButton = document.querySelector(
-                '#cancelModal .btn-logout-confirm'
+        try {
+            const response = await fetch(
+                '../actions/get_patient_appointment_details.php?appointment_id=' +
+                encodeURIComponent(appointmentId)
             );
 
-            if (cancelButton) {
-                cancelButton.disabled = true;
-                cancelButton.textContent = 'Canceling...';
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Unable to load consultation details.');
             }
 
-            // Submit the original form
-            document.getElementById('cancelAppointmentForm').submit();
-        }
+            const consultation = data.consultation;
 
-
-        function openLogoutModal() {
-            document.getElementById('logoutModal')
-                .classList.remove('hidden');
-        }
-
-
-        function closeLogoutModal() {
-            document.getElementById('logoutModal')
-                .classList.add('hidden');
-        }
-
-
-        function confirmLogout() {
-            window.location.href = "../auth/logout.php";
-        }
-
-        function openSuccessModal() {
-            document.getElementById('successModal')
-                .classList.remove('hidden');
-        }
-
-        function closeSuccessModal() {
-            document.getElementById('successModal')
-                .classList.add('hidden');
-        }
-
-        <?php if ($successMessage): ?>
-            document.addEventListener("DOMContentLoaded", function () {
-                openSuccessModal();
-            });
-        <?php endif; ?>
-
-        // ===============================
-        // APPOINTMENT CONSULTATION DETAILS
-        // ===============================
-
-        async function openAppointmentDetails(appointmentId) {
-            const modal = document.getElementById('appointmentDetailsModal');
-            const content = document.getElementById('appointmentDetailsContent');
-
-            modal.classList.remove('hidden');
             content.replaceChildren();
 
-            const loading = document.createElement('p');
-            loading.textContent = 'Loading consultation details...';
-            content.appendChild(loading);
+            const details = [
+                ['Consultation Date', formatAppointmentDetailDate(consultation.date)],
+                ['Time', formatAppointmentDetailTime(consultation.time)],
+                ['Complaint', consultation.complaint],
+                ['Treatment Given', consultation.treatment_given],
+                ['Medicine Dispensed', consultation.medicines_dispensed || 'No medicine dispensed'],
+                ['Remarks', consultation.remarks]
+            ];
 
-            try {
-                const response = await fetch(
-                    '../actions/get_patient_appointment_details.php?appointment_id=' +
-                    encodeURIComponent(appointmentId)
-                );
+            details.forEach(([label, value]) => {
+                const item = document.createElement('div');
+                item.className = 'appointment-detail-item';
 
-                const data = await response.json();
+                const heading = document.createElement('strong');
+                heading.textContent = label;
 
-                if (!response.ok || !data.success) {
-                    throw new Error(data.message || 'Unable to load consultation details.');
-                }
+                const text = document.createElement('p');
+                text.textContent = value || 'Not Recorded';
 
-                const consultation = data.consultation;
-
-                content.replaceChildren();
-
-                const details = [
-                    ['Consultation Date', formatAppointmentDetailDate(consultation.date)],
-                    ['Time', formatAppointmentDetailTime(consultation.time)],
-                    ['Complaint', consultation.complaint],
-                    ['Treatment Given', consultation.treatment_given],
-                    ['Medicine Dispensed', consultation.medicines_dispensed || 'No medicine dispensed'],
-                    ['Remarks', consultation.remarks]
-                ];
-
-                details.forEach(([label, value]) => {
-                    const item = document.createElement('div');
-                    item.className = 'appointment-detail-item';
-
-                    const heading = document.createElement('strong');
-                    heading.textContent = label;
-
-                    const text = document.createElement('p');
-                    text.textContent = value || 'Not Recorded';
-
-                    item.append(heading, text);
-                    content.appendChild(item);
-                });
-
-            } catch (error) {
-                console.error('Appointment details error:', error);
-
-                content.replaceChildren();
-
-                const errorMessage = document.createElement('p');
-                errorMessage.textContent =
-                    error.message || 'Unable to load consultation details. Please try again.';
-
-                content.appendChild(errorMessage);
-            }
-        }
-
-        function formatAppointmentDetailDate(date) {
-            if (!date) return 'Not Recorded';
-
-            const parsedDate = new Date(date + 'T00:00:00');
-
-            return parsedDate.toLocaleDateString('en-PH', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+                item.append(heading, text);
+                content.appendChild(item);
             });
+
+        } catch (error) {
+            console.error('Appointment details error:', error);
+
+            content.replaceChildren();
+
+            const errorMessage = document.createElement('p');
+            errorMessage.textContent =
+                error.message || 'Unable to load consultation details. Please try again.';
+
+            content.appendChild(errorMessage);
         }
+    }
 
-        function formatAppointmentDetailTime(time) {
-            if (!time) return 'Not Recorded';
+    function formatAppointmentDetailDate(date) {
+        if (!date) return 'Not Recorded';
 
-            const [hours, minutes] = time.split(':');
-            const parsedTime = new Date();
+        const parsedDate = new Date(date + 'T00:00:00');
 
-            parsedTime.setHours(Number(hours), Number(minutes), 0, 0);
+        return parsedDate.toLocaleDateString('en-PH', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
 
-            return parsedTime.toLocaleTimeString('en-PH', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-            });
-        }
+    function formatAppointmentDetailTime(time) {
+        if (!time) return 'Not Recorded';
 
-        function closeAppointmentDetails() {
-            document.getElementById('appointmentDetailsModal')
-                .classList.add('hidden');
-        }
+        const [hours, minutes] = time.split(':');
+        const parsedTime = new Date();
 
-        // Close consultation details modal when clicking outside
+        parsedTime.setHours(Number(hours), Number(minutes), 0, 0);
+
+        return parsedTime.toLocaleTimeString('en-PH', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+    }
+
+    function closeAppointmentDetails() {
         document.getElementById('appointmentDetailsModal')
-            .addEventListener('click', function (event) {
-                if (event.target === this) {
-                    closeAppointmentDetails();
-                }
-            });
-    </script>
+            .classList.add('hidden');
+    }
 
-    <?php
-    $patientRoles = ['Student', 'Teaching Staff', 'Non-Teaching Staff'];
+    // Close consultation details modal when clicking outside
+    document.getElementById('appointmentDetailsModal')
+        .addEventListener('click', function (event) {
+            if (event.target === this) {
+                closeAppointmentDetails();
+            }
+        });
+</script>
 
-    if (in_array($_SESSION['role'] ?? '', $patientRoles, true)):
-    ?>
-        <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
-        <script src="../assets/js/firebase_messaging.js"></script>
-    <?php endif; ?>
-    </body>
-    </html>
+<?php
+$patientRoles = ['Student', 'Teaching Staff', 'Non-Teaching Staff'];
+
+if (in_array($_SESSION['role'] ?? '', $patientRoles, true)):
+?>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
+    <script src="../assets/js/firebase_messaging.js"></script>
+<?php endif; ?>
+</body>
+</html>
