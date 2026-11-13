@@ -370,7 +370,7 @@ if (!$staff) {
 
                         <div class="input-row two-cols">
 
-                         <div class="input-group">
+                        <div class="input-group">
                             <label>Insurance Number</label>
                             <input
                                 type="text"
@@ -378,7 +378,7 @@ if (!$staff) {
                                 value="<?= htmlspecialchars($staff['insurance_number'] ?? '') ?>"
                                 placeholder="Insurance Policy Number"
                             >
-                         </div>
+                        </div>
 
                         <div class="input-group">
                             <label>Insurance Company</label>

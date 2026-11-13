@@ -443,7 +443,8 @@ function pageUrl($page, $queryParams) {
                 title="View"
                 onclick='openStaffModal({
 
-                    id: <?= json_encode($staff["staff_id_number"]) ?>,
+                    id: <?= (int) $staff["id"] ?>,
+                    staff_id_number: <?= json_encode($staff["staff_id_number"]) ?>,
                     last_name: <?= json_encode($staff["last_name"]) ?>,
                     first_name: <?= json_encode($staff["first_name"]) ?>,
                     middle_name: <?= json_encode($staff["middle_name"] ?? "") ?>,
@@ -722,7 +723,17 @@ function pageUrl($page, $queryParams) {
 
                 <div class="form-group">
                     <label>Medical History</label>
-                    <p id="m_history">--</p>
+
+                    <button
+                        type="button"
+                        class="btn-view-history"
+                        onclick="openStaffMedicalHistoryModal()">
+
+                        <i class="bx bx-file-find"></i>
+                        <span>View All Medical History</span>
+                        <i class="bx bx-chevron-right history-link-arrow"></i>
+
+                    </button>
                 </div>
 
                 <div class="form-group">
@@ -786,6 +797,58 @@ function pageUrl($page, $queryParams) {
                 </div>
 
             </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- STAFF MEDICAL HISTORY MODAL -->
+<div id="staffMedicalHistoryModal" class="modal">
+    <div class="modal-content modal-container medical-history-mode">
+
+        <span class="close" onclick="closeStaffMedicalHistoryModal()">&times;</span>
+
+        <div class="medical-history-header">
+            <div class="history-header-icon">
+                <i class="bx bx-file-medical"></i>
+            </div>
+
+            <div class="history-header-text">
+                <span>STAFF RECORD</span>
+                <h1>Medical History</h1>
+                <p id="historyStaffName">Staff Name</p>
+            </div>
+        </div>
+
+        <div class="medical-history-layout">
+
+            <!-- PAST MEDICAL HISTORY -->
+            <div class="info-section past-history-section">
+                <div class="info-title">Past Medical History</div>
+
+                <div class="history-content">
+                    <p id="pastStaffMedicalHistory">
+                        No past medical history recorded.
+                    </p>
+                </div>
+            </div>
+
+            <!-- CLINIC HISTORY -->
+            <div class="info-section clinic-history-section">
+                <div class="info-title">Clinic History</div>
+
+                <div class="history-subsection">
+                    <h3>
+                        <i class="bx bx-notepad"></i>
+                        Clinic History
+                    </h3>
+
+                    <div id="staffConsultationHistoryList">
+                        <p>No consultation records found.</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>

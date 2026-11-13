@@ -37,6 +37,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $date = $_POST['appointment_date'];
     $timeInput = trim($_POST['appointment_time']);
 
+    $reason = trim($_POST['reason'] ?? '');
+
+    if ($reason === '') {
+        $_SESSION['error'] = "Please provide a reason for rescheduling.";
+        header("Location: ../clinic/appointments.php");
+        exit();
+    }
+
     // Allowed appointment time slots
     $allowedTimes = [
         '08:30:00',
@@ -139,6 +147,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         SET
             proposed_date = ?,
             proposed_time = ?,
+            reschedule_reason = ?,
             reschedule_status = 'pending'
         WHERE id = ?
         AND status = 'Approved'
@@ -149,9 +158,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     mysqli_stmt_bind_param(
         $stmt,
-        "ssi",
+        "sssi",
         $date,
         $time,
+        $reason,
         $appointment_id
     );
 

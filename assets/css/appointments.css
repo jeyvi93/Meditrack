@@ -800,3 +800,212 @@ span.flatpickr-weekday {
     pointer-events: none;
     font-size: 14px;
 }
+
+
+/* ===============================
+   VIEW CONSULTATION DETAILS MODAL
+================================ */
+
+#appointmentDetailsModal {
+    display: flex;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+#appointmentDetailsModal.hidden {
+    display: none;
+}
+
+#appointmentDetailsModal .appointment-details-modal {
+    box-sizing: border-box;
+    max-width: 520px;
+    width: 100%;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    padding: 30px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16);
+    text-align: left;
+}
+
+#appointmentDetailsModal .reschedule-modal-icon {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: #eff6ff;
+}
+
+#appointmentDetailsModal .reschedule-modal-icon i {
+    font-size: 32px;
+    color: #2563eb;
+    margin: 0;
+}
+
+#appointmentDetailsModal h3 {
+    margin: 0 0 8px;
+    color: var(--navy-dark);
+    font-size: 1.3rem;
+    font-weight: 800;
+    text-align: center;
+}
+
+#appointmentDetailsModal .reschedule-modal-description {
+    max-width: 360px;
+    margin: 0 auto;
+    padding: 0;
+    color: #64748b;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+#appointmentDetailsModal .appointment-details-content {
+    display: grid;
+    gap: 10px;
+    margin: 24px 0;
+}
+
+#appointmentDetailsModal .appointment-detail-item {
+    padding: 13px 15px;
+    border: 1px solid #e8edf4;
+    border-radius: 11px;
+    background: #f8fafc;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+#appointmentDetailsModal .appointment-detail-item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+#appointmentDetailsModal .appointment-detail-item strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #64748b;
+    font-size: 0.7rem;
+    letter-spacing: 0.6px;
+}
+
+#appointmentDetailsModal .appointment-detail-item p {
+    padding: 0;
+    color: #1e293b;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+#appointmentDetailsModal .btn-close-reschedule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 0;
+    min-height: 44px;
+    background: #2563eb;
+    border: 1px solid #2563eb;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+#appointmentDetailsModal .btn-close-reschedule:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+/* MOBILE */
+@media (max-width: 480px) {
+
+    #appointmentDetailsModal {
+        padding: 12px;
+    }
+
+    #appointmentDetailsModal .appointment-details-modal {
+        max-height: calc(100dvh - 24px);
+        padding: 24px 18px;
+        border-radius: 16px;
+    }
+
+    #appointmentDetailsModal .reschedule-modal-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+    }
+
+    #appointmentDetailsModal .reschedule-modal-icon i {
+        font-size: 28px;
+    }
+
+    #appointmentDetailsModal h3 {
+        font-size: 1.1rem;
+    }
+
+    #appointmentDetailsModal .reschedule-modal-description {
+        font-size: 0.8rem;
+    }
+
+    #appointmentDetailsModal .appointment-details-content {
+        gap: 9px;
+        margin: 20px 0;
+    }
+
+    #appointmentDetailsModal .appointment-detail-item {
+        padding: 11px 12px;
+    }
+
+    #appointmentDetailsModal .appointment-detail-item p {
+        font-size: 0.84rem;
+    }
+}
+
+/* ===============================
+   VIEW CONSULTATION DETAILS BUTTON
+================================ */
+
+.btn-view-details {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 8px 13px;
+
+    background: #eff6ff;
+    color: #2563eb;
+
+    border: 1px solid #bfdbfe;
+    border-radius: 7px;
+
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.btn-view-details i {
+    font-size: 16px;
+}
+
+.btn-view-details:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.btn-view-details:active {
+    transform: translateY(0);
+}

@@ -678,32 +678,6 @@ $rejected = $rejectedStmt->get_result();
 
                         <td>
 
-                        
-                            <form
-                                action="../actions/complete_appointment.php"
-                                method="POST"
-                                style="display:inline;">
-
-                                <button
-                                    type="button"
-                                    class="btn-icon btn-complete"
-                                    title="Mark Completed"
-                                    onclick='openCompleteModal(
-                                        <?= htmlspecialchars(
-                                            json_encode($row["full_name"]),
-                                            ENT_QUOTES,
-                                            "UTF-8"
-                                        ); ?>,
-                                        <?= (int) $row["id"]; ?>
-                                    )'>
-
-                                    <i class="fas fa-check"></i>
-
-                                </button>
-                            </form>
-
-
-
                             <button class="btn-icon btn-resched"
                                 title="Reschedule"
                                 onclick="openRescheduleModal('<?= htmlspecialchars($row['full_name']); ?>', <?= $row['id']; ?>)">
@@ -765,6 +739,7 @@ $rejected = $rejectedStmt->get_result();
                                     <th>Date</th>
                                     <th>Reason</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -793,6 +768,16 @@ $rejected = $rejectedStmt->get_result();
                                         <span class="status-pill stat-completed">
                                         <?= htmlspecialchars($row['status']); ?>
                                         </span>
+                                    </td>
+
+                                    <td>
+                                        <button
+                                            type="button"
+                                            class="btn-view-details"
+                                            onclick="openAppointmentDetails(<?= (int)$row['id'] ?>)">
+                                            <i class='bx bx-file'></i>
+                                            View Details
+                                        </button>
                                     </td>
 
                                 </tr>
@@ -1088,101 +1073,138 @@ $rejected = $rejectedStmt->get_result();
     </div>
 
         <!-- RESCHEDULE MODAL -->
-    <div id="rescheduleModal" class="modal-overlay">
-        <div class="modal-box">
+        <div id="rescheduleModal" class="modal-overlay">
+            <div class="modal-box">
 
-            <div class="modal-header">
-                <h2>Reschedule Appointment</h2>
-                <button class="close-btn" onclick="closeRescheduleModal()">×</button>
-            </div>
-
-            <form id="rescheduleForm" action="../actions/reschedule_appointment.php" method="POST">
-                <input type="hidden" name="appointment_id" id="resAppointmentId">
-
-                <div class="form-group">
-                    <label>Patient Name</label>
-                    <input type="text" id="resPatientName" readonly>
+                <div class="modal-header">
+                    <h2>Reschedule Appointment</h2>
+                    <button class="close-btn" onclick="closeRescheduleModal()">×</button>
                 </div>
 
-                <div class="form-group">
-                    <label>New Date</label>
+                <form id="rescheduleForm" action="../actions/reschedule_appointment.php" method="POST">
+                    <input type="hidden" name="appointment_id" id="resAppointmentId">
 
-                    <div class="res-date-wrapper">
-                        <input
-                            type="text"
-                            id="resDate"
-                            name="appointment_date"
-                            placeholder="dd/mm/yyyy"
-                            required
-                            readonly
-                        >
-                        <i class="fas fa-calendar-alt"></i>
+                    <div class="form-group">
+                        <label>Patient Name</label>
+                        <input type="text" id="resPatientName" readonly>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label>New Time</label>
-                    <select id="resTime" name="appointment_time" required>
-                        <option value="">Select Time</option>
-                        <option value="08:30:00">08:30 AM</option>
-                        <option value="10:00:00">10:00 AM</option>
-                        <option value="13:30:00">01:30 PM</option>
-                        <option value="15:00:00">03:00 PM</option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label>New Date</label>
 
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="closeRescheduleModal()">Cancel</button>
-                    <button type="submit" class="btn-primary">Save Changes</button>
-                </div>
+                        <div class="res-date-wrapper">
+                            <input
+                                type="text"
+                                id="resDate"
+                                name="appointment_date"
+                                placeholder="dd/mm/yyyy"
+                                required
+                                readonly
+                            >
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
 
-            </form>
-        </div>
-    </div>
+                    <div class="form-group">
+                        <label>New Time</label>
+                        <select id="resTime" name="appointment_time" required>
+                            <option value="">Select Time</option>
+                            <option value="08:30:00">08:30 AM</option>
+                            <option value="10:00:00">10:00 AM</option>
+                            <option value="13:30:00">01:30 PM</option>
+                            <option value="15:00:00">03:00 PM</option>
+                        </select>
+                    </div>
 
-    <!-- CANCEL MODAL -->
-    <div id="cancelModal" class="modal-overlay">
-        <div class="modal-box">
+                    <div class="form-group">
+                    <label>Reason for Reschedule</label>
+                        <textarea
+                            id="resReason"
+                            name="reason"
+                            rows="3"
+                            placeholder="Enter the reason for rescheduling..."
+                            required
+                        ></textarea>
+                    </div>
 
-            <div class="modal-header">
-                <h2>Cancel Appointment</h2>
-                <button class="close-btn" onclick="closeCancelModal()">×</button>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" onclick="closeRescheduleModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                    </div>
+
+                </form>
             </div>
-
-            <form id="cancelForm" action="../actions/cancel_appointment.php" method="POST">
-                <input type="hidden" name="appointment_id" id="canAppointmentId">
-
-                <div class="form-group">
-                    <label>Patient Name</label>
-                    <input type="text" id="canPatientName" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label>Reason for Cancellation</label>
-                    <select id="canReason" name="reason" required>
-                        <option value="">Select reason</option>
-                        <option>Patient not available</option>
-                        <option>Schedule conflict</option>
-                        <option>Emergency case</option>
-                        <option>Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Additional Notes (optional)</label>
-                    <textarea id="canNotes" name="note" rows="3" placeholder="Add extra details..."></textarea>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="closeCancelModal()">Back</button>
-                    <button type="submit" class="btn-danger">Confirm Cancel</button>
-                </div>
-
-            </form>
         </div>
-    </div>
-    
-    
+
+        <!-- CANCEL MODAL -->
+        <div id="cancelModal" class="modal-overlay">
+            <div class="modal-box">
+
+                <div class="modal-header">
+                    <h2>Cancel Appointment</h2>
+                    <button class="close-btn" onclick="closeCancelModal()">×</button>
+                </div>
+
+                <form id="cancelForm" action="../actions/cancel_appointment.php" method="POST">
+                    <input type="hidden" name="appointment_id" id="canAppointmentId">
+
+                    <div class="form-group">
+                        <label>Patient Name</label>
+                        <input type="text" id="canPatientName" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Reason for Cancellation</label>
+                        <select id="canReason" name="reason" required>
+                            <option value="">Select reason</option>
+                            <option>Patient not available</option>
+                            <option>Schedule conflict</option>
+                            <option>Emergency case</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Additional Notes (optional)</label>
+                        <textarea id="canNotes" name="note" rows="3" placeholder="Add extra details..."></textarea>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" onclick="closeCancelModal()">Back</button>
+                        <button type="submit" class="btn-danger">Confirm Cancel</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- APPOINTMENT CONSULTATION DETAILS MODAL -->
+        <div id="appointmentDetailsModal" class="modal-overlay hidden">
+            <div class="modal-box appointment-details-modal">
+
+                <div class="reschedule-modal-icon">
+                    <i class='bx bx-file'></i>
+                </div>
+
+                <h3>Consultation Details</h3>
+
+                <p class="reschedule-modal-description">
+                    Here are the consultation details recorded by the clinic.
+                </p>
+
+                <div id="appointmentDetailsContent" class="appointment-details-content">
+                    <p>Loading consultation details...</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-close-reschedule"
+                    onclick="closeAppointmentDetails()">
+                    Close
+                </button>
+
+            </div>
+        </div> 
 
     <?php if (isset($_SESSION['success']) || isset($_SESSION['error'])): ?>
 

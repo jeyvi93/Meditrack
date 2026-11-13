@@ -145,6 +145,7 @@ if ($patient_type === 'student') {
 
     $stmt = $conn->prepare("
         SELECT
+            id,
             student_id_number,
             first_name,
             middle_name,
@@ -165,6 +166,7 @@ if ($patient_type === 'student') {
 
     $stmt = $conn->prepare("
         SELECT
+            id,
             staff_id_number,
             first_name,
             middle_name,
@@ -217,6 +219,15 @@ if ($patient_type !== 'student') {
 
 // Use verified database information
 $last_name = $patient['last_name'];
+// Get verified patient profile ID
+$student_id = null;
+$staff_id = null;
+
+if ($patient_type === 'student') {
+    $student_id = (int) $patient['id'];
+} else {
+    $staff_id = (int) $patient['id'];
+}
 $first_name = $patient['first_name'];
 $middle_name = $patient['middle_name'] ?? '';
 
@@ -342,30 +353,34 @@ if ($patient_type === 'student') {
 
     $sql = "
         INSERT INTO consultations (
-        appointment_id,
-        appointment_mode,
-        appointment_reason,
-        date,
-        time,
-        patient_type,
-        full_name,
-        age,
-        sex,
-        contact_number,
-        department,
-        course,
-        year_level,
-        position,
-        complaint,
-        treatment_given,
-        remarks
-    )
+            appointment_id,
+            student_id,
+            staff_id,
+            appointment_mode,
+            appointment_reason,
+            date,
+            time,
+            patient_type,
+            full_name,
+            age,
+            sex,
+            contact_number,
+            department,
+            course,
+            year_level,
+            position,
+            complaint,
+            treatment_given,
+            remarks
+        )
         VALUES (
-        NULLIF(?, 0),
-        ?,
-        ?,
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-    )
+            NULLIF(?, 0),
+            ?,
+            ?,
+            ?,
+            ?,
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        )
     ";
 
     $stmt = $conn->prepare($sql);
@@ -378,8 +393,10 @@ if ($patient_type === 'student') {
 
 
     $stmt->bind_param(
-        "issssssisssssssss",
+        "iiissssssisssssssss",
         $appointment_id,
+        $student_id,
+        $staff_id,
         $appointment_mode,
         $appointment_reason,
         $date,

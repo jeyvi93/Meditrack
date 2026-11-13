@@ -465,9 +465,6 @@ if (resDate) {
 // Recheck when returning to the page
 window.addEventListener("focus", updateRescheduleTimeSlots);
 
-
-
-
 // ===============================
 // REJECT MODAL
 // ===============================
@@ -522,6 +519,7 @@ window.addEventListener("click",function(e){
         "rejectModal",
         "rescheduleModal",
         "cancelModal",
+        "appointmentDetailsModal"
     ];
 
 
@@ -533,7 +531,11 @@ window.addEventListener("click",function(e){
 
         if(e.target===modal){
 
-            modal.style.display="none";
+            if (id === "appointmentDetailsModal") {
+                closeAppointmentDetails();
+            } else {
+                modal.style.display = "none";
+            }
 
         }
 
@@ -558,5 +560,118 @@ function closeMessageModal(){
         modal.style.display="none";
 
     }
+
+}
+
+
+// ===============================
+// CONSULTATION DETAILS MODAL
+// ===============================
+
+async function openAppointmentDetails(appointmentId) {
+
+    const modal = document.getElementById("appointmentDetailsModal");
+    const content = document.getElementById("appointmentDetailsContent");
+
+    modal.classList.remove("hidden");
+    content.replaceChildren();
+
+    const loading = document.createElement("p");
+    loading.textContent = "Loading consultation details...";
+    content.appendChild(loading);
+
+    try {
+
+        const response = await fetch(
+            "../actions/get_clinic_appointment_details.php?appointment_id=" +
+            encodeURIComponent(appointmentId)
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Unable to load consultation details.");
+        }
+
+        const consultation = data.consultation;
+
+        content.replaceChildren();
+
+        const details = [
+            ["Consultation Date", formatAppointmentDetailDate(consultation.date)],
+            ["Time", formatAppointmentDetailTime(consultation.time)],
+            ["Complaint", consultation.complaint],
+            ["Treatment Given", consultation.treatment_given],
+            ["Medicine Dispensed", consultation.medicines_dispensed || "No medicine dispensed"],
+            ["Remarks", consultation.remarks]
+        ];
+
+        details.forEach(([label, value]) => {
+
+            const item = document.createElement("div");
+            item.className = "appointment-detail-item";
+
+            const heading = document.createElement("strong");
+            heading.textContent = label;
+
+            const text = document.createElement("p");
+            text.textContent = value || "Not Recorded";
+
+            item.append(heading, text);
+            content.appendChild(item);
+
+        });
+
+    } catch (error) {
+
+        console.error("Appointment details error:", error);
+
+        content.replaceChildren();
+
+        const errorMessage = document.createElement("p");
+        errorMessage.textContent =
+            error.message || "Unable to load consultation details. Please try again.";
+
+        content.appendChild(errorMessage);
+
+    }
+
+}
+
+function formatAppointmentDetailDate(date) {
+
+    if (!date) return "Not Recorded";
+
+    const parsedDate = new Date(date + "T00:00:00");
+
+    return parsedDate.toLocaleDateString("en-PH", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+
+}
+
+function formatAppointmentDetailTime(time) {
+
+    if (!time) return "Not Recorded";
+
+    const [hours, minutes] = time.split(":");
+    const parsedTime = new Date();
+
+    parsedTime.setHours(Number(hours), Number(minutes), 0, 0);
+
+    return parsedTime.toLocaleTimeString("en-PH", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+    });
+
+}
+
+function closeAppointmentDetails() {
+
+    document.getElementById("appointmentDetailsModal")
+        .classList.add("hidden");
 
 }

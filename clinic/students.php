@@ -348,7 +348,8 @@ else
 class="icon-btn view"
 title="View"
 onclick='openStudentModal({
-    id: <?= json_encode($student["student_id_number"]) ?>,
+    id: <?= (int) $student["id"] ?>,
+    student_id_number: <?= json_encode($student["student_id_number"]) ?>,
     first_name: <?= json_encode($student["first_name"]) ?>,
     middle_name: <?= json_encode($student["middle_name"] ?? "") ?>,
     last_name: <?= json_encode($student["last_name"]) ?>,
@@ -637,7 +638,15 @@ onclick='openStudentModal({
 
                 <div class="form-group">
                     <label>Medical History</label>
-                    <p id="m_history">--</p>
+
+                    <button
+                        type="button"
+                        class="btn-view-history"
+                        onclick="openMedicalHistoryModal()">
+                        <i class="bx bx-file-find"></i>
+                        <span>View All Medical History</span>
+                        <i class="bx bx-chevron-right history-link-arrow"></i>
+                    </button>
                 </div>
 
                 <div class="form-group">
@@ -708,6 +717,70 @@ onclick='openStudentModal({
     </div>
 </div>
 
+<!-- VIEW ALL MEDICAL HISTORY MODAL -->
+<div id="medicalHistoryModal" class="modal">
+
+    <div class="modal-content modal-container medical-history-mode">
+
+        <span class="close" onclick="closeMedicalHistoryModal()">&times;</span>
+
+        <!-- MEDICAL HISTORY HEADER -->
+        <div class="medical-history-header">
+
+            <div class="history-header-icon">
+                <i class="bx bx-file-medical"></i>
+            </div>
+
+            <div class="history-header-text">
+                <span>STUDENT RECORD</span>
+                <h1>Medical History</h1>
+                <p id="historyStudentName">Student Name</p>
+            </div>
+
+        </div>
+
+        <!-- MEDICAL HISTORY LAYOUT -->
+        <div class="medical-history-layout">
+
+            <!-- LEFT: PAST MEDICAL HISTORY -->
+            <div class="info-section past-history-section">
+
+                <div class="info-title">Past Medical History</div>
+
+                <div class="history-content">
+                    <p id="pastMedicalHistory">
+                        No past medical history recorded.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: CLINIC HISTORY -->
+            <div class="info-section clinic-history-section">
+
+                <div class="info-title">Clinic History</div>
+
+                <!-- CONSULTATION HISTORY -->
+                <div class="history-subsection">
+
+                    <h3>
+                        <i class="bx bx-notepad"></i>
+                        Consultation History
+                    </h3>
+
+                    <div id="consultationHistoryList">
+                        <p>No consultation records found.</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 <!-- ARCHIVE STUDENT CONFIRMATION MODAL -->
 <div id="archiveStudentModal" class="modal">

@@ -1,3 +1,5 @@
+let selectedStudentData = null;
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // =====================
@@ -169,9 +171,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function openStudentModal(data) {
 
+    selectedStudentData = data;
+
     document.getElementById("studentModal").style.display = "flex";
 
-    document.getElementById("m_studentId").textContent = data.id;
+    document.getElementById("m_studentId").textContent = data.student_id_number;
         const fullName = [
             data.last_name,
             [
@@ -195,7 +199,6 @@ function openStudentModal(data) {
     document.getElementById("m_height").textContent = data.height ?? "Not Recorded";
     document.getElementById("m_weight").textContent = data.weight ?? "Not Recorded";
     document.getElementById("m_allergies").textContent = data.allergies || "Not Recorded";
-    document.getElementById("m_history").textContent = data.history || "Not Recorded";
     document.getElementById("m_medications").textContent = data.medications || "Not Recorded";
     document.getElementById("m_vaccines").textContent = data.vaccines || "No Records Available";
 
@@ -217,6 +220,164 @@ function closeStudentModal() {
     document.getElementById("studentModal").style.display = "none";
 
 }
+
+// =====================
+// VIEW ALL MEDICAL HISTORY MODAL
+// =====================
+
+function formatHistoryDate(date) {
+
+    if (!date) return "Date not recorded";
+
+    const parsedDate = new Date(date + "T00:00:00");
+
+    if (isNaN(parsedDate.getTime())) return date;
+
+    return parsedDate.toLocaleDateString("en-PH", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+}
+
+function createHistoryEntry(title, value) {
+
+    const entry = document.createElement("div");
+    entry.className = "history-entry";
+
+    const heading = document.createElement("h4");
+    heading.textContent = title;
+
+    const content = document.createElement("p");
+    content.textContent = value || "Not recorded";
+
+    entry.appendChild(heading);
+    entry.appendChild(content);
+
+    return entry;
+}
+
+function displayHistoryRecords(containerId, records, type) {
+
+    const container = document.getElementById(containerId);
+
+    container.replaceChildren();
+
+    if (!records || records.length === 0) {
+
+        const empty = document.createElement("p");
+        empty.textContent = "No clinic history records found.";
+
+        container.appendChild(empty);
+        return;
+    }
+
+    records.forEach(record => {
+
+        const card = document.createElement("div");
+        card.className = "history-record";
+
+        card.appendChild(createHistoryEntry(
+            "Consultation Date",
+            formatHistoryDate(record.date)
+        ));
+
+        card.appendChild(createHistoryEntry(
+            "Time",
+            record.time || "Not recorded"
+        ));
+
+        card.appendChild(createHistoryEntry(
+            "Type",
+            record.appointment_id
+                ? "Appointment"
+                : "Walk-in"
+        ));
+
+        card.appendChild(createHistoryEntry(
+            "Complaint",
+            record.complaint
+        ));
+
+        card.appendChild(createHistoryEntry(
+            "Treatment Given",
+            record.treatment_given
+        ));
+
+        card.appendChild(createHistoryEntry(
+            "Medicine Dispensed",
+            record.medicines_dispensed || "No medicine dispensed"
+        ));
+
+        card.appendChild(createHistoryEntry(
+            "Remarks",
+            record.remarks
+        ));
+
+        container.appendChild(card);
+    });
+}
+
+async function openMedicalHistoryModal() {
+
+    if (!selectedStudentData) {
+        return;
+    }
+
+    const fullName = [
+        selectedStudentData.last_name,
+        [
+            selectedStudentData.first_name,
+            selectedStudentData.middle_name
+        ].filter(name => name && name.trim() !== "").join(" ")
+    ].filter(name => name && name.trim() !== "").join(", ");
+
+    document.getElementById("historyStudentName").textContent = fullName;
+
+    document.getElementById("pastMedicalHistory").textContent =
+        selectedStudentData.history || "No past medical history recorded.";
+
+    const clinicHistoryContainer =
+        document.getElementById("consultationHistoryList");
+
+    clinicHistoryContainer.textContent = "Loading clinic history...";
+
+    document.getElementById("medicalHistoryModal").style.display = "flex";
+
+    try {
+
+        const response = await fetch(
+            "../actions/get_student_medical_history.php?student_id=" +
+            encodeURIComponent(selectedStudentData.id)
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "Unable to load medical history.");
+        }
+
+        displayHistoryRecords(
+            "consultationHistoryList",
+            data.consultations,
+            "consultation"
+        );
+
+    } catch (error) {
+
+        console.error("Medical history error:", error);
+
+        clinicHistoryContainer.textContent =
+            "Unable to load clinic history. Please try again.";
+    }
+}
+
+function closeMedicalHistoryModal() {
+
+    document.getElementById("medicalHistoryModal").style.display = "none";
+
+}
+
 
 // =====================
 // ARCHIVE STUDENT MODAL

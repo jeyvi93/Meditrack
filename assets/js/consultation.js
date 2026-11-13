@@ -528,6 +528,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("appointmentId").value = data.appointment_id;
                 document.getElementById("appointmentMode").value = "Appointment";
 
+                // Hide manual patient lookup in Appointment mode
+                const patientIdInput = document.getElementById("patientIdNumber");
+                const retrieveButton = document.getElementById("retrievePatientBtn");
+                const lookupMessage = document.getElementById("patientLookupMessage");
+
+                patientIdInput.readOnly = true;
+                retrieveButton.style.display = "none";
+                lookupMessage.style.display = "none";
+
                 // Display the appointment reason
                 document.getElementById("appointmentReason").value = data.purpose || "";
                 document.getElementById("appointmentReasonGroup").style.display = "block";
@@ -547,23 +556,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const dateInput = document.getElementById("consultationDate");
     const timeInput = document.getElementById("consultationTime");
 
-    const now = new Date();
+    function setConsultationDateTime() {
+        const now = new Date();
 
-    // Current date
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
 
-    // Current time
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
 
-    if (dateInput) {
-        dateInput.value = `${year}-${month}-${day}`;
+        if (dateInput) {
+            dateInput.value = `${year}-${month}-${day}`;
+        }
+
+        if (timeInput) {
+            timeInput.value = `${hours}:${minutes}`;
+        }
     }
 
-    if (timeInput) {
-        timeInput.value = `${hours}:${minutes}`;
-    }
+    setConsultationDateTime();
 
 });

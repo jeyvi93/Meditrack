@@ -201,11 +201,15 @@ document.addEventListener("DOMContentLoaded", function () {
 // VIEW STAFF MODAL
 // =========================
 
+let selectedStaffData = null;
+
 function openStaffModal(data) {
+
+    selectedStaffData = data;
 
     document.getElementById("staffModal").style.display = "flex";
 
-    document.getElementById("m_staffId").textContent = data.id;
+    document.getElementById("m_staffId").textContent = data.staff_id_number;
         const fullName = [
             data.last_name,
             [
@@ -241,7 +245,6 @@ function openStaffModal(data) {
             : "Not Recorded";
 
     document.getElementById("m_allergies").textContent = data.allergies || "Not Recorded";
-    document.getElementById("m_history").textContent = data.history || "Not Recorded";
     document.getElementById("m_medications").textContent = data.medications || "Not Recorded";
     document.getElementById("m_vaccines").textContent = data.vaccines || "No Records Available";
 
@@ -260,6 +263,199 @@ function openStaffModal(data) {
 function closeStaffModal() {
 
     document.getElementById("staffModal").style.display = "none";
+
+}
+
+// =========================
+// STAFF MEDICAL HISTORY
+// =========================
+
+function formatStaffHistoryDate(date) {
+
+    if (!date) return "Not Recorded";
+
+    const parsedDate = new Date(date + "T00:00:00");
+
+    return parsedDate.toLocaleDateString("en-PH", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+
+}
+
+function createStaffHistoryEntry(title, value) {
+
+    const entry = document.createElement("div");
+    entry.className = "history-entry";
+
+    const heading = document.createElement("h4");
+    heading.textContent = title;
+
+    const content = document.createElement("p");
+    content.textContent = value || "Not Recorded";
+
+    entry.appendChild(heading);
+    entry.appendChild(content);
+
+    return entry;
+
+}
+
+function displayStaffHistoryRecords(records) {
+
+    const container = document.getElementById(
+        "staffConsultationHistoryList"
+    );
+
+    container.replaceChildren();
+
+    if (!records || records.length === 0) {
+
+        const empty = document.createElement("p");
+        empty.textContent = "No clinic history records found.";
+
+        container.appendChild(empty);
+        return;
+
+    }
+
+    records.forEach(record => {
+
+        const card = document.createElement("div");
+        card.className = "history-record";
+
+        card.appendChild(
+            createStaffHistoryEntry(
+                "Consultation Date",
+                formatStaffHistoryDate(record.date)
+            )
+        );
+
+        card.appendChild(
+            createStaffHistoryEntry(
+                "Time",
+                record.time || "Not Recorded"
+            )
+        );
+
+        card.appendChild(
+            createStaffHistoryEntry(
+                "Type",
+                record.appointment_id ? "Appointment" : "Walk-in"
+            )
+        );
+
+        card.appendChild(
+            createStaffHistoryEntry(
+                "Complaint",
+                record.complaint
+            )
+        );
+
+        card.appendChild(
+            createStaffHistoryEntry(
+                "Treatment Given",
+                record.treatment_given
+            )
+        );
+
+        card.appendChild(
+            createStaffHistoryEntry(
+                "Medicine Dispensed",
+                record.medicines_dispensed || "No medicine dispensed"
+            )
+        );
+
+        card.appendChild(
+            createStaffHistoryEntry(
+                "Remarks",
+                record.remarks
+            )
+        );
+
+        container.appendChild(card);
+
+    });
+
+}
+
+async function openStaffMedicalHistoryModal() {
+
+    if (!selectedStaffData) return;
+
+    const modal = document.getElementById(
+        "staffMedicalHistoryModal"
+    );
+
+    const fullName = [
+        selectedStaffData.last_name,
+        [
+            selectedStaffData.first_name,
+            selectedStaffData.middle_name
+        ].filter(name => name && name.trim() !== "").join(" ")
+    ].filter(name => name && name.trim() !== "").join(", ");
+
+    document.getElementById("historyStaffName").textContent =
+        fullName;
+
+    document.getElementById("pastStaffMedicalHistory").textContent =
+        selectedStaffData.history || "No past medical history recorded.";
+
+    const container = document.getElementById(
+        "staffConsultationHistoryList"
+    );
+
+    container.replaceChildren();
+
+    const loading = document.createElement("p");
+    loading.textContent = "Loading clinic history...";
+
+    container.appendChild(loading);
+
+    modal.style.display = "flex";
+
+    try {
+
+        const response = await fetch(
+            "../actions/get_staff_medical_history.php?staff_id=" +
+            encodeURIComponent(selectedStaffData.id)
+        );
+
+        if (!response.ok) {
+            throw new Error("Unable to retrieve medical history.");
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(
+                data.message || "Unable to retrieve medical history."
+            );
+        }
+
+        displayStaffHistoryRecords(data.consultations);
+
+    } catch (error) {
+
+        console.error("Staff medical history error:", error);
+
+        container.replaceChildren();
+
+        const errorMessage = document.createElement("p");
+        errorMessage.textContent = "Unable to load clinic history. Please try again.";
+
+        container.appendChild(errorMessage);
+
+    }
+
+}
+
+function closeStaffMedicalHistoryModal() {
+
+    document.getElementById(
+        "staffMedicalHistoryModal"
+    ).style.display = "none";
 
 }
 
