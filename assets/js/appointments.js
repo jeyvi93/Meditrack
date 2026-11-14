@@ -509,6 +509,12 @@ function openCancelModal(name,id){
 
 }
 
+function closeCancelModal() {
+
+    document.getElementById("cancelModal").style.display = "none";
+
+}
+
 // ===============================
 // CLICK OUTSIDE TO CLOSE
 // ===============================
