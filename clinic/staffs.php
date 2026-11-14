@@ -810,7 +810,7 @@ function pageUrl($page, $queryParams) {
 
         <div class="medical-history-header">
             <div class="history-header-icon">
-                <i class="bx bx-file-medical"></i>
+                <i class="bx bx-file"></i>
             </div>
 
             <div class="history-header-text">
