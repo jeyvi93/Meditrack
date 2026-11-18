@@ -354,3 +354,11 @@ body { background-color: var(--bg-light); color: var(--text-main); }
     width: 100%;
     resize: vertical;
 }
+
+input[readonly],
+textarea[readonly] {
+    background-color: #F1F5F9;
+    color: #000000;
+    border-color: #CBD5E1;
+    cursor: not-allowed;
+}

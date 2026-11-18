@@ -102,7 +102,14 @@ if ($batchQuery) {
                         Date
                     </label>
                     <input
-                        type="date"
+                        type="text"
+                        id="consultationDateDisplay"
+                        placeholder="MM/DD/YYYY"
+                        disabled
+                    >
+
+                    <input
+                        type="hidden"
                         id="consultationDate"
                         name="consultation_date"
                         required

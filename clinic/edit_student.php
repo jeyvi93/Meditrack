@@ -173,9 +173,14 @@ unset($_SESSION['error']);
                             <div class="input-row three-cols">
                                 <div class="input-group">
                                     <label>Birth Date</label>
-                                    <input type="date" id="dobInput" name="date_of_birth"
-                                        value="<?= htmlspecialchars($student['date_of_birth'] ?? '') ?>"
-                                        readonly>
+                                    <input
+                                        type="text"
+                                        id="dobInput"
+                                        value="<?= !empty($student['date_of_birth'])
+                                            ? date('m/d/Y', strtotime($student['date_of_birth']))
+                                            : '' ?>"
+                                        readonly
+                                    >
                                 </div>
                                 <div class="input-group">
                                     <label>Age</label>

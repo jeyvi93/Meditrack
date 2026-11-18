@@ -273,7 +273,7 @@ function pageUrl($page, $queryParams) {
                             type="text"
                             class="filter-select"
                             id="dateFilter"
-                            placeholder="dd/mm/yyyy"
+                            placeholder="Select date"
                             value="<?= htmlspecialchars($dateFilter) ?>"
                             readonly
                         >
@@ -302,7 +302,7 @@ function pageUrl($page, $queryParams) {
                             <tr>
                                 <td class="date-cell">
                                     <strong>
-                                        <?= date("M d, Y", strtotime($row['referred_date'])) ?>
+                                       <?= date("m/d/Y", strtotime($row['referred_date'])) ?>
                                     </strong>
                                 </td>
 

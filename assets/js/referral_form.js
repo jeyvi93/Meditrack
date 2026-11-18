@@ -113,7 +113,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // AGE CALCULATION
     // ======================
     document.getElementById("dobInput").addEventListener("change", function () {
-        let birth = new Date(this.value);
+        const [month, day, year] = this.value.split("/");
+        let birth = new Date(Number(year), Number(month) - 1, Number(day));
         let today = new Date();
 
         let age = today.getFullYear() - birth.getFullYear();
@@ -188,7 +189,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("lastName").value = patient.last_name || "";
                     document.getElementById("firstName").value = patient.first_name || "";
                     document.getElementById("middleName").value = patient.middle_name || "";
-                    document.getElementById("dobInput").value = patient.date_of_birth || "";
+                        const dob = patient.date_of_birth || "";
+
+                    document.getElementById("dobInput").value = dob
+                        ? (() => {
+                            const [year, month, day] = dob.split("-");
+                            return `${month}/${day}/${year}`;
+                        })()
+                        : "";
+
+                    document.getElementById("dobInputHidden").value = dob;
                     document.getElementById("ageDisplay").value = patient.age ?? "";
                     document.getElementById("sex").value = patient.sex || "";
                     document.getElementById("contact").value = patient.contact_number || "";
@@ -284,5 +294,63 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    const parentDobDisplay = document.getElementById("parentDobDisplay");
+    const parentDobPicker = document.getElementById("parent_dob_picker");
+    const parentDobHidden = document.getElementById("parent_dob");
+
+    parentDobDisplay.addEventListener("click", function () {
+        try {
+            parentDobPicker.showPicker();
+        } catch (error) {
+            parentDobPicker.focus();
+            parentDobPicker.click();
+        }
+    });
+
+    if (parentDobDisplay && parentDobPicker && parentDobHidden) {
+        parentDobPicker.addEventListener("change", function () {
+            if (!this.value) {
+                parentDobDisplay.value = "";
+                parentDobHidden.value = "";
+                return;
+            }
+
+            const [year, month, day] = this.value.split("-");
+
+            parentDobDisplay.value = `${month}/${day}/${year}`;
+            parentDobHidden.value = this.value;
+        });
+    }
+
+    // SPOUSE DATE OF BIRTH
+    const spouseDobDisplay = document.getElementById("spouseDobDisplay");
+    const spouseDobPicker = document.getElementById("spouse_dob_picker");
+    const spouseDobHidden = document.getElementById("spouse_dob");
+
+    spouseDobDisplay.addEventListener("click", function () {
+        try {
+            spouseDobPicker.showPicker();
+        } catch (error) {
+            spouseDobPicker.focus();
+            spouseDobPicker.click();
+        }
+    });
+
+    if (spouseDobDisplay && spouseDobPicker && spouseDobHidden) {
+        spouseDobPicker.addEventListener("change", function () {
+            if (!this.value) {
+                spouseDobDisplay.value = "";
+                spouseDobHidden.value = "";
+                return;
+            }
+
+            const [year, month, day] = this.value.split("-");
+
+            spouseDobDisplay.value = `${month}/${day}/${year}`;
+            spouseDobHidden.value = this.value;
+        });
+    }
+
 
 });
+

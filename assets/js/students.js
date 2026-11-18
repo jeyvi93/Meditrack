@@ -169,6 +169,19 @@ document.addEventListener("DOMContentLoaded", function () {
 // VIEW MODAL
 // =====================
 
+function formatDateOfBirth(date) {
+
+    if (!date) return "Not Recorded";
+
+    const parts = date.split("-");
+
+    if (parts.length !== 3) return date;
+
+    const [year, month, day] = parts;
+
+    return `${month}/${day}/${year}`;
+}
+
 function openStudentModal(data) {
 
     selectedStudentData = data;
@@ -185,7 +198,7 @@ function openStudentModal(data) {
         ].filter(name => name && name.trim() !== "").join(", ");
 
     document.getElementById("m_fullName").textContent = fullName;
-    document.getElementById("m_dob").textContent = data.dob || "Not Recorded";
+    document.getElementById("m_dob").textContent = formatDateOfBirth(data.dob);
     document.getElementById("m_age").textContent = data.age || "Not Recorded";
     document.getElementById("m_sex").textContent = data.sex || "Not Recorded";
     document.getElementById("m_course").textContent = data.course || "Not Recorded";

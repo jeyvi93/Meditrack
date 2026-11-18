@@ -44,6 +44,7 @@ $countSql = "
             NULLIF(TRIM(staffs.first_name), ''),
             NULLIF(TRIM(staffs.last_name), '')
         ) LIKE ?
+        OR users.email LIKE ?
     )
     AND (? = '' OR users.role = ?)
 ";
@@ -52,8 +53,9 @@ $countStmt = mysqli_prepare($conn, $countSql);
 
 mysqli_stmt_bind_param(
     $countStmt,
-    "sssss",
+    "ssssss",
     $search,
+    $searchLike,
     $searchLike,
     $searchLike,
     $roleFilter,
@@ -120,6 +122,7 @@ $sql = "
             NULLIF(TRIM(staffs.first_name), ''),
             NULLIF(TRIM(staffs.last_name), '')
         ) LIKE ?
+        OR users.email LIKE ?
     )
     AND (? = '' OR users.role = ?)
 
@@ -131,8 +134,9 @@ $stmt = mysqli_prepare($conn, $sql);
 
 mysqli_stmt_bind_param(
     $stmt,
-    "sssssii",
+    "ssssssii",
     $search,
+    $searchLike,
     $searchLike,
     $searchLike,
     $roleFilter,
@@ -276,7 +280,7 @@ while ($row = mysqli_fetch_assoc($rolesResult)) {
     <header class="page-header">
         <div>
                     <h1>Account List</h1>
-                    <p>View registered accounts and their verification status.</p>
+                    <p>View and manage student and personnel accounts.</p>
                 </div>
             </header>
 

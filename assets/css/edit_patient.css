@@ -335,3 +335,11 @@
         width: 100%;
     }
 }
+
+input[readonly],
+textarea[readonly] {
+    background-color: #F1F5F9;
+    color: #000000;
+    border-color: #CBD5E1;
+    cursor: not-allowed;
+}

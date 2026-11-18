@@ -162,7 +162,7 @@ unset($_SESSION['error']);
                                 type="text"
                                 id="appointmentDate"
                                 name="appointment_date"
-                                placeholder="dd/mm/yyyy"
+                                placeholder="mm/dd/yyyy"
                                 required
                                 readonly>
                         </div>

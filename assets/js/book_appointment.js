@@ -10,7 +10,7 @@ if (appointmentDate && typeof flatpickr !== "undefined") {
     flatpickr(appointmentDate, {
         dateFormat: "Y-m-d",
         altInput: true,
-        altFormat: "d/m/Y",
+        altFormat: "m/d/Y",
         minDate: "today",
 
         disable: [
@@ -24,7 +24,7 @@ if (appointmentDate && typeof flatpickr !== "undefined") {
         },
 
         onReady: function(selectedDates, dateStr, instance) {
-            instance.altInput.placeholder = "dd/mm/yyyy";
+            instance.altInput.placeholder = "mm/dd/yyyy";
             instance.altInput.readOnly = true;
         }
     });

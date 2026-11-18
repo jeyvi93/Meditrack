@@ -183,10 +183,11 @@ if (!$staff) {
                                 <div class="input-group">
                                     <label>Birth Date</label>
                                     <input
-                                        type="date"
-                                        name="date_of_birth"
+                                        type="text"
                                         id="dobInput"
-                                        value="<?= htmlspecialchars($staff['date_of_birth'] ?? '') ?>"
+                                        value="<?= !empty($staff['date_of_birth'])
+                                            ? date('m/d/Y', strtotime($staff['date_of_birth']))
+                                            : '' ?>"
                                         readonly
                                     >
                                 </div>

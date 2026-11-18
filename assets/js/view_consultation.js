@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
         flatpickr(dateFilter, {
             dateFormat: "Y-m-d",
             altInput: true,
-            altFormat: "d/m/Y",
+            altFormat: "m/d/Y",
             enable: availableConsultationDates,
             allowInput: false,
 
@@ -270,8 +270,14 @@ function openModal(id) {
             // RECORD INFORMATION
             // ==========================
 
+            const modalDateParts = consultation.date
+                ? consultation.date.split("-")
+                : [];
+
             document.getElementById("modalDate").textContent =
-                consultation.date;
+                modalDateParts.length === 3
+                    ? `${modalDateParts[1]}/${modalDateParts[2]}/${modalDateParts[0]}`
+                    : consultation.date || "Not Recorded";
 
             document.getElementById("modalTime").textContent =
                 consultation.time;

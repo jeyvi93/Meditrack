@@ -85,7 +85,20 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                         </div>
                         <div class="input-group">
                             <label>Referred Date</label>
-                            <input type="date" id="refDate" name="referred_date" value="<?= date('Y-m-d') ?>" required>
+                            <input
+                                type="text"
+                                id="refDateDisplay"
+                                value="<?= date('m/d/Y') ?>"
+                                readonly
+                            >
+
+                            <input
+                                type="hidden"
+                                id="refDate"
+                                name="referred_date"
+                                value="<?= date('Y-m-d') ?>"
+                                required
+                            >
                         </div>
                         <div class="input-group">
                             <label>Doctor's Name</label>
@@ -154,7 +167,18 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                         </div>
                         <div class="input-group">
                             <label>Date of Birth</label>
-                            <input type="text" id="dobInput" name="date_of_birth" readonly>
+
+                            <input
+                                type="text"
+                                id="dobInput"
+                                readonly
+                            >
+
+                            <input
+                                type="hidden"
+                                id="dobInputHidden"
+                                name="date_of_birth"
+                            >
                         </div>
                         <div class="input-group">
                             <label>Age</label>
@@ -204,7 +228,28 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                             </div>
                             <div class="input-group">
                                 <label>Parent's Date of Birth</label>
-                                <input type="date" id="parent_dob" name="parent_dob">
+
+                                <div class="date-picker-wrapper">
+                                    <input
+                                        type="text"
+                                        id="parentDobDisplay"
+                                        placeholder="MM/DD/YYYY"
+                                        readonly
+                                    >
+
+                                    <input
+                                        type="date"
+                                        id="parent_dob_picker"
+                                        class="date-picker-overlay"
+                                        aria-label="Select parent's date of birth"
+                                    >
+                                </div>
+
+                                <input
+                                    type="hidden"
+                                    id="parent_dob"
+                                    name="parent_dob"
+                                >
                             </div>
                             <div class="input-group">
                                 <label>Spouse Name (if any)</label>
@@ -220,7 +265,28 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                             </div>
                             <div class="input-group">
                                 <label>Spouse's Date of Birth</label>
-                                <input type="date" id="spouse_dob" name="spouse_dob">
+
+                                <div class="date-picker-wrapper">
+                                    <input
+                                        type="text"
+                                        id="spouseDobDisplay"
+                                        placeholder="MM/DD/YYYY"
+                                        readonly
+                                    >
+
+                                    <input
+                                        type="date"
+                                        id="spouse_dob_picker"
+                                        class="date-picker-overlay"
+                                        aria-label="Select spouse's date of birth"
+                                    >
+                                </div>
+
+                                <input
+                                    type="hidden"
+                                    id="spouse_dob"
+                                    name="spouse_dob"
+                                >
                             </div>
                         </div>
                     </section>

@@ -203,6 +203,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 let selectedStaffData = null;
 
+function formatStaffDateOfBirth(date) {
+
+    if (!date) return "Not Recorded";
+
+    const parts = date.split("-");
+
+    if (parts.length !== 3) return date;
+
+    const [year, month, day] = parts;
+
+    return `${month}/${day}/${year}`;
+}
+
 function openStaffModal(data) {
 
     selectedStaffData = data;
@@ -219,7 +232,7 @@ function openStaffModal(data) {
         ].filter(name => name && name.trim() !== "").join(", ");
 
     document.getElementById("m_fullName").textContent = fullName;
-    document.getElementById("m_dob").textContent = data.dob || "Not Recorded";
+    document.getElementById("m_dob").textContent = formatStaffDateOfBirth(data.dob);
     document.getElementById("m_age").textContent = data.age ?? "Not Recorded";
     document.getElementById("m_sex").textContent = data.sex || "Not Recorded";
     document.getElementById("m_position").textContent = data.position || "Not Recorded";

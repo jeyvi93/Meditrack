@@ -8,6 +8,19 @@ $collegeLogo = base64_encode(
     file_get_contents(__DIR__ . '/../assets/images/MCC_NEW-v2.png')
 );
 
+// FORMAT DATABASE DATE TO MM/DD/YYYY
+function formatReferralDate($date) {
+    if (empty($date) || $date === '0000-00-00') {
+        return '';
+    }
+
+    $timestamp = strtotime($date);
+
+    return $timestamp !== false
+        ? date('m/d/Y', $timestamp)
+        : '';
+}
+
 ?>
 <!DOCTYPE html>
 
@@ -81,7 +94,7 @@ $collegeLogo = base64_encode(
                 <div class="col">
                     DATE OF BIRTH: <span class="field-line" id="tDob" style="width: 150px;">
                                         <span class="field-value">
-                                            <?= htmlspecialchars($referral['date_of_birth'] ?? '') ?>
+                                            <?= htmlspecialchars(formatReferralDate($referral['date_of_birth'] ?? '')) ?>
                                         </span>
                                    </span>
                 </div>
@@ -121,18 +134,14 @@ $collegeLogo = base64_encode(
                 <div class="col">
                     DATE OF BIRTH: <span class="field-line" id="tParentDob" style="width: 280px;">
                                         <span class="field-value">
-                                            <?= ($referral['parent_dob'] ?? '') !== '0000-00-00'
-                                                ? htmlspecialchars($referral['parent_dob'] ?? '')
-                                                : '' ?>
+                                            <?= htmlspecialchars(formatReferralDate($referral['parent_dob'] ?? '')) ?>
                                         </span>
                                    </span>
                 </div>
                 <div class="col" style="padding-left: 110px;">
                     DATE OF BIRTH: <span class="field-line" id="tSpouseDob" style="width: 150px;">
                                         <span class="field-value">
-                                            <?= ($referral['spouse_dob'] ?? '') !== '0000-00-00'
-                                                ? htmlspecialchars($referral['spouse_dob'] ?? '')
-                                                : '' ?>
+                                            <?= htmlspecialchars(formatReferralDate($referral['spouse_dob'] ?? '')) ?>
                                         </span>
                                    </span>
                 </div>
@@ -150,7 +159,7 @@ $collegeLogo = base64_encode(
             </thead>
             <tbody>
                 <tr>
-                    <td> <?= htmlspecialchars($referral['referred_date'] ?? '') ?> </td>
+                    <td> <?= htmlspecialchars(formatReferralDate($referral['referred_date'] ?? '')) ?> </td>
                     <td> <?= htmlspecialchars($referral['doctor_name'] ?? '') ?> </td>
                     <td class="nurse-note-cell">
                         <div class="nurse-notes">

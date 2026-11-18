@@ -570,6 +570,12 @@ document.addEventListener("DOMContentLoaded", function () {
             dateInput.value = `${year}-${month}-${day}`;
         }
 
+        const dateDisplay = document.getElementById("consultationDateDisplay");
+
+        if (dateDisplay) {
+            dateDisplay.value = `${month}/${day}/${year}`;
+        }
+
         if (timeInput) {
             timeInput.value = `${hours}:${minutes}`;
         }

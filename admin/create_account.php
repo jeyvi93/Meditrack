@@ -12,17 +12,19 @@ if (($_SESSION['role'] ?? '') !== 'Administrator') {
 
 require_once "../config/database.php";
 
+// Generate CSRF token
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Retrieve messages from the backend
 $errorMessage = $_SESSION['error'] ?? '';
 $errorField = $_SESSION['error_field'] ?? '';
 $successMessage = $_SESSION['success'] ?? '';
 
 // Retrieve old form values
-$oldStaffIdNumber = $_SESSION['old_staff_id_number'] ?? '';
+$oldStaffIdNumber = $_SESSION['old_staff_id_number'] ?? $_SESSION['old_id_number'] ?? '';
 $oldRole = $_SESSION['old_role'] ?? '';
-$oldLastName = $_SESSION['old_last_name'] ?? '';
-$oldFirstName = $_SESSION['old_first_name'] ?? '';
-$oldMiddleName = $_SESSION['old_middle_name'] ?? '';
 $oldEmail = $_SESSION['old_email'] ?? '';
 
 // Clear flash messages and stored values after copying them
@@ -31,6 +33,7 @@ unset(
     $_SESSION['error_field'],
     $_SESSION['success'],
     $_SESSION['old_staff_id_number'],
+    $_SESSION['old_id_number'],
     $_SESSION['old_role'],
     $_SESSION['old_last_name'],
     $_SESSION['old_first_name'],
@@ -46,10 +49,10 @@ unset(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Create Personnel Account | MediTrack</title>
+    <title>Create Account | MediTrack</title>
 
     <link rel="stylesheet" href="../assets/css/sidebar.css">
-    <link rel="stylesheet" href="../assets/css/create_personnel.css">
+    <link rel="stylesheet" href="../assets/css/create_account.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
@@ -130,16 +133,16 @@ unset(
 
     <header class="page-header">
         <div>
-            <h1>Create Personnel Account</h1>
-            <p>Create login accounts for existing clinic personnel.</p>
+            <h1>Create Account</h1>
+            <p>Create login accounts for existing students and personnel.</p>
         </div>
     </header>
 
     <section class="personnel-card">
 
         <div class="form-heading">
-            <h2>Personnel Information</h2>
-            <p>Enter the ID of an existing clinic staff member to create their account.</p>
+            <h2>Account Information</h2>
+            <p>Enter the ID of an existing student or personnel to create their account.</p>
         </div>
 
         <?php if ($errorMessage !== '' && $errorField === ''): ?>
@@ -148,17 +151,23 @@ unset(
             </p>
         <?php endif; ?>
 
-        <form id="personnelForm" action="../actions/create_personnel_process.php" method="POST" novalidate>
-
+        <form id="accountForm" action="../actions/create_account_process.php" method="POST" novalidate>
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>"
+            >
             <div class="form-row">
 
                 <div class="form-group">
-                    <label for="staff_id_number">Personnel ID Number</label>
+                    <label for="staff_id_number">ID Number</label>
                     <input
                         type="text"
                         id="staff_id_number"
                         name="staff_id_number"
-                        placeholder="Enter registered personnel ID"
+                        placeholder="Enter registered student or personnel ID"
+                        maxlength="20"
+                        pattern="[0-9!@#$%^&*()_+=\-./ ]+"
                         value="<?= htmlspecialchars($oldStaffIdNumber, ENT_QUOTES, 'UTF-8') ?>"
                         oninput="this.value = this.value.replace(/[A-Za-z]/g, '')"
                         required
@@ -169,12 +178,27 @@ unset(
                 </div>
 
                 <div class="form-group">
-                    <label for="role">Personnel Role</label>
+                    <label for="role">Account Type</label>
+
                     <select id="role" name="role" required>
-                        <option value="">Select personnel role</option>
+                        <option value="">Select account type</option>
+
+                        <option value="Student" <?= $oldRole === 'Student' ? 'selected' : '' ?>>
+                            Student
+                        </option>
+
+                        <option value="Teaching Staff" <?= $oldRole === 'Teaching Staff' ? 'selected' : '' ?>>
+                            Teaching Staff
+                        </option>
+
+                        <option value="Non-Teaching Staff" <?= $oldRole === 'Non-Teaching Staff' ? 'selected' : '' ?>>
+                            Non-Teaching Staff
+                        </option>
+
                         <option value="School Nurse" <?= $oldRole === 'School Nurse' ? 'selected' : '' ?>>
                             School Nurse
                         </option>
+
                         <option value="Clinic Staff" <?= $oldRole === 'Clinic Staff' ? 'selected' : '' ?>>
                             Clinic Staff
                         </option>
@@ -187,66 +211,13 @@ unset(
 
             </div>
 
-            <div class="form-row name-row">
-
-                <div class="form-group">
-                    <label for="last_name">Last Name</label>
-                    <input
-                        type="text"
-                        id="last_name"
-                        name="last_name"
-                        placeholder="Enter last name"
-                        value="<?= htmlspecialchars($oldLastName, ENT_QUOTES, 'UTF-8') ?>"
-                        oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
-                        required
-                    >
-                    <span class="field-error" id="last_name_error">
-                        <?= $errorField === 'last_name' ? htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8') : '' ?>
-                    </span>
-                </div>
-
-                <div class="form-group">
-                    <label for="first_name">First Name</label>
-                    <input
-                        type="text"
-                        id="first_name"
-                        name="first_name"
-                        placeholder="Enter first name"
-                        value="<?= htmlspecialchars($oldFirstName, ENT_QUOTES, 'UTF-8') ?>"
-                        oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
-                        required
-                    >
-                    <span class="field-error" id="first_name_error">
-                        <?= $errorField === 'first_name' ? htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8') : '' ?>
-                    </span>
-                </div>
-
-                <div class="form-group">
-                    <label for="middle_name">
-                        Middle Name <span class="middle-name-note">(Leave blank if none)</span>
-                    </label>
-                    <input
-                        type="text"
-                        id="middle_name"
-                        name="middle_name"
-                        placeholder="Enter middle name"
-                        value="<?= htmlspecialchars($oldMiddleName, ENT_QUOTES, 'UTF-8') ?>"
-                        oninput="this.value = this.value.replace(/[0-9]/g, '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())"
-                    >
-                    <span class="field-error" id="middle_name_error">
-                        <?= $errorField === 'middle_name' ? htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8') : '' ?>
-                    </span>
-                </div>
-
-            </div>
-
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <input
                     type="email"
                     id="email"
                     name="email"
-                    placeholder="Enter personnel email"
+                    placeholder="Enter account email address"
                     value="<?= htmlspecialchars($oldEmail, ENT_QUOTES, 'UTF-8') ?>"
                     oninput="this.value = this.value.trim()"
                     required
@@ -315,7 +286,7 @@ unset(
 </main>
 
 <script src="../assets/js/accounts.js"></script>
-<script src="../assets/js/personnel-validation.js"></script>
+<script src="../assets/js/account-validation.js"></script>
 
 </body>
 </html>

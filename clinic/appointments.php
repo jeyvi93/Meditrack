@@ -1097,7 +1097,7 @@ $rejected = $rejectedStmt->get_result();
                                 type="text"
                                 id="resDate"
                                 name="appointment_date"
-                                placeholder="dd/mm/yyyy"
+                                placeholder="mm/dd/yyyy"
                                 required
                                 readonly
                             >

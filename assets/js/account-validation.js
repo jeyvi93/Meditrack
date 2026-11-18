@@ -1,14 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("personnelForm");
+    const form = document.getElementById("accountForm");
 
     if (!form) return;
 
     const fields = {
         staff_id_number: document.getElementById("staff_id_number"),
         role: document.getElementById("role"),
-        last_name: document.getElementById("last_name"),
-        first_name: document.getElementById("first_name"),
-        middle_name: document.getElementById("middle_name"),
         email: document.getElementById("email"),
         password: document.getElementById("password"),
         confirm_password: document.getElementById("confirm_password")
@@ -39,9 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!field) return true;
 
-        const value = field.value.trim();
+        const value = fieldName === "password" || fieldName === "confirm_password"
+        ? field.value
+        : field.value.trim();
 
-        if (fieldName !== "middle_name" && !value) {
+        if (!value) {
             showError(fieldName, "This field is required.");
             return false;
         }
@@ -50,6 +49,14 @@ document.addEventListener("DOMContentLoaded", () => {
             showError(fieldName, "Emojis are not allowed.");
             return false;
         }
+
+        if (
+    fieldName === "staff_id_number" &&
+        /[A-Za-z]/.test(value)
+    ) {
+        showError(fieldName, "ID number can contain numbers and symbols only.");
+        return false;
+    }
 
         if (fieldName === "email" && value && !field.validity.valid) {
             showError(fieldName, "Please enter a valid email address.");

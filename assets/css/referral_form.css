@@ -215,3 +215,32 @@ body { background-color: var(--bg-light); color: var(--text-main); }
         min-width: 90px;
     }
 }
+
+/* PARENT AND SPOUSE DATE PICKERS */
+.date-picker-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.date-picker-wrapper input[type="text"] {
+    width: 100%;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.date-picker-overlay {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+input[readonly]:not(#parentDobDisplay):not(#spouseDobDisplay),
+textarea[readonly] {
+    background-color: #F1F5F9;
+    color: #000000;
+    border-color: #CBD5E1;
+    cursor: not-allowed;
+}

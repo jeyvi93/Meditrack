@@ -367,7 +367,7 @@ if (resDate && typeof flatpickr !== "undefined") {
     flatpickr(resDate, {
         dateFormat: "Y-m-d",
         altInput: true,
-        altFormat: "d/m/Y",
+        altFormat: "m/d/Y",
         clickOpens: true,
         minDate: "today",
 
@@ -378,7 +378,7 @@ if (resDate && typeof flatpickr !== "undefined") {
         ],
 
         onReady: function(selectedDates, dateStr, instance) {
-            instance.altInput.placeholder = "dd/mm/yyyy";
+            instance.altInput.placeholder = "mm/dd/yyyy";
             instance.altInput.readOnly = true;
 
             const wrapper = instance.altInput.parentElement;

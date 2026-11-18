@@ -2,6 +2,18 @@
 // REFERRAL MODAL
 // ===============================
 
+// FORMAT DATE TO MM/DD/YYYY
+function formatReferralDate(date) {
+
+    if (!date || date === "0000-00-00") {
+        return "—";
+    }
+
+    const [year, month, day] = date.split("-");
+
+    return `${month}/${day}/${year}`;
+}
+
 function openModal(id) {
 
     fetch(`../actions/get_referral.php?id=${id}`)
@@ -16,7 +28,7 @@ function openModal(id) {
             const referral = data.referral;
 
             document.getElementById("modalReferredDate").textContent =
-                referral.referred_date || "—";
+                formatReferralDate(referral.referred_date);
 
             document.getElementById("modalDoctor").textContent =
                 referral.doctor_name || "—";
@@ -31,7 +43,7 @@ function openModal(id) {
                 referral.sex || "—";
 
             document.getElementById("modalDob").textContent =
-                referral.date_of_birth || "—";
+                formatReferralDate(referral.date_of_birth);
 
             document.getElementById("modalContact").textContent =
                 referral.contact_number || "—";
@@ -43,13 +55,13 @@ function openModal(id) {
                 referral.parent_name || "—";
 
             document.getElementById("modalParentDob").textContent =
-                referral.parent_dob || "—";
+                formatReferralDate(referral.parent_dob);
 
             document.getElementById("modalSpouseName").textContent =
                 referral.spouse_name || "—";
 
             document.getElementById("modalSpouseDob").textContent =
-                referral.spouse_dob || "—";
+                formatReferralDate(referral.spouse_dob);
 
             document.getElementById("modalPhilhealthMember").textContent =
                 Number(referral.is_philhealth_member) === 1 ? "Yes" : "No";
@@ -238,7 +250,7 @@ if (dateFilter && typeof flatpickr !== "undefined") {
 
         dateFormat: "Y-m-d",
         altInput: true,
-        altFormat: "d/m/Y",
+        altFormat: "m/d/Y",
         enable: availableReferralDates,
         allowInput: false,
 

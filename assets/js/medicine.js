@@ -21,7 +21,18 @@ function openTab(evt, tabName) {
     filterMedicines();
 }
 
+function formatMedicineDate(date) {
 
+    if (!date) return "Not Recorded";
+
+    const parts = date.split("-");
+
+    if (parts.length !== 3) return date;
+
+    const [year, month, day] = parts;
+
+    return `${month}/${day}/${year}`;
+}
 
 // ==========================
 // SEARCH + FILTER
@@ -566,8 +577,8 @@ function openMedicineBatches(medicineName) {
                 const values = [
                     batch.batch_number || "N/A",
                     batch.quantity,
-                    batch.date_acquired || "N/A",
-                    batch.expiry_date || "N/A",
+                    formatMedicineDate(batch.date_acquired),
+                    formatMedicineDate(batch.expiry_date),
                     batch.supplier || "N/A"
                 ];
 
