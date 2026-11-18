@@ -39,8 +39,8 @@ unset($_SESSION['login_email']);
         $guestNav = [
             'secondary_label' => 'Home',
             'secondary_href' => 'index.php',
-            'primary_label' => 'Create Account',
-            'primary_href' => 'patient/register.php',
+            'primary_label' => 'Home',
+            'primary_href' => 'index.php',
             'logo_src' => 'assets/images/med.png'
         ];
 
@@ -207,12 +207,6 @@ unset($_SESSION['login_email']);
                         </div>
 
                     </div>
-
-                    <!-- REGISTER LINK -->
-                    <p class="register-hint">
-                        Don't have an account?
-                        <a href="patient/register.php">Register here</a>
-                    </p>
 
                 </div>
 
