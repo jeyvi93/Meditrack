@@ -1,5 +1,53 @@
 const addMedicineForm = document.getElementById("addMedicineForm");
 
+// ======================
+// MEDICINE DATE PICKERS
+// ======================
+
+function setupMedicineDatePicker(displayId, pickerId, hiddenId) {
+
+    const display = document.getElementById(displayId);
+    const picker = document.getElementById(pickerId);
+    const hidden = document.getElementById(hiddenId);
+
+    if (!display || !picker || !hidden) return;
+
+    display.addEventListener("click", function () {
+        try {
+            picker.showPicker();
+        } catch (error) {
+            picker.focus();
+            picker.click();
+        }
+    });
+
+    picker.addEventListener("change", function () {
+
+        if (!this.value) {
+            display.value = "";
+            hidden.value = "";
+            return;
+        }
+
+        const [year, month, day] = this.value.split("-");
+
+        display.value = `${month}/${day}/${year}`;
+        hidden.value = this.value;
+    });
+}
+
+setupMedicineDatePicker(
+    "dateAcquiredDisplay",
+    "dateAcquiredPicker",
+    "dateAcquiredValue"
+);
+
+setupMedicineDatePicker(
+    "expiryDateDisplay",
+    "expiryDatePicker",
+    "expiryDateValue"
+);
+
 // FILTER INVALID CHARACTERS AND EMOJIS
 const textFields = [
     document.getElementById("medName"),
@@ -20,11 +68,15 @@ textFields.forEach(input => {
 // REAL-TIME VALIDATION
 if (addMedicineForm) {
 
-    const inputs = addMedicineForm.querySelectorAll("input");
+    const inputs = addMedicineForm.querySelectorAll(
+        'input:not([type="hidden"]):not([readonly])'
+    );
 
     function validateField(input) {
 
         const group = input.closest(".input-group");
+
+        if (!group) return true;
         let error = "";
 
         if (!input.checkValidity()) {
@@ -36,6 +88,7 @@ if (addMedicineForm) {
             } else {
                 error = "Please enter a valid value.";
             }
+
         }
 
         let errorElement = group.querySelector(".field-error");
@@ -68,7 +121,9 @@ addMedicineForm.addEventListener("submit", function (e) {
     let formIsValid = true;
     let firstInvalidInput = null;
 
-    addMedicineForm.querySelectorAll("input").forEach(input => {
+    addMedicineForm.querySelectorAll(
+        'input:not([type="hidden"]):not(.date-picker-overlay)'
+    ).forEach(input => {
 
         if (!validateField(input)) {
             formIsValid = false;
@@ -114,12 +169,12 @@ addMedicineForm.addEventListener("submit", function (e) {
 
     formData.append(
         "date_acquired",
-        document.getElementById("dateAcquired").value
+        document.getElementById("dateAcquiredValue").value
     );
 
     formData.append(
         "expiry_date",
-        document.getElementById("expiryDate").value
+        document.getElementById("expiryDateValue").value
     );
 
 

@@ -107,12 +107,51 @@ $is_restock = ($mode === 'restock');
                                 <input type="number" id="lowStockThreshold" min="1" placeholder="e.g. 10" required>
                             </div>
                             <div class="input-group">
-                                <label for="dateAcquired">Date Acquired</label>
-                                <input type="date" id="dateAcquired" required>
+                                <label>Date Acquired</label>
+
+                                <div class="date-picker-wrapper">
+                                    <input
+                                        type="text"
+                                        id="dateAcquiredDisplay"
+                                        placeholder="mm/dd/yyyy"
+                                        readonly
+                                        required
+                                    >
+
+                                    <input
+                                        type="date"
+                                        id="dateAcquiredPicker"
+                                        class="date-picker-overlay"
+                                        aria-label="Select date acquired"
+                                        required
+                                    >
+                                </div>
+
+                                <input type="hidden" id="dateAcquiredValue">
                             </div>
+
                             <div class="input-group">
-                                <label for="expiryDate">Expiration Date</label>
-                                <input type="date" id="expiryDate" required>
+                                <label>Expiration Date</label>
+
+                                <div class="date-picker-wrapper">
+                                    <input
+                                        type="text"
+                                        id="expiryDateDisplay"
+                                        placeholder="mm/dd/yyyy"
+                                        readonly
+                                        required
+                                    >
+
+                                    <input
+                                        type="date"
+                                        id="expiryDatePicker"
+                                        class="date-picker-overlay"
+                                        aria-label="Select expiration date"
+                                        required
+                                    >
+                                </div>
+
+                                <input type="hidden" id="expiryDateValue">
                             </div>
                         </div>
                     </div>
