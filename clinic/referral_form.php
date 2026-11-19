@@ -233,7 +233,7 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                                     <input
                                         type="text"
                                         id="parentDobDisplay"
-                                        placeholder="MM/DD/YYYY"
+                                        placeholder="mm/dd/yyyy"
                                         readonly
                                     >
 
@@ -270,7 +270,7 @@ if (($_SESSION['role'] ?? '') === 'Administrator') {
                                     <input
                                         type="text"
                                         id="spouseDobDisplay"
-                                        placeholder="MM/DD/YYYY"
+                                        placeholder="mm/dd/yyyy"
                                         readonly
                                     >
 

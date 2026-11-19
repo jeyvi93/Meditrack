@@ -35,6 +35,52 @@ function formatMedicineDate(date) {
 }
 
 // ==========================
+// EDIT MEDICINE DATE PICKERS
+// ==========================
+
+function setupEditMedicineDatePicker(displayId, pickerId, hiddenId) {
+
+    const display = document.getElementById(displayId);
+    const picker = document.getElementById(pickerId);
+    const hidden = document.getElementById(hiddenId);
+
+    if (!display || !picker || !hidden) return;
+
+    display.addEventListener("click", function () {
+        try {
+            picker.showPicker();
+        } catch (error) {
+            picker.focus();
+            picker.click();
+        }
+    });
+
+    picker.addEventListener("change", function () {
+
+        if (!this.value) {
+            display.value = "";
+            hidden.value = "";
+            return;
+        }
+
+        display.value = formatMedicineDate(this.value);
+        hidden.value = this.value;
+    });
+}
+
+setupEditMedicineDatePicker(
+    "editDateAcquired",
+    "editDateAcquiredPicker",
+    "editDateAcquiredValue"
+);
+
+setupEditMedicineDatePicker(
+    "editExpiryDate",
+    "editExpiryDatePicker",
+    "editExpiryDateValue"
+);
+
+// ==========================
 // SEARCH + FILTER
 // ==========================
 
@@ -735,16 +781,25 @@ function openEditModal(id) {
             document.getElementById("editSupplier").value =
                 data.supplier;
 
+            // DATE ACQUIRED
             document.getElementById("editDateAcquired").value =
                 formatMedicineDate(data.date_acquired);
 
-            document.getElementById("editExpiryDate").value =
-                formatMedicineDate(data.expiry_date);
+            document.getElementById("editDateAcquiredPicker").value =
+                data.date_acquired;
 
             document.getElementById("editDateAcquiredValue").value =
                 data.date_acquired;
 
+            // EXPIRATION DATE
+            document.getElementById("editExpiryDate").value =
+                formatMedicineDate(data.expiry_date);
+
+            document.getElementById("editExpiryDatePicker").value =
+                data.expiry_date;
+
             document.getElementById("editExpiryDateValue").value =
+                data.expiry_date;
                 data.expiry_date;
 
             document.getElementById("editModal").style.display = "flex";

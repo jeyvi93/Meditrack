@@ -1113,3 +1113,42 @@ body { background-color: var(--bg-light); color: var(--text-main); min-height: 1
 .medicine-batches-modal .close-modal:hover {
     color: #f10000;
 }
+
+/* EDIT MEDICINE DATE FIELDS */
+
+.date-fields-row {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+}
+
+.date-fields-row .form-group {
+    flex: 1;
+    min-width: 0;
+}
+
+.date-picker-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.date-picker-wrapper input[type="text"] {
+    width: 100%;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.date-picker-overlay {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .date-fields-row {
+        gap: 10px;
+    }
+}

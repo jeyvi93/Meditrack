@@ -657,28 +657,54 @@ $disposed_medicines = mysqli_query($conn, "
                 </div>
             </div>
 
-            <div class="form-row">
+            <div class="date-fields-row">
+
+                <!-- DATE ACQUIRED -->
                 <div class="form-group">
                     <label>Date Acquired</label>
-                    <input
-                        type="text"
-                        id="editDateAcquired"
-                        placeholder="mm/dd/yyyy"
-                        readonly
-                    >
+
+                    <div class="date-picker-wrapper">
+                        <input
+                            type="text"
+                            id="editDateAcquired"
+                            placeholder="mm/dd/yyyy"
+                            readonly
+                        >
+
+                        <input
+                            type="date"
+                            id="editDateAcquiredPicker"
+                            class="date-picker-overlay"
+                            aria-label="Select date acquired"
+                        >
+                    </div>
+
                     <input type="hidden" id="editDateAcquiredValue">
                 </div>
 
+                <!-- EXPIRATION DATE -->
                 <div class="form-group">
                     <label>Expiration Date</label>
-                    <input
-                        type="text"
-                        id="editExpiryDate"
-                        placeholder="mm/dd/yyyy"
-                        readonly
-                    >
+
+                    <div class="date-picker-wrapper">
+                        <input
+                            type="text"
+                            id="editExpiryDate"
+                            placeholder="mm/dd/yyyy"
+                            readonly
+                        >
+
+                        <input
+                            type="date"
+                            id="editExpiryDatePicker"
+                            class="date-picker-overlay"
+                            aria-label="Select expiration date"
+                        >
+                    </div>
+
                     <input type="hidden" id="editExpiryDateValue">
                 </div>
+
             </div>
 
             <div class="modal-footer">
