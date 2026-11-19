@@ -660,12 +660,24 @@ $disposed_medicines = mysqli_query($conn, "
             <div class="form-row">
                 <div class="form-group">
                     <label>Date Acquired</label>
-                    <input type="date" id="editDateAcquired">
+                    <input
+                        type="text"
+                        id="editDateAcquired"
+                        placeholder="mm/dd/yyyy"
+                        readonly
+                    >
+                    <input type="hidden" id="editDateAcquiredValue">
                 </div>
 
                 <div class="form-group">
                     <label>Expiration Date</label>
-                    <input type="date" id="editExpiryDate">
+                    <input
+                        type="text"
+                        id="editExpiryDate"
+                        placeholder="mm/dd/yyyy"
+                        readonly
+                    >
+                    <input type="hidden" id="editExpiryDateValue">
                 </div>
             </div>
 

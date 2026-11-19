@@ -736,9 +736,15 @@ function openEditModal(id) {
                 data.supplier;
 
             document.getElementById("editDateAcquired").value =
-                data.date_acquired;
+                formatMedicineDate(data.date_acquired);
 
             document.getElementById("editExpiryDate").value =
+                formatMedicineDate(data.expiry_date);
+
+            document.getElementById("editDateAcquiredValue").value =
+                data.date_acquired;
+
+            document.getElementById("editExpiryDateValue").value =
                 data.expiry_date;
 
             document.getElementById("editModal").style.display = "flex";
@@ -781,13 +787,12 @@ document.getElementById("editMedicineForm").addEventListener("submit", function 
         "supplier",
         document.getElementById("editSupplier").value
     );
-    formData.append(
-        "date_acquired",
-        document.getElementById("editDateAcquired").value
+    formData.append("date_acquired",
+        document.getElementById("editDateAcquiredValue").value
     );
-    formData.append(
-        "expiry_date",
-        document.getElementById("editExpiryDate").value
+
+    formData.append("expiry_date",
+        document.getElementById("editExpiryDateValue").value
     );
 
     fetch("../actions/update_medicine.php", {
