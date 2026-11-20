@@ -69,7 +69,7 @@ $passwordPageUrl = $isAdminPage
 
             <li>
                 <a href="<?= $adminPath ?>create_account.php"
-                   class="<?= basename($_SERVER['SCRIPT_NAME']) === 'create_personnel.php' ? 'active' : '' ?>">
+                   class="<?= basename($_SERVER['SCRIPT_NAME']) === 'create_account.php' ? 'active' : '' ?>">
                     <i class='bx bxs-user-plus'></i>
                     Create Account
                 </a>

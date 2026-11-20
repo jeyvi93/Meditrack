@@ -243,7 +243,7 @@ while ($row = mysqli_fetch_assoc($rolesResult)) {
         <h2>Delete Account</h2>
 
         <p>
-            Are you sure you want to delete this unverified account?
+            Are you sure you want to delete this account?
             This action cannot be undone.
         </p>
 
@@ -267,7 +267,7 @@ while ($row = mysqli_fetch_assoc($rolesResult)) {
             <i class="bx bx-check"></i>
         </div>
         <h2>Account Deleted!</h2>
-        <p>The unverified account has been successfully deleted.</p>
+        <p>The account has been successfully deleted.</p>
         <div class="modal-actions">
             <button type="button" class="btn-primary" id="closeDeleteSuccessModal">
                 OK
@@ -350,14 +350,11 @@ while ($row = mysqli_fetch_assoc($rolesResult)) {
                                 </td>
 
                                 <td class="email-status-cell">
+
                                     <?php if ((int) $account['email_verified'] === 1): ?>
 
-                                        <span class="status-badge verified">Verified</span>
-
-                                    <?php else: ?>
-
                                         <div class="unverified-actions">
-                                            <span class="status-badge unverified">Unverified</span>
+                                            <span class="status-badge verified">Verified</span>
 
                                             <button
                                                 type="button"
@@ -379,7 +376,12 @@ while ($row = mysqli_fetch_assoc($rolesResult)) {
                                             </div>
                                         </div>
 
+                                    <?php else: ?>
+
+                                        <span class="status-badge unverified">Unverified</span>
+
                                     <?php endif; ?>
+
                                 </td>
                             </tr>
                         <?php endforeach; ?>

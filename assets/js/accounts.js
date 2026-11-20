@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             try {
 
-                const response = await fetch("delete_unverified_account.php", {
+                const response = await fetch("delete_account.php", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"

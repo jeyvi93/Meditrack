@@ -60,7 +60,7 @@ try {
     $sql = "
         DELETE FROM users
         WHERE id = ?
-        AND email_verified = 0
+        AND email_verified = 1
     ";
 
     $stmt = mysqli_prepare($conn, $sql);
@@ -72,7 +72,7 @@ try {
 
         echo json_encode([
             'success' => true,
-            'message' => 'Unverified account deleted successfully.'
+            'message' => 'Account deleted successfully.'
         ]);
 
     } else {
@@ -81,7 +81,7 @@ try {
 
         echo json_encode([
             'success' => false,
-            'message' => 'Account not found or it is already verified.'
+            'message' => 'Account not found or could not be deleted.'
         ]);
     }
 
